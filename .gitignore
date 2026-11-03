@@ -1,0 +1,26 @@
+# Build outputs
+target/
+**/target/
+build.log
+*.log
+
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Tauri & Installer bundles
+translate-tauri/src-tauri/target/
+
+# OS / Editor files
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.vscode/
+.idea/
+
+# Windows Credential Manager / Local user secrets (if any local json dumped)
+*.local.json

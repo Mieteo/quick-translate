@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dịch nhanh</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell" id="appShell">
+    <!-- ===== TOP HEADER BAR (EDGE-TO-EDGE) ===== -->
+    <header class="topbar" id="mainTopbar" data-tauri-drag-region>
+      <div class="topbar-left">
+        <button class="icon-btn" id="btnMenu" title="Mở Cài đặt">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+        <span class="brand-title" data-tauri-drag-region>DỊCH NHANH</span>
+        <button class="pill-btn snip-trigger" id="btnSnip" title="Chụp vùng màn hình và dịch đè trực tiếp (Shift+F7)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 8V6a2 2 0 0 1 2-2h2"></path>
+            <path d="M4 16v2a2 2 0 0 0 2 2h2"></path>
+            <path d="M16 4h2a2 2 0 0 1 2 2v2"></path>
+            <path d="M16 20h2a2 2 0 0 0 2-2v-2"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          <span>Chụp vùng màn hình</span>
+        </button>
+      </div>
+
+      <!-- Language Selector Pill in Center -->
+      <div class="lang-pill">
+        <select id="topSourceLang" class="lang-select" title="Ngôn ngữ nguồn"></select>
+        <button class="swap-btn" id="btnSwapLang" title="Đảo chiều ngôn ngữ">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="17 1 21 5 17 9"></polyline>
+            <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
+            <polyline points="7 23 3 19 7 15"></polyline>
+            <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+          </svg>
+        </button>
+        <select id="topTargetLang" class="lang-select" title="Ngôn ngữ đích"></select>
+      </div>
+
+      <!-- Window Controls on Right -->
+      <div class="topbar-right">
+        <button class="win-btn active" id="btnPin" title="Ghim cửa sổ nổi trên cùng (Always on top)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="17" x2="12" y2="22"></line>
+            <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"></path>
+          </svg>
+        </button>
+        <button class="win-btn" id="btnMinimize" title="Thu nhỏ">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+        </button>
+        <button class="win-btn" id="btnMaximize" title="Phóng to / Thu vừa">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round">
+            <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+          </svg>
+        </button>
+        <button class="win-btn close" id="btnClose" title="Ẩn xuống khay hệ thống (Esc)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- ===== IMAGE OVERLAY TOOLBAR (SHOWN IN IMAGE MODE) ===== -->
+    <div class="image-toolbar hidden" id="imageToolbar" data-tauri-drag-region>
+      <div class="itb-group">
+        <!-- Global Offset / Scale / Opacity popover -->
+        <div class="popover-anchor">
+          <button class="itb-btn" id="btnToggleOffsetPanel" title="Chỉnh độ lệch hàng loạt (dX, dY), co giãn khung và độ mờ nền">
+            🎯 Chỉnh lệch &amp; Nền
+          </button>
+          <div class="floating-popover hidden" id="offsetPopover">
+            <div class="pop-title">
+              <span>Chỉnh lệch &amp; Hiển thị khung đích</span>
+              <button class="pop-reset-link" id="btnResetAllBoxes" title="Đặt lại toàn bộ vị trí &amp; kích thước các khung">Đặt lại tất cả</button>
+            </div>
+            <div class="pop-row">
+              <label>Lệch ngang (dX)</label>
+              <input type="range" id="rangeGlobalDx" min="-150" max="150" value="0" />
+              <span class="pop-val" id="valGlobalDx">0px</span>
+            </div>
+            <div class="pop-row">
+              <label>Lệch dọc (dY)</label>
+              <input type="range" id="rangeGlobalDy" min="-150" max="150" value="0" />
+              <span class="pop-val" id="valGlobalDy">0px</span>
+            </div>
+            <div class="pop-row">
+              <label>Co giãn khung</label>
+              <input type="range" id="rangeGlobalScale" min="60" max="150" value="100" />
+              <span class="pop-val" id="valGlobalScale">100%</span>
+            </div>
+            <div class="pop-row">
+              <label>Độ mờ nền che</label>
+              <input type="range" id="rangeBoxOpacity" min="15" max="100" value="94" />
+              <span class="pop-val" id="valBoxOpacity">94%</span>
+            </div>
+            <label class="pop-check-row">
+              <input type="checkbox" id="chkAutoExpandBox" checked />
+              <span>Tự giãn chiều cao khung nếu chữ dịch dài</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Typography popover -->
+        <div class="popover-anchor">
+          <button class="itb-btn" id="btnToggleTypoPanel" title="Tùy chỉnh kiểu chữ, cỡ chữ, đậm/nghiêng, canh lề">
+            Aa Kiểu chữ
+          </button>
+          <div class="floating-popover hidden" id="typoPopover">
+            <div class="pop-title">
+              <span>Tùy chọn kiểu chữ khung dịch</span>
+              <button class="pop-reset-link" id="btnResetTypo">Mặc định</button>
+            </div>
+            <div class="pop-row">
+              <label>Phông chữ</label>
+              <select id="typoFontFamily" class="itb-select" style="flex:1;">
+                <option value="'Segoe UI Variable Text', 'Segoe UI', sans-serif">Segoe UI (Mặc định)</option>
+                <option value="Inter, system-ui, sans-serif">Inter / Hiện đại</option>
+                <option value="Arial, Helvetica, sans-serif">Arial</option>
+                <option value="'Times New Roman', Georgia, serif">Times New Roman (Có chân)</option>
+                <option value="Consolas, 'Courier New', monospace">Consolas (Đơn cách)</option>
+              </select>
+            </div>
+            <div class="pop-row">
+              <label>Cỡ chữ (Auto-fit)</label>
+              <div class="btn-group-inline">
+                <button class="itb-btn sm" id="btnFontMinus" title="Giảm cỡ chữ">A−</button>
+                <span class="pop-val" id="valFontDelta" style="min-width:42px;text-align:center;">+0px</span>
+                <button class="itb-btn sm" id="btnFontPlus" title="Tăng cỡ chữ">A+</button>
+              </div>
+            </div>
+            <div class="pop-row">
+              <label>Kiểu &amp; Canh lề</label>
+              <div class="btn-group-inline">
+                <button class="itb-btn sm" id="btnTypoBold" title="Chữ đậm (Bold)"><b>B</b></button>
+                <button class="itb-btn sm" id="btnTypoItalic" title="Chữ nghiêng (Italic)"><i>I</i></button>
+                <button class="itb-btn sm active" data-align="left" id="btnAlignLeft" title="Canh trái">Trái</button>
+                <button class="itb-btn sm" data-align="center" id="btnAlignCenter" title="Canh giữa">Giữa</button>
+                <button class="itb-btn sm" data-align="right" id="btnAlignRight" title="Canh phải">Phải</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Undo / Redo / Add Box -->
+        <button class="itb-btn icon-only" id="btnUndo" title="Hoàn tác thao tác khung (Ctrl+Z)" disabled>↶</button>
+        <button class="itb-btn icon-only" id="btnRedo" title="Làm lại thao tác khung (Ctrl+Y)" disabled>↷</button>
+        <button class="itb-btn" id="btnAddBox" title="Thêm một khung văn bản mới lên ảnh">+ Thêm ô</button>
+      </div>
+
+      <div class="itb-group itb-right">
+        <!-- Sao chép ảnh đã dịch & Sao chép ảnh gốc -->
+        <button class="itb-btn" id="btnCopyTranslatedImage" title="Sao chép ảnh đã dịch (kèm các khung chữ dịch) vào Clipboard">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; color: var(--accent);">
+            <rect x="2" y="3" width="16" height="14" rx="2"></rect>
+            <circle cx="7" cy="8" r="1.5"></circle>
+            <path d="M18 13l-3.5-3.5L6 17"></path>
+            <rect x="11" y="12" width="11" height="9" rx="1.8" fill="var(--bg-btn)" stroke="currentColor" stroke-width="2"></rect>
+            <path d="M14 15.5h5M14 18h3.5" stroke-width="1.8"></path>
+          </svg>
+          <span>Sao chép ảnh đã dịch</span>
+        </button>
+        <button class="itb-btn" id="btnCopyOriginalImage" title="Sao chép ảnh gốc (chưa che chữ) vào Clipboard">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+            <rect x="8" y="8" width="13" height="13" rx="2"></rect>
+            <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
+            <circle cx="12.5" cy="12.5" r="1.4"></circle>
+            <path d="M21 17l-3.5-3.5L10 21"></path>
+          </svg>
+          <span>Sao chép ảnh gốc</span>
+        </button>
+        <button class="itb-btn" id="btnRetakeSnip" title="Chụp lại vùng màn hình khác">
+          📷 Chụp lại
+        </button>
+        <button class="itb-btn danger-hover" id="btnDismissImage" title="Đóng ảnh và quay về chế độ dịch văn bản">
+          ✕
+        </button>
+      </div>
+    </div>
+
+    <!-- ===== MAIN WORKSPACE ===== -->
+    <main class="workspace" id="mainWorkspace">
+      <!-- ==================== A. IMAGE WORKSPACE (TOP: IMAGE STAGE + RESIZER + BOTTOM: DUAL TEXT PANES) ==================== -->
+      <div class="image-workspace hidden" id="imageWorkspace">
+        <!-- PHẦN CHÍNH GIỮA: ẢNH THỂ HIỆN -->
+        <section class="image-stage-pane" id="imageStagePane">
+          <div class="image-viewport" id="imageViewport">
+            <div class="stage-container" id="stageContainer">
+              <img id="stageImage" alt="Ảnh chụp màn hình" draggable="false" />
+              <!-- SVG layer for ghost source boxes + dashed connector lines -->
+              <svg class="connector-svg" id="connectorSvg" xmlns="http://www.w3.org/2000/svg"></svg>
+              <!-- Interactive target translation boxes layer -->
+              <div class="overlay-boxes-layer" id="overlayBoxesLayer"></div>
+            </div>
+          </div>
+
+          <!-- Zoom & Quick Info Bar at bottom of image stage -->
+          <div class="stage-bottom-bar">
+            <div class="zoom-controls">
+              <button class="stage-mini-btn" id="btnZoomOut" title="Thu nhỏ ảnh (Ctrl + Lăn chuột xuống)">−</button>
+              <span class="zoom-label" id="zoomLabel">Vừa khung</span>
+              <button class="stage-mini-btn" id="btnZoomIn" title="Phóng to ảnh (Ctrl + Lăn chuột lên)">+</button>
+              <button class="stage-mini-btn" id="btnZoomFit" title="Đặt lại tỷ lệ vừa khung">Vừa khung</button>
+            </div>
+
+            <!-- Selected Box Context Action Bar -->
+            <div class="box-context-bar hidden" id="boxContextBar">
+              <span class="ctx-badge" id="ctxBoxLabel">Khung đang chọn</span>
+              <button class="stage-mini-btn" id="btnCtxEdit" title="Nhấp đúp vào khung hoặc bấm để sửa bản dịch trực tiếp">✎ Sửa</button>
+              <button class="stage-mini-btn" id="btnCtxRetranslate" title="Dịch lại riêng khung văn bản này">🔄 Dịch lại</button>
+              <button class="stage-mini-btn" id="btnCtxMerge" title="Gộp các khung đang chọn">⊕ Gộp</button>
+              <button class="stage-mini-btn" id="btnCtxSplit" title="Tách đôi khung văn bản này thành 2 khung">✂ Tách</button>
+              <button class="stage-mini-btn" id="btnCtxLock" title="Khóa / Mở khóa vị trí khung này để tránh kéo nhầm">🔓 Khóa</button>
+              <button class="stage-mini-btn" id="btnCtxResetBox" title="Đặt lại khung này về đúng vị trí chữ gốc">↺ Đặt lại</button>
+              <button class="stage-mini-btn" id="btnCtxCopyBox" title="Sao chép văn bản của khung này">📋 Chép</button>
+              <button class="stage-mini-btn danger" id="btnCtxDelete" title="Xóa khung này (Delete)">🗑</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- THANH KÉO PHÂN CÁCH (RESIZER) GIỮA ẢNH TRÊN & TEXT DƯỚI -->
+        <div class="image-split-resizer" id="imageSplitResizer" title="Kéo lên/xuống để điều chỉnh chiều cao giữa ảnh và văn bản">
+          <div class="resizer-handle-pill"></div>
+        </div>
+
+        <!-- PHẦN DƯỚI CHIA 2 CỘT: TRÁI VĂN BẢN GỐC, PHẢI VĂN BẢN DỊCH -->
+        <section class="image-bottom-panes" id="imageBottomPanes">
+          <!-- Cột Header tiêu đề 2 bên -->
+          <div class="dual-panes-header">
+            <div class="pane-header-col">
+              <span class="col-title">VĂN BẢN GỐC</span>
+              <button class="btn ghost sm" id="btnCopyAllSource" title="Sao chép toàn bộ văn bản nguồn">📋 Sao chép gốc</button>
+            </div>
+            <div class="pane-header-col">
+              <span class="col-title">VĂN BẢN DỊCH</span>
+              <button class="btn ghost sm" id="btnCopyAllSegments" title="Sao chép toàn bộ bản dịch">📋 Sao chép bản dịch</button>
+            </div>
+          </div>
+
+          <!-- Danh sách các đoạn văn bản đối xứng tự nhiên, mềm mại như văn bản đọc (liên thông 3 vùng) -->
+          <div class="dual-flow-container" id="dualFlowContainer"></div>
+        </section>
+      </div>
+
+      <!-- ==================== B. NORMAL TEXT LEFT COLUMN ==================== -->
+      <section class="pane pane-left" id="textLeftPane">
+        <div class="editor-wrap">
+          <textarea
+            id="input"
+            placeholder="Bôi đen văn bản rồi nhấn F7, dán ảnh (Ctrl+V), hoặc nhập văn bản cần dịch tại đây…"
+            spellcheck="false"
+          ></textarea>
+          <button class="clear-btn hidden" id="btnClearInput" title="Xóa nội dung">✕</button>
+        </div>
+
+        <div class="pane-footer">
+          <span class="char-count" id="charCount">0 ký tự</span>
+        </div>
+      </section>
+
+      <!-- ==================== C. NORMAL TEXT RIGHT COLUMN ==================== -->
+      <section class="pane pane-right" id="textRightPane">
+        <div class="output-wrap">
+          <div class="output placeholder" id="output">Bản dịch sẽ hiển thị đối xứng tại đây…</div>
+        </div>
+
+        <div class="pane-footer pane-footer-right">
+          <button class="btn ghost" id="btnCopy">Sao chép</button>
+          <button class="btn primary" id="btnTranslate">Dịch • Ctrl+Enter</button>
+        </div>
+      </section>
+    </main>
+
+    <!-- ===== BOTTOM EDGE-TO-EDGE STATUS BAR ===== -->
+    <footer class="statusbar" id="mainStatusbar">
+      <div class="status-left">
+        <span class="status-dot" id="statusDot"></span>
+        <span class="status-text" id="statusText">Sẵn sàng — Nhấn F7 để dịch nhanh hoặc Shift+F7 để chụp màn hình</span>
+      </div>
+      <div class="status-right">
+        <span class="badge model-badge" id="modelBadge">⚡ Gemini 3.5 Flash-Lite (0/500)</span>
+        <span class="badge hotkey-badge" id="hotkeyBadge">Phím tắt: F7</span>
+      </div>
+    </footer>
+
+    <!-- ===== SLIDE-OVER SETTINGS DRAWER (Menu ☰) ===== -->
+    <div class="drawer-backdrop hidden" id="drawerBackdrop"></div>
+    <aside class="settings-drawer hidden" id="settingsDrawer">
+      <div class="drawer-header">
+        <h2>Cài đặt</h2>
+        <button class="icon-btn" id="btnCloseDrawer" title="Đóng cài đặt">✕</button>
+      </div>
+
+      <div class="drawer-body">
+        <!-- API Configuration -->
+        <div class="drawer-section-title">CẤU HÌNH API</div>
+        <div class="field-label-row">
+          <span>Gemini API Key</span>
+          <span class="conn-badge" id="connBadge">Chưa có key</span>
+          <a href="#" class="link-inline" id="linkKey">Lấy key miễn phí</a>
+        </div>
+        <div class="key-input-wrap">
+          <input type="password" id="apiKey" class="drawer-field" placeholder="Dán Gemini API key vào đây…" autocomplete="off" />
+        </div>
+        <div class="drawer-note">
+          Key được mã hóa an toàn trong Windows Credential Manager theo tài khoản Windows của bạn.
+        </div>
+
+        <div class="field-row-inline" style="margin-top: 14px;">
+          <label class="inline-label" for="modelSelect">AI Model</label>
+          <select id="modelSelect" class="drawer-field" style="flex: 1;"></select>
+        </div>
+        <div class="drawer-note">
+          (Chế độ dịch đè vị trí gốc trên ảnh hoạt động với các model Gemini. Gemma sẽ tự động dùng chế độ danh sách)
+        </div>
+
+        <!-- Global Hotkeys -->
+        <div class="drawer-section-title">PHÍM TẮT TOÀN HỆ THỐNG</div>
+        <div class="hotkey-row">
+          <span class="hotkey-label">Dịch nhanh văn bản bôi đen</span>
+          <input type="text" id="hotkeyInput" class="hotkey-pill-input" readonly title="Nhấn phím F1–F12 hoặc Ctrl/Alt/Shift + phím" />
+        </div>
+        <div class="hotkey-row">
+          <span class="hotkey-label">Chụp màn hình và dịch OCR</span>
+          <input type="text" id="imageHotkeyInput" class="hotkey-pill-input" readonly title="Nhấn phím F1–F12 hoặc Ctrl/Alt/Shift + phím" />
+        </div>
+        <div class="drawer-note">
+          Nhấn vào ô phím tắt rồi bấm phím mới (hỗ trợ F1–F12 độc lập như F7 hoặc tổ hợp Ctrl/Alt/Shift).
+        </div>
+
+        <!-- Theme & Pin Transparency (Nằm giữa Phím tắt toàn hệ thống và Hệ thống & dữ liệu) -->
+        <div class="drawer-section-title">GIAO DIỆN &amp; ĐỘ TRONG SUỐT</div>
+        <div class="setting-row">
+          <span>Giao diện (Theme)</span>
+          <div class="theme-selector" id="themeSelector">
+            <button type="button" class="theme-chip active" data-theme="dark" title="Giao diện Tối (Dark)">
+              <span class="theme-swatch swatch-dark"></span>
+              <span>Tối</span>
+            </button>
+            <button type="button" class="theme-chip" data-theme="light" title="Giao diện Sáng (Light)">
+              <span class="theme-swatch swatch-light"></span>
+              <span>Sáng</span>
+            </button>
+            <button type="button" class="theme-chip" data-theme="warm" title="Giao diện Xám ngà cam nhạt (Dịu mắt)">
+              <span class="theme-swatch swatch-warm"></span>
+              <span>Xám ngà</span>
+            </button>
+          </div>
+        </div>
+        <div class="setting-row" style="margin-bottom: 4px;">
+          <span>Độ trong suốt khi Ghim</span>
+          <span class="pop-val" id="valPinTransparency" style="min-width: 110px;">Trong suốt 10% (Rõ 90%)</span>
+        </div>
+        <div class="setting-row" style="margin-bottom: 4px;">
+          <input type="range" id="rangePinTransparency" min="0" max="65" step="1" value="10" style="width: 100%; accent-color: var(--accent); cursor: pointer;" />
+        </div>
+        <div class="drawer-note" style="margin-bottom: 6px;">
+          Chỉ áp dụng độ trong suốt khi đang bật <b>Ghim cửa sổ</b> (📌 góc phải trên). Khi bỏ ghim, cửa sổ tự động tắt trong suốt (hiển thị 100%).
+        </div>
+
+        <!-- System & Data -->
+        <div class="drawer-section-title">HỆ THỐNG &amp; DỮ LIỆU</div>
+        <div class="setting-row">
+          <span>Khởi động cùng Windows</span>
+          <label class="switch">
+            <input type="checkbox" id="startupCheck" />
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="setting-row">
+          <span id="cacheInfoText">Bộ nhớ đệm: 0 bản dịch đã lưu</span>
+          <button class="btn ghost sm" id="btnClearCache">[Xóa cache]</button>
+        </div>
+      </div>
+
+      <div class="drawer-footer">
+        <button class="btn primary flex-1" id="btnSaveSettings">Lưu cài đặt</button>
+        <button class="btn danger flex-1" id="btnQuitApp">Thoát ứng dụng</button>
+      </div>
+    </aside>
+  </div>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>
