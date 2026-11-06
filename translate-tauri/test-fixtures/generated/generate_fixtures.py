@@ -11,7 +11,11 @@ Sinh bộ dữ liệu test cho bộ nhận diện bố cục chữ (OCR) và thu
 Chạy lại:  python generate_fixtures.py
 """
 
+import sys
+import sys
 import json
+import math
+sys.stdout.reconfigure(encoding="utf-8")
 import os
 import random
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
@@ -34,6 +38,25 @@ FONTS = {
     "ja": ("YuGothR.ttc", "YuGothB.ttc"),
     "zh": ("msyh.ttc", "msyhbd.ttc"),
     "zht": ("msyh.ttc", "msyhbd.ttc"),
+    "fr": ("segoeui.ttf", "segoeuib.ttf"),
+    "es": ("segoeui.ttf", "segoeuib.ttf"),
+    "th": ("leelawad.ttf", "leelawdb.ttf"),
+    "id": ("segoeui.ttf", "segoeuib.ttf"),
+}
+
+SERIF_FONTS = {
+    "en": ("times.ttf", "timesbd.ttf"),
+    "vi": ("times.ttf", "timesbd.ttf"),
+    "de": ("times.ttf", "timesbd.ttf"),
+    "ru": ("times.ttf", "timesbd.ttf"),
+    "ko": ("malgun.ttf", "malgunbd.ttf"),
+    "ja": ("YuGothR.ttc", "YuGothB.ttc"),
+    "zh": ("simsun.ttc", "simsun.ttc"),
+    "zht": ("simsun.ttc", "simsun.ttc"),
+    "fr": ("times.ttf", "timesbd.ttf"),
+    "es": ("times.ttf", "timesbd.ttf"),
+    "th": ("leelawad.ttf", "leelawdb.ttf"),
+    "id": ("times.ttf", "timesbd.ttf"),
 }
 CODE_FONT = "consola.ttf" if os.path.exists(os.path.join(FONT_DIR, "consola.ttf")) else "cour.ttf"
 
@@ -174,9 +197,76 @@ INK_DARK = (235, 237, 241)
 ACCENTS = [(37, 99, 235), (5, 150, 105), (180, 83, 9), (147, 51, 234), (219, 39, 119)]
 
 
-def font_for(lang, size, bold=False):
-    reg, bd = FONTS[lang]
+def font_for(lang, size, bold=False, serif=False, italic=False):
+    if italic:
+        f = "georgiai.ttf" if os.path.exists(os.path.join(FONT_DIR, "georgiai.ttf")) else "ariali.ttf"
+        return ImageFont.truetype(os.path.join(FONT_DIR, f), size)
+    table = SERIF_FONTS if serif else FONTS
+    reg, bd = table.get(lang, FONTS["en"])
     return ImageFont.truetype(os.path.join(FONT_DIR, bd if bold else reg), size)
+
+
+def draw_block_ext(draw, text, lang, size, bold, x, y, max_w, color, spacing=1.22, force_mono=False, serif=False, italic=False, align="left", stroke_w=0, stroke_c=None):
+    font = font_for(lang, size, bold, serif, italic)
+    ascent, descent = font.getmetrics()
+    line_h = ascent + descent
+    step = round(line_h * spacing, 1)
+    lines = text.split("\n") if force_mono else wrap_text(draw, text, font, max_w, lang in CJK)
+
+    x0 = y0 = None
+    x1 = y1 = 0
+    for i, line in enumerate(lines):
+        ly = y + i * step
+        tw = text_w(draw, line, font)
+        if align == "center":
+            lx = x + max(0, (max_w - tw) / 2)
+        elif align == "right":
+            lx = x + max(0, max_w - tw)
+        else:
+            lx = x
+        bbox = draw.textbbox((lx, ly), line, font=font, stroke_width=stroke_w)
+        x0 = bbox[0] if x0 is None else min(x0, bbox[0])
+        y0 = bbox[1] if y0 is None else min(y0, bbox[1])
+        x1 = max(x1, bbox[2])
+        y1 = max(y1, bbox[3])
+        draw.text((lx, ly), line, font=font, fill=color, stroke_width=stroke_w, stroke_fill=stroke_c)
+
+    return {
+        "text": "\n".join(lines),
+        "pixel_rect": [round(x0, 1), round(y0, 1), round(x1 - x0, 1), round(y1 - y0, 1)],
+        "line_height": step,
+        "line_count": len(lines),
+    }
+
+
+def draw_vertical_block(draw, text, lang, size, bold, x, y, color, spacing=1.22):
+    font = font_for(lang, size, bold)
+    ascent, descent = font.getmetrics()
+    char_h = ascent + descent
+    step_y = round(char_h * spacing, 1)
+    col_w = round(char_h * 1.35, 1)
+    
+    cols = text.split("\n")
+    x0 = y0 = None
+    x1 = y1 = 0
+    
+    for c_idx, col in enumerate(cols):
+        cx = x - c_idx * col_w
+        for r_idx, ch in enumerate(col):
+            cy = y + r_idx * step_y
+            bbox = draw.textbbox((cx, cy), ch, font=font)
+            x0 = bbox[0] if x0 is None else min(x0, bbox[0])
+            y0 = bbox[1] if y0 is None else min(y0, bbox[1])
+            x1 = max(x1, bbox[2])
+            y1 = max(y1, bbox[3])
+            draw.text((cx, cy), ch, font=font, fill=color)
+            
+    return {
+        "text": text,
+        "pixel_rect": [round(x0, 1), round(y0, 1), round(x1 - x0, 1), round(y1 - y0, 1)],
+        "line_height": step_y,
+        "line_count": len(cols),
+    }
 
 
 def code_font(size):
@@ -1693,6 +1783,763 @@ def build_web_poll(rng, lang, idx):
                         "ocr_merge_expected": True})
 
 
+# POOLS CHO 6 NHÓM MỚI
+# ---------------------------------------------------------------------------
+
+MANGA_POOLS = {
+    "ja": {
+        "vert": [
+            ("そんな…信じられない！\n本当に君なのか？", "Không thể nào… thật khó tin!\nThực sự là cậu sao?"),
+            ("ここはどこだ？\n誰もいないのか？", "Đây là đâu?\nKhông có ai ở đây sao?"),
+            ("待って！\n行かないでくれ！", "Đợi đã!\nXin đừng đi!"),
+            ("力を合わせれば\n必ず勝てるはずだ。", "Chỉ cần hợp sức\nnhất định chúng ta sẽ thắng."),
+            ("静かにしろ！\n敵が近づいているぞ。", "Trật tự nào!\nKẻ địch đang tới gần đấy."),
+            ("俺たちの戦いは\nまだ始まったばかりだ！", "Trận chiến của chúng ta\nchỉ mới bắt đầu mà thôi!"),
+        ],
+        "bubble": [
+            ("早く逃げろ！ここはお前が戦える場所じゃない！", "Mau chạy đi! Nơi này không phải chỗ cậu có thể chiến đấu!"),
+            ("私を信じて。絶対にあなたを守るから。", "Hãy tin tôi. Tôi nhất định sẽ bảo vệ bạn."),
+            ("約束を覚えているか？あの日の誓いを！", "Cậu còn nhớ lời hứa không? Lời thề ngày hôm đó!"),
+            ("なぜそんな無茶をするんだ…！", "Tại sao cậu lại làm điều liều lĩnh như vậy chứ…!"),
+        ],
+        "sfx": [
+            ("ドドドド！", "Rầm rầm rầm! (Rung chuyển dữ dội)"),
+            ("バキッ！", "Rắc! (Tiếng gãy vỡ)"),
+            ("ゴゴゴゴ…", "Ù ù ù… (Sát khí dồn dập)"),
+            ("ザッ！", "Xoạt! (Bước chân bất ngờ)"),
+        ]
+    },
+    "zh": {
+        "vert": [
+            ("这怎么可能…\n绝对不可以！", "Làm sao có thể như vậy…\ntuyệt đối không được!"),
+            ("快点离开这里，\n危险就要来了！", "Mau rời khỏi đây,\nnguy hiểm sắp tới rồi!"),
+            ("只要我们坚持下去，\n就一定能看到希望。", "Chỉ cần chúng ta kiên trì,\nnhất định sẽ thấy hy vọng."),
+            ("你到底隐瞒了什么秘密？\n快点告诉我！", "Rốt cuộc ngươi đang che giấu bí mật gì?\nMau nói cho ta biết!"),
+        ],
+        "bubble": [
+            ("别害怕，有我在你身边，没有人能伤害你！", "Đừng sợ, có ta ở bên cạnh, không ai có thể làm hại nàng!"),
+            ("这场战争已经持续太久了，是时候做个了断了。", "Cuộc chiến này kéo dài quá lâu rồi, đã đến lúc kết thúc."),
+            ("小心身后！那家伙的速度太快了！", "Cẩn thận phía sau! Tốc độ của tên đó quá nhanh!"),
+        ],
+        "sfx": [
+            ("轰隆！", "Ầm ầm! (Tiếng sấm sét nổ)"),
+            ("唰！", "Vút! (Lướt đi cực nhanh)"),
+            ("砰！", "Bốp! (Va đập dữ dội)"),
+        ]
+    },
+    "zht": {
+        "vert": [
+            ("這怎麼可能…\n絕對不可以！", "Làm sao có thể như vậy…\ntuyệt đối không được!"),
+            ("快點離開這裡，\n危險就要來了！", "Mau rời khỏi đây,\nnguy hiểm sắp tới rồi!"),
+            ("只要我們堅持下去，\n就一定能看到希望。", "Chỉ cần chúng ta kiên trì,\nnhất định sẽ thấy hy vọng."),
+            ("你到底隱瞞了什麼秘密？\n快點告訴我！", "Rốt cuộc ngươi đang che giấu bí mật gì?\nMau nói cho ta biết!"),
+        ],
+        "bubble": [
+            ("別害怕，有我在你身邊，沒有人能傷害你！", "Đừng sợ, có ta ở bên cạnh, không ai có thể làm hại nàng!"),
+            ("這場戰爭已經持續太久了，是時候做個了斷了。", "Cuộc chiến này kéo dài quá lâu rồi, đã đến lúc kết thúc."),
+        ],
+        "sfx": [
+            ("轟隆！", "Ầm ầm! (Tiếng sấm sét nổ)"),
+            ("唰！", "Vút! (Lướt đi cực nhanh)"),
+        ]
+    },
+    "ko": {
+        "bubble": [
+            ("포기하지 마! 아직 끝난 게 아니야!", "Đừng bỏ cuộc! Vẫn chưa kết thúc đâu!"),
+            ("도대체 무슨 생각을 하고 있는 거야?", "Rốt cuộc cậu đang nghĩ cái gì thế hả?"),
+            ("내가 널 반드시 구해낼 테니까 기다려!", "Tôi nhất định sẽ cứu được cậu, hãy đợi đấy!"),
+            ("우리가 힘을 합치면 불가능은 없어.", "Nếu chúng ta hợp lực thì không gì là không thể."),
+        ],
+        "sfx": [
+            ("쿠구구궁!", "Rầm rầm rầm! (Động đất)"),
+            ("콰아아앙!", "Đoàng! (Nổ lớn dữ dội)"),
+            ("슉!", "Vút! (Đường kiếm chớp nhoáng)"),
+        ]
+    },
+    "en": {
+        "bubble": [
+            ("Hold on tight! Something is crashing from the sky!", "Bám chặt vào! Có thứ gì đó đang lao xuống từ trên trời!"),
+            ("I will never forgive you for what you did to my friends!", "Ta sẽ không bao giờ tha thứ cho những gì ngươi đã làm với bạn ta!"),
+            ("Stay behind me if you want to make it out alive.", "Hãy ở sau lưng tôi nếu muốn sống sót rời khỏi đây."),
+            ("Is this really all the power you possess?", "Đây thực sự là toàn bộ sức mạnh mà ngươi sở hữu sao?"),
+        ],
+        "sfx": [
+            ("BOOM!!", "BÙM!! (Tiếng nổ lớn)"),
+            ("SLASH!!", "XOẸT!! (Đòn chém chí mạng)"),
+            ("CRASH!!", "XOẢNG!! (Va chạm nát vụn)"),
+        ]
+    },
+    "vi": {
+        "bubble": [
+            ("Hãy cẩn thận! Kết giới xung quanh đang bắt đầu vỡ vụn!", "Hãy cẩn thận! Kết giới xung quanh đang bắt đầu vỡ vụn!"),
+            ("Tôi sẽ chặn hắn lại ở đây, mọi người mau rút lui!", "Tôi sẽ chặn hắn lại ở đây, mọi người mau rút lui!"),
+            ("Không thể ngờ sức mạnh của phong ấn lại suy yếu nhanh như vậy.", "Không thể ngờ sức mạnh của phong ấn lại suy yếu nhanh như vậy."),
+        ],
+        "sfx": [
+            ("RẦM!!", "RẦM!! (Va chạm cực mạnh)"),
+            ("XOẸT!!", "XOẸT!! (Vung kiếm xé gió)"),
+            ("ĐÙNG!!", "ĐÙNG!! (Tiếng nổ vang trời)"),
+        ]
+    }
+}
+
+GAME_POOLS = {
+    "dialogs": [
+        ("[Eldrin - Mage Guild]", "[Eldrin - Trưởng Pháp Sư]",
+         "Take this ancient amulet. It will protect you from the curse of the shadow ruins.",
+         "Hãy cầm lấy bùa hộ mệnh cổ này. Nó sẽ bảo vệ ngươi khỏi lời nguyền của tàn tích bóng tối."),
+        ("[Captain Sarah]", "[Đại Úy Sarah]",
+         "Our scouts detected goblin activity near the northern bridge. Move out immediately!",
+         "Trinh sát báo cáo có yêu tinh gần cây cầu phía bắc. Hãy xuất kích ngay lập tức!"),
+        ("[Merchant Bron]", "[Thương Nhân Bron]",
+         "Finest blades and potions in the realm, traveler! Take a look at my special stock.",
+         "Gươm báu và bình dược tốt nhất vương quốc đây! Hãy xem qua gian hàng đặc biệt của ta."),
+        ("[High Priestess]", "[Đại Tế Tư]",
+         "The celestial alignment approaches. We must cleanse the shrine before nightfall.",
+         "Hiện tượng thiên thực đang tới gần. Chúng ta phải thanh tẩy đền thờ trước khi trời tối."),
+    ],
+    "items": [
+        ("Frostmourne Blade", "Thanh Kiếm Băng Giá Frostmourne", "Legendary Two-Handed Sword", "Đại Kiếm Huyền Thoại (Hai tay)",
+         "+480 Physical Attack", "+480 Sát thương vật lý", "+18% Critical Strike Chance", "+18% Tỷ lệ chí mạng",
+         "Forged in the heart of the frozen abyss.", "Được rèn trong lòng vực thẳm băng giá."),
+        ("Dragonscale Chestplate", "Áo Giáp Vảy Rồng", "Epic Heavy Armor", "Giáp Nặng Sử Thi",
+         "+720 Armor Rating", "+720 Giáp phòng ngự", "+1,200 Maximum Health", "+1.200 Máu tối đa",
+         "Impenetrable scales harvested from an elder wyrm.", "Lớp vảy kiên cố thu hoạch từ loài rồng cổ đại."),
+        ("Elixir of Immortality", "Thần Dược Bất Tử", "Rare Consumable Potion", "Bình Dược Quý Hiếm",
+         "Restores 50% HP instantly", "Hồi phục ngay lập tức 50% Máu", "Grants immunity for 6 seconds", "Miễn nhiễm sát thương trong 6 giây",
+         "Distilled from the blossom of the world tree.", "Chiết xuất từ hoa của cây thế giới."),
+    ],
+    "subtitles": [
+        ("We must breach the perimeter before the blast doors seal permanently.",
+         "Chúng ta phải vượt qua hàng rào phòng thủ trước khi cửa sập đóng vĩnh viễn."),
+        ("Trust in the prophecy, champion. The stars never lie.",
+         "Hãy tin vào lời tiên tri, dũng sĩ. Những vì sao không bao giờ nói dối."),
+        ("Prepare yourselves! The ancient dragon has awakened!",
+         "Chuẩn bị sẵn sàng! Con rồng cổ đại đã thức tỉnh!"),
+        ("I have walked through darkness for a thousand years for this single moment.",
+         "Ta đã bước đi trong bóng tối suốt một ngàn năm chỉ vì khoảnh khắc duy nhất này."),
+    ]
+}
+
+TABLE_POOLS = {
+    "products": [
+        ("SKU-101", "Wireless Ergonomic Mouse", "Chuột công thái học không dây", "Accessories", "Phụ kiện", "$49.99", "In Stock", "Còn hàng"),
+        ("SKU-102", "Mechanical Keyboard RGB", "Bàn phím cơ RGB", "Gaming Gear", "Thiết bị game", "$129.50", "In Stock", "Còn hàng"),
+        ("SKU-103", "UltraWide 4K IPS Monitor", "Màn hình UltraWide 4K IPS", "Displays", "Màn hình", "$489.00", "Low Stock", "Sắp hết"),
+        ("SKU-104", "Active Noise-Cancelling Headset", "Tai nghe chống ồn chủ động", "Audio", "Âm thanh", "$199.00", "Out of Stock", "Hết hàng"),
+    ],
+    "specs": [
+        ("Display Size", "Kích thước màn hình", "6.7 inches OLED 120Hz", "6.7 inch OLED 120Hz"),
+        ("Processor", "Vi xử lý", "Octa-Core 3.4 GHz Chipset", "Chipset 8 nhân 3.4 GHz"),
+        ("RAM / Storage", "Bộ nhớ RAM / Ổ cứng", "16 GB RAM / 512 GB SSD", "16 GB RAM / 512 GB SSD"),
+        ("Battery Capacity", "Dung lượng pin", "5000 mAh with 65W Fast Charge", "5000 mAh sạc nhanh 65W"),
+    ],
+    "invoices": [
+        ("Cloud Server Hosting (Monthly)", "Thuê máy chủ đám mây (Hàng tháng)", "$120.00"),
+        ("Dedicated IP Address", "Địa chỉ IP tĩnh chuyên dụng", "$15.00"),
+        ("SSL Certificate (Wildcard)", "Chứng chỉ bảo mật SSL Wildcard", "$45.00"),
+        ("Subtotal", "Tạm tính", "$180.00"),
+        ("Tax (VAT 10%)", "Thuế VAT (10%)", "$18.00"),
+        ("Grand Total", "Tổng thanh toán", "$198.00"),
+    ]
+}
+
+DOC_POOLS = {
+    "papers": [
+        ("DEEP NEURAL NETWORKS FOR REAL-TIME OCR LAYOUT ANALYSIS", "MẠNG NƠ-RON SÂU CHO PHÂN TÍCH BỐ CỤC OCR THỜI GIAN THỰC"),
+        ("1. Introduction", "1. Giới thiệu tổng quan",
+         "Recent advancements in vision-language models have significantly improved text localization and bounding box extraction in complex real-world documents.",
+         "Những tiến bộ gần đây trong mô hình thị giác-ngôn ngữ đã cải thiện đáng kể khả năng định vị văn bản và trích xuất khung bounding box trong tài liệu phức tạp."),
+        ("2. Proposed Methodology", "2. Phương pháp đề xuất",
+         "We introduce a lightweight anchor-free detection network tailored for desktop screen captures with minimal latency and high recall rates.",
+         "Chúng tôi giới thiệu mạng phát hiện nhẹ không dùng neo được tinh chỉnh riêng cho ảnh chụp màn hình máy tính với độ trễ tối thiểu và tỷ lệ tìm kiếm cao."),
+    ],
+    "quotes": [
+        ("CHAPTER 4: THE ARCHITECTURE OF PERCEPTION", "CHƯƠNG 4: CẤU TRÚC CỦA SỰ NHẬN THỨC"),
+        ("The nature of intelligence is not merely the passive accumulation of facts, but the dynamic restructuring of patterns within chaotic sensory streams.",
+         "Bản chất của trí tuệ không đơn thuần là sự tích lũy thụ động dữ kiện, mà là sự tái cấu trúc linh hoạt các mẫu thức trong luồng cảm quan hỗn loạn."),
+        ("\"To understand is to perceive patterns where others see only noise.\"",
+         "\"Thấu hiểu chính là nhận ra quy luật nơi người khác chỉ thấy sự hỗn độn.\""),
+        ("[1] Source: Philosophical Foundations of Cognitive Science, Oxford Press, 2024.",
+         "[1] Nguồn: Cơ sở triết học của khoa học nhận thức, Oxford Press, 2024."),
+    ],
+    "toc": [
+        ("TABLE OF CONTENTS", "MỤC LỤC TÀI LIỆU"),
+        ("Chapter 1: Foundational Principles", "Chương 1: Các nguyên lý nền tảng", "Page 12", "Trang 12"),
+        ("Chapter 2: Neural Optimization", "Chương 2: Tối ưu hóa mạng nơ-ron", "Page 48", "Trang 48"),
+        ("Chapter 3: Experimental Evaluation", "Chương 3: Đánh giá thực nghiệm", "Page 96", "Trang 96"),
+        ("Chapter 4: Conclusion & Future Scope", "Chương 4: Kết luận & Hướng phát triển", "Page 142", "Trang 142"),
+    ]
+}
+
+EXTRA_LANG_POOLS = {
+    "fr": {
+        "titles": [
+            ("PARAMÈTRES DU COMPTE", "CÀI ĐẶT TÀI KHOẢN"),
+            ("CONFIRMATION REQUISE", "YÊU CẦU XÁC NHẬN"),
+            ("OFFRE EXCLUSIVE", "ƯU ĐÃI ĐỘC QUYỀN"),
+        ],
+        "paras": [
+            ("Vos modifications ont été enregistrées avec succès et seront appliquées dès le prochain démarrage.",
+             "Các thay đổi của bạn đã được lưu thành công và sẽ áp dụng vào lần khởi động tới."),
+            ("Voulez-vous vraiment supprimer cet élément ? Cette action est irréversible et supprimera toutes les données associées.",
+             "Bạn có thực sự muốn xóa mục này? Hành động này không thể hoàn tác và sẽ xóa toàn bộ dữ liệu liên quan."),
+            ("Profitez d'une réduction de 30% sur tous les abonnements annuels pour une durée limitée.",
+             "Tận hưởng ưu đãi giảm giá 30% cho mọi gói thuê bao năm trong thời gian có hạn."),
+        ],
+        "buttons": [("Enregistrer", "Lưu"), ("Annuler", "Hủy"), ("Confirmer", "Xác nhận"), ("Télécharger", "Tải xuống")],
+    },
+    "es": {
+        "titles": [
+            ("CONFIGURACIÓN DE SEGURIDAD", "CÀI ĐẶT BẢO MẬT"),
+            ("ACTUALIZACIÓN DISPONIBLE", "BẢN CẬP NHẬT MỚI"),
+            ("PLAN DE SUSCRIPCIÓN", "GÓI DỊCH VỤ"),
+        ],
+        "paras": [
+            ("Los cambios se han guardado automáticamente y se sincronizarán la próxima vez que se conecte.",
+             "Thay đổi đã được lưu tự động và sẽ đồng bộ vào lần kết nối tiếp theo."),
+            ("Una nueva versión está lista para instalar. Contiene correcciones de seguridad importantes.",
+             "Phiên bản mới đã sẵn sàng để cài đặt. Bao gồm các bản sửa lỗi bảo mật quan trọng."),
+            ("Elija el plan que mejor se adapte a sus necesidades empresariales con soporte técnico 24/7.",
+             "Chọn gói phù hợp nhất với nhu cầu doanh nghiệp của bạn kèm hỗ trợ kỹ thuật 24/7."),
+        ],
+        "buttons": [("Guardar", "Lưu"), ("Cancelar", "Hủy"), ("Actualizar", "Cập nhật"), ("Comprar ahora", "Mua ngay")],
+    },
+    "th": {
+        "titles": [
+            ("การตั้งค่าความปลอดภัย", "CÀI ĐẶT BẢO MẬT"),
+            ("แจ้งเตือนการอัปเดต", "THÔNG BÁO CẬP NHẬT"),
+            ("ข้อเสนอพิเศษประจำเดือน", "ƯU ĐÃI ĐẶC BIỆT THÁNG"),
+        ],
+        "paras": [
+            ("การเปลี่ยนแปลงของคุณได้รับการบันทึกเรียบร้อยแล้วและจะซิงค์ในครั้งต่อไป",
+             "Thay đổi của bạn đã được lưu thành công và sẽ đồng bộ vào lần tới."),
+            ("มีเวอร์ชันใหม่พร้อมให้ดาวน์โหลด ซึ่งมีการปรับปรุงประสิทธิภาพที่สำคัญ",
+             "Đã có phiên bản mới sẵn sàng tải xuống với nhiều cải tiến hiệu năng quan trọng."),
+            ("รับส่วนลดพิเศษเมื่อสมัครแพ็กเกจรายปีตั้งแต่วันนี้จนถึงสิ้นเดือน",
+             "Nhận ưu đãi giảm giá đặc biệt khi đăng ký gói năm từ nay đến cuối tháng."),
+        ],
+        "buttons": [("บันทึก", "Lưu"), ("ยกเลิก", "Hủy"), ("ดาวน์โหลด", "Tải xuống"), ("ตกลง", "Đồng ý")],
+    },
+    "id": {
+        "titles": [
+            ("PENGATURAN PRIVASI", "CÀI ĐẶT QUYỀN RIÊNG TƯ"),
+            ("PEMBERITAHUAN SISTEM", "THÔNG BÁO HỆ THỐNG"),
+            ("PAKET BERLANGGANAN", "GÓI DỊCH VỤ ĐĂNG KÝ"),
+        ],
+        "paras": [
+            ("Perubahan Anda telah berhasil disimpan dan akan disinkronkan saat terhubung kembali ke server.",
+             "Thay đổi của bạn đã được lưu thành công và sẽ đồng bộ khi kết nối lại máy chủ."),
+            ("Pembaruan perangkat lunak siap dipasang untuk meningkatkan keamanan dan stabilitas sistem.",
+             "Bản cập nhật phần mềm đã sẵn sàng để cài đặt nhằm nâng cao bảo mật và độ ổn định."),
+            ("Nikmati akses tanpa batas ke semua fitur premium dengan paket berlangganan tahunan.",
+             "Tận hưởng quyền truy cập không giới hạn vào mọi tính năng cao cấp với gói thuê bao năm."),
+        ],
+        "buttons": [("Simpan", "Lưu"), ("Batal", "Hủy"), ("Pasang", "Cài đặt"), ("Mulai Sekarang", "Bắt đầu ngay")],
+    }
+}
+
+# ---------------------------------------------------------------------------
+# 6 BUILDERS MỚI
+# ---------------------------------------------------------------------------
+
+def build_manga_webtoon(rng, lang, idx):
+    sub = "vert" if (lang in ["ja", "zh", "zht"] and rng.random() < 0.5) else ("sfx" if rng.random() < 0.35 else "bubble")
+    pool = MANGA_POOLS.get(lang, MANGA_POOLS["en"])
+
+    if sub == "vert":
+        w, h = 340, 460
+        img = Image.new("RGB", (w, h), (245, 245, 247))
+        d = ImageDraw.Draw(img)
+        # Comic panel outer border
+        d.rectangle([10, 10, w - 10, h - 10], outline=(30, 30, 30), width=3)
+        # Speech bubble oval in center
+        bx0, by0, bx1, by1 = 30, 30, w - 30, h - 30
+        d.ellipse([bx0, by0, bx1, by1], fill=(255, 255, 255), outline=(20, 20, 20), width=2)
+        # Tail pointer
+        d.polygon([(w // 2 - 20, by1 - 6), (w // 2 - 50, h - 14), (w // 2 + 10, by1 - 4)], fill=(255, 255, 255))
+        d.line([(w // 2 - 20, by1 - 6), (w // 2 - 50, h - 14), (w // 2 + 10, by1 - 4)], fill=(20, 20, 20), width=2)
+        # Vertical text
+        items = pool["vert"]
+        src_text, vi_text = items[idx % len(items)]
+        size = rng.randint(18, 22)
+        block = draw_vertical_block(d, src_text, lang, size, True, w - 85, 75, (20, 20, 20), spacing=1.25)
+        block["id"] = 1
+        block["type"] = "manga_speech_vertical"
+        block["translation"] = vi_text
+        return img, b_case(f"gen{idx:03d}_manga_{lang}", f"[gen] Manga: Bong bóng thoại chữ dọc ({lang})", lang,
+                           f"gen{idx:03d}_manga_{lang}.png", (w, h), [block],
+                           {"expected_block_count": 1, "is_manga": True, "is_vertical_text": True})
+
+    elif sub == "sfx":
+        w, h = 380, 220
+        img = Image.new("RGB", (w, h), (20, 22, 28))
+        d = ImageDraw.Draw(img)
+        # Manga speed lines radiating
+        for angle in range(0, 360, 15):
+            rad = math.radians(angle)
+            x2 = int(w / 2 + math.cos(rad) * 220)
+            y2 = int(h / 2 + math.sin(rad) * 220)
+            d.line([(w // 2, h // 2), (x2, y2)], fill=(40, 44, 56), width=1)
+        items = pool.get("sfx", MANGA_POOLS["en"]["sfx"])
+        src_text, vi_text = items[idx % len(items)]
+        size = rng.randint(32, 42)
+        fill_c = rng.choice([(255, 240, 60), (255, 80, 80), (255, 255, 255)])
+        block = draw_block_ext(d, src_text, lang, size, True, 20, (h - size * 2) // 2, w - 40,
+                               fill_c, align="center", stroke_w=3, stroke_c=(0, 0, 0))
+        block["id"] = 1
+        block["type"] = "manga_sfx"
+        block["translation"] = vi_text
+        return img, b_case(f"gen{idx:03d}_manga_{lang}", f"[gen] Manga: Hiệu ứng âm thanh SFX viền đậm ({lang})", lang,
+                           f"gen{idx:03d}_manga_{lang}.png", (w, h), [block],
+                           {"expected_block_count": 1, "is_manga": True, "is_sfx": True})
+
+    else:
+        w, h = 420, 260
+        img = Image.new("RGB", (w, h), (242, 243, 247))
+        d = ImageDraw.Draw(img)
+        d.rectangle([10, 10, w - 10, h - 10], outline=(30, 30, 30), width=2)
+        # Oval bubble
+        d.ellipse([26, 26, w - 26, h - 36], fill=(255, 255, 255), outline=(20, 20, 20), width=2)
+        # Tail
+        d.polygon([(w // 2 - 15, h - 38), (w // 2 - 35, h - 14), (w // 2 + 10, h - 38)], fill=(255, 255, 255))
+        d.line([(w // 2 - 15, h - 38), (w // 2 - 35, h - 14), (w // 2 + 10, h - 38)], fill=(20, 20, 20), width=2)
+        items = pool.get("bubble", MANGA_POOLS["en"]["bubble"])
+        src_text, vi_text = items[idx % len(items)]
+        size = rng.randint(15, 18)
+        block = draw_block_ext(d, src_text, lang, size, True, 45, 60, w - 90, (20, 20, 20), align="center", spacing=1.28)
+        block["id"] = 1
+        block["type"] = "manga_bubble"
+        block["translation"] = vi_text
+        return img, b_case(f"gen{idx:03d}_manga_{lang}", f"[gen] Manga: Bong bóng thoại ngang hội thoại ({lang})", lang,
+                           f"gen{idx:03d}_manga_{lang}.png", (w, h), [block],
+                           {"expected_block_count": 1, "is_manga": True, "is_speech_bubble": True})
+
+
+def build_game_hud(rng, lang, idx):
+    sub = idx % 3
+    if sub == 0:
+        # RPG Dialog Box
+        w, h = 760, 200
+        img = Image.new("RGB", (w, h), (14, 16, 22))
+        d = ImageDraw.Draw(img)
+        # Fantasy banner frame
+        d.rectangle([12, 12, w - 12, h - 12], fill=(22, 25, 34), outline=(180, 140, 50), width=2)
+        d.rectangle([16, 16, w - 16, h - 16], outline=(70, 60, 35), width=1)
+        # Avatar placeholder
+        d.rectangle([26, 26, 130, 174], fill=(35, 40, 54), outline=(180, 140, 50), width=1)
+        d.text((45, 90), "[AVATAR]", font=font_for("en", 13, True), fill=(140, 150, 175))
+        item = GAME_POOLS["dialogs"][idx % len(GAME_POOLS["dialogs"])]
+        char_en, char_vi, dia_en, dia_vi = item
+        # Blocks
+        b_name = draw_block_ext(d, char_en, "en", 16, True, 150, 26, 500, (250, 204, 21))
+        b_name["id"] = 1
+        b_name["type"] = "character_name"
+        b_name["translation"] = char_vi
+        
+        b_dia = draw_block_ext(d, dia_en, "en", 15, False, 150, 62, 570, (240, 242, 248), spacing=1.3)
+        b_dia["id"] = 2
+        b_dia["type"] = "dialog"
+        b_dia["translation"] = dia_vi
+        
+        b_prompt = draw_block_ext(d, "[Press E to Continue]", "en", 12, True, 560, 160, 170, (160, 170, 190), align="right")
+        b_prompt["id"] = 3
+        b_prompt["type"] = "prompt"
+        b_prompt["translation"] = "[Nhấn E để tiếp tục]"
+        
+        return img, b_case(f"gen{idx:03d}_game_{lang}", f"[gen] Game: Hộp thoại hội thoại RPG ({lang})", lang,
+                           f"gen{idx:03d}_game_{lang}.png", (w, h), [b_name, b_dia, b_prompt],
+                           {"expected_block_count": 3, "is_game_hud": True})
+
+    elif sub == 1:
+        # MMORPG Item Tooltip
+        w, h = 340, 310
+        img = Image.new("RGB", (w, h), (18, 20, 26))
+        d = ImageDraw.Draw(img)
+        rarity_color = rng.choice([(255, 128, 0), (163, 53, 238), (0, 112, 221)])
+        d.rectangle([8, 8, w - 8, h - 8], fill=(24, 27, 36), outline=rarity_color, width=2)
+        item = GAME_POOLS["items"][idx % len(GAME_POOLS["items"])]
+        name_s, name_vi, type_s, type_vi, st1_s, st1_vi, st2_s, st2_vi, lore_s, lore_vi = item
+        
+        b1 = draw_block_ext(d, name_s, "en", 17, True, 20, 18, w - 40, rarity_color)
+        b1["id"] = 1; b1["type"] = "item_name"; b1["translation"] = name_vi
+        
+        b2 = draw_block_ext(d, type_s, "en", 13, False, 20, 48, w - 40, (180, 185, 200))
+        b2["id"] = 2; b2["type"] = "item_type"; b2["translation"] = type_vi
+        
+        d.line([(20, 75), (w - 20, 75)], fill=(50, 56, 72))
+        
+        b3 = draw_block_ext(d, st1_s, "en", 14, True, 20, 88, w - 40, (235, 238, 245))
+        b3["id"] = 3; b3["type"] = "stat"; b3["translation"] = st1_vi
+        
+        b4 = draw_block_ext(d, st2_s, "en", 14, True, 20, 118, w - 40, (235, 238, 245))
+        b4["id"] = 4; b4["type"] = "stat"; b4["translation"] = st2_vi
+        
+        d.line([(20, 150), (w - 20, 150)], fill=(50, 56, 72))
+        
+        b5 = draw_block_ext(d, f'"{lore_s}"', "en", 12, False, 20, 165, w - 40, (215, 195, 130), italic=True, spacing=1.25)
+        b5["id"] = 5; b5["type"] = "flavor_text"; b5["translation"] = f'"{lore_vi}"'
+        
+        return img, b_case(f"gen{idx:03d}_game_{lang}", f"[gen] Game: Tooltip trang bị phẩm chất ({lang})", lang,
+                           f"gen{idx:03d}_game_{lang}.png", (w, h), [b1, b2, b3, b4, b5],
+                           {"expected_block_count": 5, "is_game_hud": True, "is_item_tooltip": True})
+
+    else:
+        # Video / Cinematic Subtitles
+        w, h = 860, 240
+        # Dark dramatic gradient background
+        img = Image.new("RGB", (w, h), (15, 18, 25))
+        d = ImageDraw.Draw(img)
+        for yy in range(h):
+            ratio = yy / h
+            r = int(12 + 18 * ratio)
+            g = int(15 + 25 * ratio)
+            b = int(24 + 40 * ratio)
+            d.line([(0, yy), (w, yy)], fill=(r, g, b))
+        sub_s, sub_vi = GAME_POOLS["subtitles"][idx % len(GAME_POOLS["subtitles"])]
+        # Semi-transparent dark strip behind subtitle
+        d.rectangle([40, 140, w - 40, 215], fill=(0, 0, 0))
+        b = draw_block_ext(d, sub_s, "en", 18, True, 60, 155, w - 120, (255, 255, 255),
+                           align="center", stroke_w=2, stroke_c=(0, 0, 0))
+        b["id"] = 1; b["type"] = "subtitle"; b["translation"] = sub_vi
+        return img, b_case(f"gen{idx:03d}_game_{lang}", f"[gen] Game: Phụ đề cắt cảnh video viền đen ({lang})", lang,
+                           f"gen{idx:03d}_game_{lang}.png", (w, h), [b],
+                           {"expected_block_count": 1, "is_game_hud": True, "is_subtitle": True})
+
+
+def build_table_data(rng, lang, idx):
+    sub = idx % 3
+    if sub == 0:
+        # Spreadsheet Data Grid
+        w, h = 760, 260
+        img = Image.new("RGB", (w, h), (255, 255, 255))
+        d = ImageDraw.Draw(img)
+        # Header background
+        d.rectangle([14, 14, w - 14, 52], fill=(45, 55, 72))
+        cols = [("Mã SKU", 30, 90), ("Tên sản phẩm", 130, 280), ("Danh mục", 420, 130), ("Đơn giá", 560, 80), ("Trạng thái", 650, 90)]
+        blocks = []
+        b_id = 1
+        for title, cx, cw in cols:
+            b = draw_block_ext(d, title, "vi", 13, True, cx, 23, cw, (255, 255, 255))
+            b["id"] = b_id; b["type"] = "table_header"; b["translation"] = title
+            blocks.append(b); b_id += 1
+        # Data rows
+        items = TABLE_POOLS["products"]
+        for r_idx, row_item in enumerate(items[:3]):
+            sku, name, name_vi, cat, cat_vi, price, stat, stat_vi = row_item
+            ry = 54 + r_idx * 48
+            bg = (248, 250, 252) if r_idx % 2 == 1 else (255, 255, 255)
+            d.rectangle([14, ry, w - 14, ry + 46], fill=bg)
+            d.line([(14, ry + 46), (w - 14, ry + 46)], fill=(226, 232, 240))
+            
+            b_name = draw_block_ext(d, name, "en", 13, False, 130, ry + 14, 280, (30, 41, 59))
+            b_name["id"] = b_id; b_name["type"] = "cell_text"; b_name["translation"] = name_vi
+            blocks.append(b_name); b_id += 1
+            
+            b_price = draw_block_ext(d, price, "en", 13, True, 560, ry + 14, 80, (15, 23, 42), align="right")
+            b_price["id"] = b_id; b_price["type"] = "cell_number"; b_price["translation"] = price
+            blocks.append(b_price); b_id += 1
+            
+        return img, b_case(f"gen{idx:03d}_table_{lang}", f"[gen] Bảng dữ liệu: Spreadsheet grid ({lang})", lang,
+                           f"gen{idx:03d}_table_{lang}.png", (w, h), blocks,
+                           {"expected_block_count": len(blocks), "is_table_data": True})
+
+    elif sub == 1:
+        # Spec Table (2 columns: Key - Value)
+        w, h = 620, 270
+        img = Image.new("RGB", (w, h), (250, 250, 252))
+        d = ImageDraw.Draw(img)
+        d.rectangle([16, 16, w - 16, h - 16], fill=(255, 255, 255), outline=(220, 224, 232), width=1)
+        d.rectangle([16, 16, w - 16, 56], fill=(241, 245, 249))
+        
+        b_head = draw_block_ext(d, "THÔNG SỐ KỸ THUẬT SẢN PHẨM", "vi", 14, True, 30, 25, w - 60, (30, 41, 59))
+        b_head["id"] = 1; b_head["type"] = "table_header"; b_head["translation"] = "THÔNG SỐ KỸ THUẬT SẢN PHẨM"
+        blocks = [b_head]
+        b_id = 2
+        specs = TABLE_POOLS["specs"]
+        for r_idx, (k_s, k_vi, v_s, v_vi) in enumerate(specs):
+            ry = 65 + r_idx * 46
+            d.line([(24, ry + 42), (w - 24, ry + 42)], fill=(241, 245, 249))
+            bk = draw_block_ext(d, k_s, "en", 13, True, 30, ry + 12, 180, (71, 85, 105))
+            bk["id"] = b_id; bk["type"] = "spec_key"; bk["translation"] = k_vi
+            blocks.append(bk); b_id += 1
+            
+            bv = draw_block_ext(d, v_s, "en", 13, False, 230, ry + 12, 360, (15, 23, 42))
+            bv["id"] = b_id; bv["type"] = "spec_value"; bv["translation"] = v_vi
+            blocks.append(bv); b_id += 1
+            
+        return img, b_case(f"gen{idx:03d}_table_{lang}", f"[gen] Bảng thông số: 2 cột Key-Value ({lang})", lang,
+                           f"gen{idx:03d}_table_{lang}.png", (w, h), blocks,
+                           {"expected_block_count": len(blocks), "is_table_data": True})
+
+    else:
+        # Mini Invoice
+        w, h = 540, 290
+        img = Image.new("RGB", (w, h), (255, 255, 255))
+        d = ImageDraw.Draw(img)
+        d.rectangle([14, 14, w - 14, h - 14], fill=(255, 255, 255), outline=(203, 213, 225), width=1)
+        b_title = draw_block_ext(d, "INVOICE SUMMARY", "en", 16, True, 30, 26, 300, (15, 23, 42))
+        b_title["id"] = 1; b_title["type"] = "invoice_title"; b_title["translation"] = "HÓA ĐƠN THANH TOÁN"
+        blocks = [b_title]
+        b_id = 2
+        d.line([(30, 60), (w - 30, 60)], fill=(203, 213, 225), width=2)
+        inv_items = TABLE_POOLS["invoices"]
+        for r_idx, (desc_s, desc_vi, amt) in enumerate(inv_items[:4]):
+            ry = 70 + r_idx * 36
+            bold = (r_idx >= 3)
+            bd = draw_block_ext(d, desc_s, "en", 13, bold, 30, ry, 340, (15, 23, 42) if bold else (71, 85, 105))
+            bd["id"] = b_id; bd["type"] = "invoice_item"; bd["translation"] = desc_vi
+            blocks.append(bd); b_id += 1
+            
+            ba = draw_block_ext(d, amt, "en", 13, bold, 380, ry, 130, (15, 23, 42), align="right")
+            ba["id"] = b_id; ba["type"] = "invoice_amount"; ba["translation"] = amt
+            blocks.append(ba); b_id += 1
+            
+        return img, b_case(f"gen{idx:03d}_table_{lang}", f"[gen] Bảng hóa đơn tài chính ({lang})", lang,
+                           f"gen{idx:03d}_table_{lang}.png", (w, h), blocks,
+                           {"expected_block_count": len(blocks), "is_table_data": True})
+
+
+def build_mobile_portrait(rng, lang, idx):
+    sub = idx % 3
+    if sub == 0:
+        # Full Mobile Screen (9:16 portrait)
+        w, h = 360, 640
+        img = Image.new("RGB", (w, h), (248, 249, 251))
+        d = ImageDraw.Draw(img)
+        # Top status bar
+        d.text((20, 10), "09:41", font=font_for("en", 12, True), fill=(20, 24, 30))
+        d.text((w - 55, 10), "85%", font=font_for("en", 11, True), fill=(20, 24, 30))
+        # App Navigation Header
+        b_hdr = draw_block_ext(d, "MESSAGES", "en", 18, True, 20, 38, w - 40, (15, 23, 42))
+        b_hdr["id"] = 1; b_hdr["type"] = "mobile_header"; b_hdr["translation"] = "HỘP THƯ TIN NHẮN"
+        blocks = [b_hdr]
+        b_id = 2
+        # 3 Feed item cards
+        senders = [("Sarah Connor", "Sarah Connor", "See you tomorrow at the office!", "Hẹn gặp bạn ngày mai tại văn phòng!", "5m ago", "5 phút trước"),
+                   ("Dev Team Lead", "Trưởng Nhóm Dev", "Build #402 passed all integration tests.", "Bản build #402 đã vượt qua mọi kiểm thử tích hợp.", "22m ago", "22 phút trước"),
+                   ("Product Manager", "Quản Lý Sản Phẩm", "Please review the updated requirements doc.", "Vui lòng duyệt tài liệu yêu cầu mới cập nhật.", "1h ago", "1 giờ trước")]
+        for r_idx, (snd, snd_vi, msg, msg_vi, tm, tm_vi) in enumerate(senders):
+            cy = 85 + r_idx * 135
+            d.rounded_rectangle([16, cy, w - 16, cy + 120], radius=12, fill=(255, 255, 255), outline=(226, 232, 240), width=1)
+            # Avatar circle
+            d.ellipse([30, cy + 16, 66, cy + 52], fill=(59, 130, 246))
+            bs = draw_block_ext(d, snd, "en", 14, True, 76, cy + 16, 170, (15, 23, 42))
+            bs["id"] = b_id; bs["type"] = "mobile_sender"; bs["translation"] = snd_vi
+            blocks.append(bs); b_id += 1
+            
+            bm = draw_block_ext(d, msg, "en", 12, False, 76, cy + 42, 240, (71, 85, 105), spacing=1.22)
+            bm["id"] = b_id; bm["type"] = "mobile_message"; bm["translation"] = msg_vi
+            blocks.append(bm); b_id += 1
+            
+        # Bottom tab bar
+        d.rectangle([0, h - 55, w, h], fill=(255, 255, 255), outline=(226, 232, 240), width=1)
+        tabs = [("Home", 35), ("Chat", 125), ("Search", 205), ("Profile", 285)]
+        for tab_name, tx in tabs:
+            d.text((tx, h - 35), tab_name, font=font_for("en", 11, False), fill=(100, 116, 139))
+            
+        return img, b_case(f"gen{idx:03d}_mobile_{lang}", f"[gen] Mobile dọc 9:16: Danh sách tin nhắn ({lang})", lang,
+                           f"gen{idx:03d}_mobile_{lang}.png", (w, h), blocks,
+                           {"expected_block_count": len(blocks), "is_mobile_portrait": True})
+
+    elif sub == 1:
+        # Lockscreen Notification Banner (Portrait AR = 0.75)
+        w, h = 360, 440
+        img = Image.new("RGB", (w, h), (24, 28, 38))
+        d = ImageDraw.Draw(img)
+        # Lockscreen clock
+        d.text((w // 2 - 40, 30), "14:25", font=font_for("en", 32, True), fill=(255, 255, 255))
+        d.text((w // 2 - 60, 75), "Wednesday, Nov 6", font=font_for("en", 12, False), fill=(180, 190, 210))
+        # Floating Notification Card
+        card_y = 120
+        d.rounded_rectangle([16, card_y, w - 16, card_y + 130], radius=14, fill=(40, 46, 62), outline=(60, 70, 92), width=1)
+        d.ellipse([30, card_y + 14, 52, card_y + 36], fill=(37, 99, 235))
+        
+        b_app = draw_block_ext(d, "Banking Alert", "en", 12, True, 60, card_y + 16, 180, (220, 230, 250))
+        b_app["id"] = 1; b_app["type"] = "app_name"; b_app["translation"] = "Thông Báo Ngân Hàng"
+        
+        b_title = draw_block_ext(d, "Transfer Received: +$2,500.00", "en", 14, True, 30, card_y + 48, w - 60, (255, 255, 255))
+        b_title["id"] = 2; b_title["type"] = "notification_title"; b_title["translation"] = "Nhận tiền thành công: +2.500,00 $"
+        
+        b_body = draw_block_ext(d, "Your account has been credited from Global Tech Corp.", "en", 12, False, 30, card_y + 78, w - 60, (180, 190, 210), spacing=1.25)
+        b_body["id"] = 3; b_body["type"] = "notification_body"; b_body["translation"] = "Tài khoản của bạn đã được nhận tiền từ Global Tech Corp."
+        
+        return img, b_case(f"gen{idx:03d}_mobile_{lang}", f"[gen] Mobile dọc: Thẻ thông báo Lockscreen ({lang})", lang,
+                           f"gen{idx:03d}_mobile_{lang}.png", (w, h), [b_app, b_title, b_body],
+                           {"expected_block_count": 3, "is_mobile_portrait": True, "is_notification": True})
+
+    else:
+        # Context Menu / Dropdown Menu
+        w, h = 240, 280
+        img = Image.new("RGB", (w, h), (245, 247, 250))
+        d = ImageDraw.Draw(img)
+        d.rounded_rectangle([12, 12, w - 12, h - 12], radius=8, fill=(255, 255, 255), outline=(203, 213, 225), width=1)
+        menu_items = [
+            ("Copy Selection", "Sao chép vùng chọn", "Ctrl+C"),
+            ("Paste from Clipboard", "Dán từ bộ nhớ đệm", "Ctrl+V"),
+            ("Duplicate Row", "Nhân bản dòng", "Ctrl+D"),
+            ("Rename File", "Đổi tên tệp", "F2"),
+            ("Delete Item", "Xóa mục này", "Del"),
+        ]
+        blocks = []
+        b_id = 1
+        for m_idx, (act_s, act_vi, shortcut) in enumerate(menu_items):
+            my = 22 + m_idx * 48
+            if m_idx == 3:
+                d.line([(20, my - 6), (w - 20, my - 6)], fill=(226, 232, 240))
+            ba = draw_block_ext(d, act_s, "en", 13, False, 24, my + 6, 125, (30, 41, 59))
+            ba["id"] = b_id; ba["type"] = "menu_item"; ba["translation"] = act_vi
+            blocks.append(ba); b_id += 1
+            
+            d.text((w - 55, my + 8), shortcut, font=font_for("en", 11, False), fill=(148, 163, 184))
+            
+        return img, b_case(f"gen{idx:03d}_mobile_{lang}", f"[gen] Menu chuột phải dọc (Context Menu) ({lang})", lang,
+                           f"gen{idx:03d}_mobile_{lang}.png", (w, h), blocks,
+                           {"expected_block_count": len(blocks), "is_mobile_portrait": True, "is_context_menu": True})
+
+
+def build_document_academic(rng, lang, idx):
+    sub = idx % 3
+    if sub == 0:
+        # Two-Column Academic Paper
+        w, h = 880, 460
+        img = Image.new("RGB", (w, h), (255, 255, 255))
+        d = ImageDraw.Draw(img)
+        item = DOC_POOLS["papers"]
+        title_s, title_vi = item[0]
+        sec1_t, sec1_t_vi, sec1_p, sec1_p_vi = item[1]
+        sec2_t, sec2_t_vi, sec2_p, sec2_p_vi = item[2]
+        
+        b_title = draw_block_ext(d, title_s, "en", 16, True, 30, 24, w - 60, (20, 24, 33), serif=True, align="center")
+        b_title["id"] = 1; b_title["type"] = "paper_title"; b_title["translation"] = title_vi
+        
+        d.line([(30, 68), (w - 30, 68)], fill=(200, 205, 215))
+        # Gutter in center
+        col_w = 385
+        cx1 = 35
+        cx2 = 460
+        
+        b_s1_t = draw_block_ext(d, sec1_t, "en", 14, True, cx1, 85, col_w, (20, 24, 33), serif=True)
+        b_s1_t["id"] = 2; b_s1_t["type"] = "section_title"; b_s1_t["translation"] = sec1_t_vi
+        
+        b_s1_p = draw_block_ext(d, sec1_p, "en", 13, False, cx1, 118, col_w, (40, 45, 55), serif=True, spacing=1.35)
+        b_s1_p["id"] = 3; b_s1_p["type"] = "paragraph"; b_s1_p["translation"] = sec1_p_vi
+        
+        b_s2_t = draw_block_ext(d, sec2_t, "en", 14, True, cx2, 85, col_w, (20, 24, 33), serif=True)
+        b_s2_t["id"] = 4; b_s2_t["type"] = "section_title"; b_s2_t["translation"] = sec2_t_vi
+        
+        b_s2_p = draw_block_ext(d, sec2_p, "en", 13, False, cx2, 118, col_w, (40, 45, 55), serif=True, spacing=1.35)
+        b_s2_p["id"] = 5; b_s2_p["type"] = "paragraph"; b_s2_p["translation"] = sec2_p_vi
+        
+        return img, b_case(f"gen{idx:03d}_doc_{lang}", f"[gen] Tài liệu: Báo cáo khoa học 2 cột font Serif ({lang})", lang,
+                           f"gen{idx:03d}_doc_{lang}.png", (w, h), [b_title, b_s1_t, b_s1_p, b_s2_t, b_s2_p],
+                           {"expected_block_count": 5, "is_academic_doc": True, "is_two_column": True})
+
+    elif sub == 1:
+        # Book Page with Blockquote & Footnote (Portrait AR = 0.9)
+        w, h = 520, 560
+        img = Image.new("RGB", (w, h), (252, 250, 245))
+        d = ImageDraw.Draw(img)
+        item = DOC_POOLS["quotes"]
+        c_title, c_title_vi = item[0]
+        p_text, p_text_vi = item[1]
+        q_text, q_text_vi = item[2]
+        fn_text, fn_text_vi = item[3]
+        
+        b_head = draw_block_ext(d, c_title, "en", 15, True, 35, 30, w - 70, (30, 32, 40), serif=True)
+        b_head["id"] = 1; b_head["type"] = "chapter_title"; b_head["translation"] = c_title_vi
+        
+        b_para = draw_block_ext(d, p_text, "en", 13, False, 35, 75, w - 70, (45, 48, 58), serif=True, spacing=1.38)
+        b_para["id"] = 2; b_para["type"] = "paragraph"; b_para["translation"] = p_text_vi
+        
+        # Blockquote with thick vertical bar
+        d.line([(35, 230), (35, 310)], fill=(90, 70, 50), width=4)
+        b_quote = draw_block_ext(d, q_text, "en", 14, False, 52, 240, w - 90, (60, 50, 40), italic=True, spacing=1.35)
+        b_quote["id"] = 3; b_quote["type"] = "blockquote"; b_quote["translation"] = q_text_vi
+        
+        # Footnote at bottom
+        d.line([(35, h - 70), (160, h - 70)], fill=(180, 175, 165), width=1)
+        b_fn = draw_block_ext(d, fn_text, "en", 11, False, 35, h - 55, w - 70, (110, 105, 95), serif=True)
+        b_fn["id"] = 4; b_fn["type"] = "footnote"; b_fn["translation"] = fn_text_vi
+        
+        return img, b_case(f"gen{idx:03d}_doc_{lang}", f"[gen] Sách: Trang trích dẫn Blockquote & Footnote ({lang})", lang,
+                           f"gen{idx:03d}_doc_{lang}.png", (w, h), [b_head, b_para, b_quote, b_fn],
+                           {"expected_block_count": 4, "is_academic_doc": True})
+
+    else:
+        # Table of Contents
+        w, h = 540, 400
+        img = Image.new("RGB", (w, h), (255, 255, 255))
+        d = ImageDraw.Draw(img)
+        item = DOC_POOLS["toc"]
+        h_s, h_vi = item[0]
+        b_head = draw_block_ext(d, h_s, "en", 16, True, 30, 26, w - 60, (20, 25, 35), serif=True, align="center")
+        b_head["id"] = 1; b_head["type"] = "toc_header"; b_head["translation"] = h_vi
+        blocks = [b_head]
+        b_id = 2
+        d.line([(30, 65), (w - 30, 65)], fill=(200, 205, 215), width=2)
+        for r_idx, (ch_s, ch_vi, pg_s, pg_vi) in enumerate(item[1:]):
+            ry = 85 + r_idx * 55
+            bc = draw_block_ext(d, ch_s, "en", 13, True, 30, ry + 10, 320, (30, 35, 45), serif=True)
+            bc["id"] = b_id; bc["type"] = "toc_chapter"; bc["translation"] = ch_vi
+            blocks.append(bc); b_id += 1
+            
+            bp = draw_block_ext(d, pg_s, "en", 13, False, 420, ry + 10, 90, (70, 75, 85), serif=True, align="right")
+            bp["id"] = b_id; bp["type"] = "toc_page"; bp["translation"] = pg_vi
+            blocks.append(bp); b_id += 1
+            
+            # Dotted leader line
+            d.text((360, ry + 10), ". . . . .", font=font_for("en", 13, False), fill=(180, 185, 195))
+            
+        return img, b_case(f"gen{idx:03d}_doc_{lang}", f"[gen] Tài liệu: Mục lục Table of Contents ({lang})", lang,
+                           f"gen{idx:03d}_doc_{lang}.png", (w, h), blocks,
+                           {"expected_block_count": len(blocks), "is_academic_doc": True})
+
+
+def build_extra_languages(rng, lang, idx):
+    pool = EXTRA_LANG_POOLS.get(lang, EXTRA_LANG_POOLS["fr"])
+    w, h = 580, 280
+    theme = rng.choice(["light", "dark"])
+    base_bg = (255, 255, 255) if theme == "light" else (26, 28, 34)
+    card_bg = (248, 250, 252) if theme == "light" else (34, 38, 48)
+    text_c = (20, 25, 35) if theme == "light" else (240, 242, 248)
+    sub_c = (75, 85, 100) if theme == "light" else (180, 185, 200)
+    
+    img = Image.new("RGB", (w, h), base_bg)
+    d = ImageDraw.Draw(img)
+    d.rounded_rectangle([16, 16, w - 16, h - 16], radius=12, fill=card_bg, outline=(220, 225, 235) if theme == "light" else (50, 55, 70), width=1)
+    
+    titles = pool["titles"]
+    paras = pool["paras"]
+    buttons = pool["buttons"]
+    
+    t_s, t_vi = titles[idx % len(titles)]
+    p_s, p_vi = paras[idx % len(paras)]
+    b_s, b_vi = buttons[idx % len(buttons)]
+    
+    b1 = draw_block_ext(d, t_s, lang, 16, True, 36, 32, w - 72, text_c)
+    b1["id"] = 1; b1["type"] = "header_title"; b1["translation"] = t_vi
+    
+    b2 = draw_block_ext(d, p_s, lang, 14, False, 36, 75, w - 72, sub_c, spacing=1.35)
+    b2["id"] = 2; b2["type"] = "paragraph"; b2["translation"] = p_vi
+    
+    # Action button at bottom
+    btn_w = 140
+    btn_h = 38
+    bx = 36
+    by = h - 68
+    btn_fill = (37, 99, 235) if theme == "light" else (59, 130, 246)
+    d.rounded_rectangle([bx, by, bx + btn_w, by + btn_h], radius=8, fill=btn_fill)
+    b3 = draw_block_ext(d, b_s, lang, 14, True, bx, by + 9, btn_w, (255, 255, 255), align="center")
+    b3["id"] = 3; b3["type"] = "button"; b3["translation"] = b_vi
+    
+    return img, b_case(f"gen{idx:03d}_extralang_{lang}", f"[gen] Ngôn ngữ mới ({lang}): Thẻ thông báo/cài đặt", lang,
+                       f"gen{idx:03d}_extralang_{lang}.png", (w, h), [b1, b2, b3],
+                       {"expected_block_count": 3, "is_extra_lang": True})
+
+# ---------------------------------------------------------------------------
+
+
 # ---------------------------------------------------------------------------
 # Ma trận phủ: 21 nhóm × số lượng = 398 case
 # ---------------------------------------------------------------------------
@@ -1718,6 +2565,12 @@ PLAN = [
     ("web_grid", 22, build_web_grid, LANGS),
     ("web_ranked", 22, build_web_ranked, LANGS),
     ("web_poll", 22, build_web_poll, LANGS),
+    ("manga", 50, build_manga_webtoon, ["ja", "ko", "zh", "zht", "en", "vi"]),
+    ("game", 50, build_game_hud, ["en", "vi", "de", "ru", "ja", "ko", "zh"]),
+    ("table", 50, build_table_data, ["vi", "en", "de", "ru", "ja", "zh", "ko"]),
+    ("mobile", 50, build_mobile_portrait, ["en", "vi", "de", "ru", "ja", "ko", "zh"]),
+    ("doc", 50, build_document_academic, ["en", "vi", "de", "ru", "fr", "es"]),
+    ("extralang", 50, build_extra_languages, ["fr", "es", "th", "id"]),
 ]
 TOTAL = sum(cnt for _, cnt, _, _ in PLAN)
 

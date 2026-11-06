@@ -72,10 +72,22 @@
       </div>
     </header>
 
-    <!-- ===== IMAGE OVERLAY TOOLBAR (SHOWN IN IMAGE MODE) ===== -->
+    <!-- ===== IMAGE OVERLAY TOOLBAR (UNIFIED SINGLE STRIP IN IMAGE MODE) ===== -->
     <div class="image-toolbar hidden" id="imageToolbar" data-tauri-drag-region>
-      <div class="itb-group">
-        <!-- Global Offset / Scale / Opacity popover -->
+      <div class="itb-strip">
+        <!-- 1. Chế độ hiển thị: Kiểu đè (2 ảnh) vs Kiểu giải thích (1 ảnh + mũi tên) -->
+        <div class="seg-control" id="displayModeControl">
+          <button class="seg-btn" id="btnModeOverlay" data-mode="overlay" title="Hiển thị kiểu đè: 2 hình ảnh (1 ảnh gốc, 1 ảnh văn bản dịch đè lên vùng chữ gốc)">
+            🖼️ Kiểu đè
+          </button>
+          <button class="seg-btn active" id="btnModeCallout" data-mode="callout" title="Hiển thị kiểu giải thích: 1 ảnh gốc ở chính giữa, các hộp văn bản dịch ở xung quanh có mũi tên nối">
+            💬 Kiểu giải thích
+          </button>
+        </div>
+
+        <span class="itb-divider"></span>
+
+        <!-- 2. Chỉnh lệch & Nền + Kiểu chữ -->
         <div class="popover-anchor">
           <button class="itb-btn" id="btnToggleOffsetPanel" title="Chỉnh độ lệch hàng loạt (dX, dY), co giãn khung và độ mờ nền">
             🎯 Chỉnh lệch &amp; Nền
@@ -112,7 +124,6 @@
           </div>
         </div>
 
-        <!-- Typography popover -->
         <div class="popover-anchor">
           <button class="itb-btn" id="btnToggleTypoPanel" title="Tùy chỉnh kiểu chữ, cỡ chữ, đậm/nghiêng, canh lề">
             Aa Kiểu chữ
@@ -153,14 +164,24 @@
           </div>
         </div>
 
-        <!-- Undo / Redo / Add Box -->
+        <span class="itb-divider"></span>
+
+        <!-- 3. Undo / Redo / Thêm ô & Zoom -->
         <button class="itb-btn icon-only" id="btnUndo" title="Hoàn tác thao tác khung (Ctrl+Z)" disabled>↶</button>
         <button class="itb-btn icon-only" id="btnRedo" title="Làm lại thao tác khung (Ctrl+Y)" disabled>↷</button>
         <button class="itb-btn" id="btnAddBox" title="Thêm một khung văn bản mới lên ảnh">+ Thêm ô</button>
-      </div>
 
-      <div class="itb-group itb-right">
-        <!-- Sao chép ảnh đã dịch & Sao chép ảnh gốc -->
+        <span class="itb-divider"></span>
+
+        <div class="zoom-controls">
+          <button class="itb-btn icon-only" id="btnZoomOut" title="Thu nhỏ ảnh (Ctrl + Lăn chuột xuống)">−</button>
+          <button class="itb-btn sm" id="btnZoomFit" title="Đặt lại tỷ lệ vừa khung"><span id="zoomLabel">Vừa khung</span></button>
+          <button class="itb-btn icon-only" id="btnZoomIn" title="Phóng to ảnh (Ctrl + Lăn chuột lên)">+</button>
+        </div>
+
+        <span class="itb-divider"></span>
+
+        <!-- 4. Sao chép ảnh & Chụp lại (nằm chung 1 dải thống nhất) -->
         <button class="itb-btn" id="btnCopyTranslatedImage" title="Sao chép ảnh đã dịch (kèm các khung chữ dịch) vào Clipboard">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; color: var(--accent);">
             <rect x="2" y="3" width="16" height="14" rx="2"></rect>
@@ -183,7 +204,7 @@
         <button class="itb-btn" id="btnRetakeSnip" title="Chụp lại vùng màn hình khác">
           📷 Chụp lại
         </button>
-        <button class="itb-btn danger-hover" id="btnDismissImage" title="Đóng ảnh và quay về chế độ dịch văn bản">
+        <button class="itb-btn danger-hover icon-only" id="btnDismissImage" title="Đóng ảnh và quay về chế độ dịch văn bản">
           ✕
         </button>
       </div>
@@ -193,38 +214,26 @@
     <main class="workspace" id="mainWorkspace">
       <!-- ==================== A. IMAGE WORKSPACE (TOP: IMAGE STAGE + RESIZER + BOTTOM: DUAL TEXT PANES) ==================== -->
       <div class="image-workspace hidden" id="imageWorkspace">
-        <!-- PHẦN CHÍNH GIỮA: ẢNH THỂ HIỆN -->
+        <!-- VÙNG A: ẢNH THỂ HIỆN (Hỗ trợ 2 chế độ: Kiểu đè 2 ảnh & Kiểu giải thích 1 ảnh) -->
         <section class="image-stage-pane" id="imageStagePane">
           <div class="image-viewport" id="imageViewport">
-            <div class="stage-container" id="stageContainer">
-              <img id="stageImage" alt="Ảnh chụp màn hình" draggable="false" />
-              <!-- SVG layer for ghost source boxes + dashed connector lines -->
-              <svg class="connector-svg" id="connectorSvg" xmlns="http://www.w3.org/2000/svg"></svg>
-              <!-- Interactive target translation boxes layer -->
-              <div class="overlay-boxes-layer" id="overlayBoxesLayer"></div>
-            </div>
-          </div>
+            <div class="stage-dual-wrap" id="stageDualWrap">
+              <!-- Ảnh gốc (Chỉ hiển thị khi ở Chế độ 1: Hiển thị kiểu đè 2 hình ảnh) -->
+              <div class="stage-container orig-stage-container hidden" id="origStageContainer">
+                <span class="stage-card-badge">Ảnh gốc</span>
+                <img id="origStageImage" alt="Ảnh gốc" draggable="false" />
+                <svg class="connector-svg orig-highlight-svg" id="origHighlightSvg" xmlns="http://www.w3.org/2000/svg"></svg>
+              </div>
 
-          <!-- Zoom & Quick Info Bar at bottom of image stage -->
-          <div class="stage-bottom-bar">
-            <div class="zoom-controls">
-              <button class="stage-mini-btn" id="btnZoomOut" title="Thu nhỏ ảnh (Ctrl + Lăn chuột xuống)">−</button>
-              <span class="zoom-label" id="zoomLabel">Vừa khung</span>
-              <button class="stage-mini-btn" id="btnZoomIn" title="Phóng to ảnh (Ctrl + Lăn chuột lên)">+</button>
-              <button class="stage-mini-btn" id="btnZoomFit" title="Đặt lại tỷ lệ vừa khung">Vừa khung</button>
-            </div>
-
-            <!-- Selected Box Context Action Bar -->
-            <div class="box-context-bar hidden" id="boxContextBar">
-              <span class="ctx-badge" id="ctxBoxLabel">Khung đang chọn</span>
-              <button class="stage-mini-btn" id="btnCtxEdit" title="Nhấp đúp vào khung hoặc bấm để sửa bản dịch trực tiếp">✎ Sửa</button>
-              <button class="stage-mini-btn" id="btnCtxRetranslate" title="Dịch lại riêng khung văn bản này">🔄 Dịch lại</button>
-              <button class="stage-mini-btn" id="btnCtxMerge" title="Gộp các khung đang chọn">⊕ Gộp</button>
-              <button class="stage-mini-btn" id="btnCtxSplit" title="Tách đôi khung văn bản này thành 2 khung">✂ Tách</button>
-              <button class="stage-mini-btn" id="btnCtxLock" title="Khóa / Mở khóa vị trí khung này để tránh kéo nhầm">🔓 Khóa</button>
-              <button class="stage-mini-btn" id="btnCtxResetBox" title="Đặt lại khung này về đúng vị trí chữ gốc">↺ Đặt lại</button>
-              <button class="stage-mini-btn" id="btnCtxCopyBox" title="Sao chép văn bản của khung này">📋 Chép</button>
-              <button class="stage-mini-btn danger" id="btnCtxDelete" title="Xóa khung này (Delete)">🗑</button>
+              <!-- Ảnh chính (Kiểu đè: Ảnh dịch đè | Kiểu giải thích: Ảnh gốc kèm hộp dịch xung quanh & mũi tên) -->
+              <div class="stage-container" id="stageContainer">
+                <span class="stage-card-badge hidden" id="transStageBadge">Ảnh dịch đè</span>
+                <img id="stageImage" alt="Ảnh chụp màn hình" draggable="false" />
+                <!-- SVG layer for ghost source boxes + connector arrows -->
+                <svg class="connector-svg" id="connectorSvg" xmlns="http://www.w3.org/2000/svg"></svg>
+                <!-- Interactive target translation boxes layer -->
+                <div class="overlay-boxes-layer" id="overlayBoxesLayer"></div>
+              </div>
             </div>
           </div>
         </section>
@@ -234,7 +243,7 @@
           <div class="resizer-handle-pill"></div>
         </div>
 
-        <!-- PHẦN DƯỚI CHIA 2 CỘT: TRÁI VĂN BẢN GỐC, PHẢI VĂN BẢN DỊCH -->
+        <!-- VÙNG B & C: 2 CỘT VĂN BẢN THÔNG THƯỜNG LIỀN MẠCH (LIÊN THÔNG HIGHLIGHT 3 VÙNG) -->
         <section class="image-bottom-panes" id="imageBottomPanes">
           <!-- Cột Header tiêu đề 2 bên -->
           <div class="dual-panes-header">
@@ -248,8 +257,11 @@
             </div>
           </div>
 
-          <!-- Danh sách các đoạn văn bản đối xứng tự nhiên, mềm mại như văn bản đọc (liên thông 3 vùng) -->
-          <div class="dual-flow-container" id="dualFlowContainer"></div>
+          <!-- 2 vùng văn bản thông thường (hỗ trợ bôi đen, quét, Ctrl+C/Ctrl+V tự nhiên & sửa trực tiếp) -->
+          <div class="dual-flow-container" id="dualFlowContainer">
+            <div class="doc-flow-col doc-col-source" id="docSourceCol" contenteditable="true" spellcheck="false"></div>
+            <div class="doc-flow-col doc-col-target" id="docTargetCol" contenteditable="true" spellcheck="false"></div>
+          </div>
         </section>
       </div>
 
@@ -411,6 +423,27 @@
         <button class="btn danger" id="btnQuitApp" style="width: 100%;">Thoát ứng dụng</button>
       </div>
     </aside>
+
+    <!-- ===== CUSTOM RIGHT-CLICK CONTEXT MENU CHO HỘP DỊCH / ĐOẠN VĂN ===== -->
+    <div class="ctx-menu hidden" id="boxContextMenu" role="menu">
+      <button type="button" class="ctx-menu-item" id="ctxMenuRetranslate">
+        <span class="ctx-menu-icon">🔄</span>
+        <span>Dịch lại đoạn này</span>
+      </button>
+      <button type="button" class="ctx-menu-item" id="ctxMenuMerge">
+        <span class="ctx-menu-icon">⊕</span>
+        <span id="ctxMenuMergeLabel">Gộp với ô kế tiếp</span>
+      </button>
+      <button type="button" class="ctx-menu-item" id="ctxMenuSplit">
+        <span class="ctx-menu-icon">✂</span>
+        <span>Tách đôi đoạn này</span>
+      </button>
+      <div class="ctx-menu-sep"></div>
+      <button type="button" class="ctx-menu-item danger" id="ctxMenuDelete">
+        <span class="ctx-menu-icon">🗑</span>
+        <span>Xóa hộp dịch này</span>
+      </button>
+    </div>
   </div>
 
   <script type="module" src="popup.js"></script>

@@ -257,6 +257,10 @@ function runGenericAssertions(tc, blocks, assert) {
       case 'is_web_cards': case 'is_web_article': case 'is_web_product':
       case 'is_web_landing': case 'is_web_forum': case 'is_web_newslist':
       case 'is_web_grid': case 'is_web_ranked': case 'is_web_poll':
+      case 'is_manga': case 'is_vertical_text': case 'is_sfx': case 'is_speech_bubble':
+      case 'is_game_hud': case 'is_item_tooltip': case 'is_subtitle':
+      case 'is_table_data': case 'is_mobile_portrait': case 'is_notification': case 'is_context_menu':
+      case 'is_academic_doc': case 'is_two_column': case 'is_extra_lang':
       case 'ocr_merge_expected': case 'expected_ocr_count_min': case 'expected_ocr_count_max':
       case 'ocr_cov_th': case 'ocr_cov_ratio':
         assert(true, `Phân loại case hợp lệ (${key})`);

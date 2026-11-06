@@ -33,21 +33,28 @@ const imageSplitResizer = $("imageSplitResizer");
 const imageBottomPanes = $("imageBottomPanes");
 const dualFlowContainer = $("dualFlowContainer");
 const dualSegmentsContainer = dualFlowContainer; // alias
+const docSourceCol = $("docSourceCol");
+const docTargetCol = $("docTargetCol");
 const btnCopyAllSource = $("btnCopyAllSource");
 const btnCopyAllSegments = $("btnCopyAllSegments");
 const btnCopyTranslatedImage = $("btnCopyTranslatedImage");
 const btnCopyOriginalImage = $("btnCopyOriginalImage");
-const btnConnectorMode = $("btnConnectorMode");
+const btnModeOverlay = $("btnModeOverlay");
+const btnModeCallout = $("btnModeCallout");
 const textLeftPane = $("textLeftPane");
 const textRightPane = $("textRightPane");
 
 const imageViewport = $("imageViewport");
+const origStageContainer = $("origStageContainer");
+const origStageImage = $("origStageImage");
+const origHighlightSvg = $("origHighlightSvg");
 const stageContainer = $("stageContainer");
+const transStageBadge = $("transStageBadge");
 const stageImage = $("stageImage");
 const connectorSvg = $("connectorSvg");
 const overlayBoxesLayer = $("overlayBoxesLayer");
-const boxContextBar = $("boxContextBar");
-const ctxBoxLabel = $("ctxBoxLabel");
+const boxContextMenu = $("boxContextMenu");
+const ctxMenuMergeLabel = $("ctxMenuMergeLabel");
 
 const input = $("input");
 const output = $("output");
@@ -105,14 +112,17 @@ let lastCapturedScreenRect = null; // { x, y, width, height } in physical virtua
 let isInPlaceMode = false;
 
 const connectorEnabled = true; // Mặc định luôn hiển thị đường nối nét đứt
+// 2 chế độ hiển thị ảnh: "overlay" (Kiểu đè: 2 hình ảnh - 1 gốc, 1 đè) | "callout" (Kiểu giải thích: 1 ảnh gốc ở giữa, các hộp dịch xung quanh có mũi tên nối)
+let imageDisplayMode = localStorage.getItem("translate_image_display_mode") === "overlay" ? "overlay" : "callout";
 let currentSplitRatio = parseFloat(localStorage.getItem("translate_split_ratio")) || 0.55; // Mặc định 55% ảnh, 45% text
 let zoomFactor = "fit"; // "fit" or number (0.4 .. 3.0)
 
-let ocrBlocks = []; // Array of { uid, text, translation, sourceBox:{x,y,w,h}, targetBox:{x,y,w,h}, bgRgb:[r,g,b], fgColor, locked }
+let ocrBlocks = []; // Array of { uid, text, translation, sourceBox:{x,y,w,h}, targetBox:{x,y,w,h}, overlayBox:{x,y,w,h}, calloutBox:{x,y,w,h}, bgRgb:[r,g,b], fgColor }
 let nextBlockUid = 1;
 let hoveredUid = null;
 let selectedUids = new Set();
 let editingUid = null;
+let contextMenuUid = null;
 
 // Global offset & style state (Items 6 & 13)
 let globalDx = 0;
@@ -226,11 +236,14 @@ function cloneBlocksState() {
       ...b,
       sourceBox: { ...b.sourceBox },
       targetBox: { ...b.targetBox },
+      overlayBox: b.overlayBox ? { ...b.overlayBox } : { ...b.sourceBox },
+      calloutBox: b.calloutBox ? { ...b.calloutBox } : { ...b.targetBox },
       bgRgb: [...b.bgRgb],
     })),
     globalDx,
     globalDy,
     globalScale,
+    imageDisplayMode,
   };
 }
 
@@ -246,11 +259,18 @@ function restoreSnapshot(snap) {
     ...b,
     sourceBox: { ...b.sourceBox },
     targetBox: { ...b.targetBox },
+    overlayBox: b.overlayBox ? { ...b.overlayBox } : { ...b.sourceBox },
+    calloutBox: b.calloutBox ? { ...b.calloutBox } : { ...b.targetBox },
     bgRgb: [...b.bgRgb],
   }));
   globalDx = snap.globalDx;
   globalDy = snap.globalDy;
   globalScale = snap.globalScale;
+  if (snap.imageDisplayMode) {
+    imageDisplayMode = snap.imageDisplayMode;
+    btnModeOverlay?.classList.toggle("active", imageDisplayMode === "overlay");
+    btnModeCallout?.classList.toggle("active", imageDisplayMode === "callout");
+  }
   syncOffsetSlidersUi();
   syncRawTextsFromBlocks();
   renderAllImageOverlay();
@@ -452,6 +472,37 @@ function getStageScale() {
   return dispW / imgW;
 }
 
+function setImageDisplayMode(mode, saveHistory = false) {
+  const nextMode = mode === "overlay" ? "overlay" : "callout";
+  if (saveHistory && imageDisplayMode !== nextMode) {
+    pushUndoState();
+  }
+  imageDisplayMode = nextMode;
+  localStorage.setItem("translate_image_display_mode", nextMode);
+
+  btnModeOverlay?.classList.toggle("active", nextMode === "overlay");
+  btnModeCallout?.classList.toggle("active", nextMode === "callout");
+
+  const imgW = stageImage.naturalWidth || 800;
+  const imgH = stageImage.naturalHeight || 600;
+  if (nextMode === "callout" && ocrBlocks.some((b) => !b.calloutBox)) {
+    layoutBlocksAroundPerimeter(ocrBlocks, imgW, imgH);
+  }
+  for (const b of ocrBlocks) {
+    if (nextMode === "overlay") {
+      if (!b.overlayBox) b.overlayBox = { ...b.sourceBox };
+      b.targetBox = { ...b.overlayBox };
+    } else {
+      if (!b.calloutBox) b.calloutBox = { ...b.targetBox };
+      b.targetBox = { ...b.calloutBox };
+    }
+  }
+
+  if (isImageMode) {
+    renderAllImageOverlay();
+  }
+}
+
 function updateStageDimensions() {
   const imgW = stageImage.naturalWidth;
   const imgH = stageImage.naturalHeight;
@@ -459,6 +510,42 @@ function updateStageDimensions() {
 
   const vpW = Math.max(120, imageViewport.clientWidth - 48);
   const vpH = Math.max(80, imageViewport.clientHeight - 48);
+
+  if (imageDisplayMode === "overlay") {
+    // Chế độ 1: Hiển thị kiểu đè (2 hình ảnh: 1 gốc bên trái, 1 đè bên phải)
+    origStageContainer?.classList.remove("hidden");
+    transStageBadge?.classList.remove("hidden");
+
+    const gap = 20;
+    const totalNaturalW = imgW * 2 + gap;
+    let dispW, dispH;
+    if (zoomFactor === "fit") {
+      const ratio = Math.min((vpW - gap) / (imgW * 2), vpH / imgH, 1.35);
+      dispW = Math.max(60, Math.round(imgW * ratio));
+      dispH = Math.max(50, Math.round(imgH * ratio));
+      $("zoomLabel").textContent = `Vừa (${Math.round(ratio * 100)}%)`;
+    } else {
+      dispW = Math.round(imgW * zoomFactor);
+      dispH = Math.round(imgH * zoomFactor);
+      $("zoomLabel").textContent = `${Math.round(zoomFactor * 100)}%`;
+    }
+
+    if (origStageContainer) {
+      origStageContainer.style.width = `${dispW}px`;
+      origStageContainer.style.height = `${dispH}px`;
+    }
+    stageContainer.style.width = `${dispW}px`;
+    stageContainer.style.height = `${dispH}px`;
+    stageContainer.style.marginTop = "0px";
+    stageContainer.style.marginBottom = "0px";
+    stageContainer.style.marginLeft = "0px";
+    stageContainer.style.marginRight = "0px";
+    return;
+  }
+
+  // Chế độ 2: Hiển thị kiểu giải thích (1 hình ảnh gốc ở chính giữa, các hộp dịch ở xung quanh có mũi tên nối)
+  origStageContainer?.classList.add("hidden");
+  transStageBadge?.classList.add("hidden");
 
   let minX = 0, maxX = imgW, minY = 0, maxY = imgH;
   for (const b of ocrBlocks) {
@@ -499,7 +586,7 @@ function updateStageDimensions() {
 }
 
 // =========================================================================
-// RENDER SVG DASHED CONNECTORS & GHOST SOURCE BOXES (MẶC ĐỊNH LUÔN BẬT)
+// RENDER SVG CONNECTORS (MŨI TÊN CHẾ ĐỘ GIẢI THÍCH & HIGHLIGHT ẢNH GỐC CHẾ ĐỘ ĐÈ)
 // =========================================================================
 function isBlockDisplaced(b, eff) {
   const dx = Math.abs(eff.x - b.sourceBox.x);
@@ -511,11 +598,35 @@ function isBlockDisplaced(b, eff) {
 
 function renderConnectorsSvg() {
   connectorSvg.innerHTML = "";
+  if (origHighlightSvg) origHighlightSvg.innerHTML = "";
 
   const imgW = stageImage.naturalWidth || 1;
   const imgH = stageImage.naturalHeight || 1;
   const scale = getStageScale();
-  connectorSvg.setAttribute("viewBox", `0 0 ${imgW * scale} ${imgH * scale}`);
+  const vb = `0 0 ${imgW * scale} ${imgH * scale}`;
+  connectorSvg.setAttribute("viewBox", vb);
+  if (origHighlightSvg) origHighlightSvg.setAttribute("viewBox", vb);
+
+  // Định nghĩa đầu mũi tên (Arrowhead marker) cho đường nối
+  const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+  const createArrowMarker = (id, color) => {
+    const marker = document.createElementNS("http://www.w3.org/2000/svg", "marker");
+    marker.setAttribute("id", id);
+    marker.setAttribute("viewBox", "0 0 10 10");
+    marker.setAttribute("refX", "8.5");
+    marker.setAttribute("refY", "5");
+    marker.setAttribute("markerWidth", "6");
+    marker.setAttribute("markerHeight", "6");
+    marker.setAttribute("orient", "auto");
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", "M 0 1.5 L 9 5 L 0 8.5 z");
+    path.setAttribute("fill", color);
+    marker.appendChild(path);
+    return marker;
+  };
+  defs.appendChild(createArrowMarker("connArrow", "rgba(96, 165, 250, 0.9)"));
+  defs.appendChild(createArrowMarker("connArrowActive", "#38bdf8"));
+  connectorSvg.appendChild(defs);
 
   for (let i = 0; i < ocrBlocks.length; i++) {
     const b = ocrBlocks[i];
@@ -527,12 +638,41 @@ function renderConnectorsSvg() {
     const sw = b.sourceBox.w * scale;
     const sh = b.sourceBox.h * scale;
 
+    // Nếu đang ở Chế độ 1 (Kiểu đè 2 ảnh): Vẽ vùng tương tác trên Ảnh gốc bên trái
+    if (imageDisplayMode === "overlay" && origHighlightSvg) {
+      const origRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      origRect.setAttribute("x", sx.toFixed(1));
+      origRect.setAttribute("y", sy.toFixed(1));
+      origRect.setAttribute("width", Math.max(4, sw).toFixed(1));
+      origRect.setAttribute("height", Math.max(4, sh).toFixed(1));
+      origRect.setAttribute("rx", "3");
+      origRect.setAttribute("class", "orig-source-box" + (isActive ? " active" : ""));
+      origRect.dataset.uid = String(b.uid);
+      origRect.addEventListener("mouseenter", () => setHighlightBlock(b.uid, true, false));
+      origRect.addEventListener("mouseleave", () => {
+        if (hoveredUid === b.uid) setHighlightBlock(null, false, false);
+      });
+      origRect.addEventListener("click", (ev) => {
+        ev.stopPropagation();
+        selectBlock(b.uid, ev.shiftKey, false);
+      });
+      origRect.addEventListener("contextmenu", (ev) => {
+        showBoxContextMenu(ev, b.uid);
+      });
+      origHighlightSvg.appendChild(origRect);
+    }
+
+    // Trong chế độ Kiểu đè, nếu hộp dịch nằm đè trùng khít vị trí gốc thì không cần vẽ dây nối rối mắt
+    if (imageDisplayMode === "overlay" && !isBlockDisplaced(b, eff)) {
+      continue;
+    }
+
     const tx = eff.x * scale;
     const ty = eff.y * scale;
     const tw = eff.w * scale;
     const th = eff.h * scale;
 
-    // 1. Khung viền nguồn mờ (Ghost source box — chỉ viền nét đứt, trong suốt không che chữ gốc)
+    // 1. Khung viền nguồn mờ trên ảnh chính (Ghost source box)
     const ghost = document.createElementNS("http://www.w3.org/2000/svg", "rect");
     ghost.setAttribute("x", sx.toFixed(1));
     ghost.setAttribute("y", sy.toFixed(1));
@@ -549,51 +689,46 @@ function renderConnectorsSvg() {
     );
     connectorSvg.appendChild(ghost);
 
-    // 2. Đường nét đứt mảnh nối từ tâm khung nguồn tới điểm gần nhất trên cạnh khung đích
+    // 2. Đường mũi tên nối từ cạnh hộp dịch trỏ tới cạnh vùng chữ gốc tương ứng
     const scx = sx + sw / 2;
     const scy = sy + sh / 2;
-    const endX = Math.max(tx, Math.min(tx + tw, scx));
-    const endY = Math.max(ty, Math.min(ty + th, scy));
+    const startX = Math.max(tx, Math.min(tx + tw, scx));
+    const startY = Math.max(ty, Math.min(ty + th, scy));
+    const targetX = Math.max(sx, Math.min(sx + sw, startX));
+    const targetY = Math.max(sy, Math.min(sy + sh, startY));
 
-    if (Math.hypot(endX - scx, endY - scy) > 2) {
+    if (Math.hypot(targetX - startX, targetY - startY) > 3) {
       const line = document.createElementNS(
         "http://www.w3.org/2000/svg",
         "line"
       );
-      line.setAttribute("x1", scx.toFixed(1));
-      line.setAttribute("y1", scy.toFixed(1));
-      line.setAttribute("x2", endX.toFixed(1));
-      line.setAttribute("y2", endY.toFixed(1));
+      line.setAttribute("x1", startX.toFixed(1));
+      line.setAttribute("y1", startY.toFixed(1));
+      line.setAttribute("x2", targetX.toFixed(1));
+      line.setAttribute("y2", targetY.toFixed(1));
       line.setAttribute("stroke", isActive ? "#38bdf8" : "rgba(96, 165, 250, 0.85)");
-      line.setAttribute("stroke-width", isActive ? "2" : "1.35");
-      line.setAttribute("stroke-dasharray", "4 3");
+      line.setAttribute("stroke-width", isActive ? "2" : "1.45");
+      line.setAttribute("stroke-dasharray", isActive ? "none" : "4 3");
+      line.setAttribute(
+        "marker-end",
+        isActive ? "url(#connArrowActive)" : "url(#connArrow)"
+      );
       line.setAttribute(
         "class",
         "connector-line" + (isActive ? " active" : "")
       );
       connectorSvg.appendChild(line);
 
-      const dot1 = document.createElementNS(
+      const dotStart = document.createElementNS(
         "http://www.w3.org/2000/svg",
         "circle"
       );
-      dot1.setAttribute("cx", scx.toFixed(1));
-      dot1.setAttribute("cy", scy.toFixed(1));
-      dot1.setAttribute("r", "2.6");
-      dot1.setAttribute("fill", "#38bdf8");
-      dot1.setAttribute("class", "connector-dot");
-      connectorSvg.appendChild(dot1);
-
-      const dot2 = document.createElementNS(
-        "http://www.w3.org/2000/svg",
-        "circle"
-      );
-      dot2.setAttribute("cx", endX.toFixed(1));
-      dot2.setAttribute("cy", endY.toFixed(1));
-      dot2.setAttribute("r", "2.6");
-      dot2.setAttribute("fill", "#38bdf8");
-      dot2.setAttribute("class", "connector-dot");
-      connectorSvg.appendChild(dot2);
+      dotStart.setAttribute("cx", startX.toFixed(1));
+      dotStart.setAttribute("cy", startY.toFixed(1));
+      dotStart.setAttribute("r", "2.5");
+      dotStart.setAttribute("fill", "#38bdf8");
+      dotStart.setAttribute("class", "connector-dot");
+      connectorSvg.appendChild(dotStart);
     }
   }
 }
@@ -609,7 +744,7 @@ function renderAllImageOverlay() {
   const scale = getStageScale();
   const alpha = (boxOpacity / 100).toFixed(2);
 
-  ocrBlocks.forEach((b, idx) => {
+  ocrBlocks.forEach((b) => {
     const eff = getEffectiveTargetRect(b);
     const dispX = eff.x * scale;
     const dispY = eff.y * scale;
@@ -625,7 +760,6 @@ function renderAllImageOverlay() {
     }
     if (hoveredUid === b.uid) boxEl.classList.add("hovered");
     if (selectedUids.has(b.uid)) boxEl.classList.add("selected");
-    if (b.locked) boxEl.classList.add("locked");
 
     boxEl.style.left = `${dispX.toFixed(1)}px`;
     boxEl.style.top = `${dispY.toFixed(1)}px`;
@@ -649,13 +783,13 @@ function renderAllImageOverlay() {
     boxEl.style.fontStyle = typoSettings.italic ? "italic" : "normal";
     boxEl.style.textAlign = typoSettings.align;
 
-    // Nội dung văn bản đích (đã bỏ hẳn nhãn số #1, #2)
+    // Nội dung văn bản đích
     const textEl = document.createElement("div");
     textEl.className = "trans-box-text";
     textEl.textContent = b.translation || "";
     boxEl.appendChild(textEl);
 
-    // 6 Tay cầm Resize (Item 5)
+    // 6 Tay cầm Resize
     for (const dir of ["nw", "ne", "sw", "se", "e", "s"]) {
       const handle = document.createElement("div");
       handle.className = `resize-handle rh-${dir}`;
@@ -666,20 +800,25 @@ function renderAllImageOverlay() {
       boxEl.appendChild(handle);
     }
 
-    // Hover đồng bộ liên thông 3 vùng
+    // Hover đồng bộ liên thông 3 vùng (A <-> B <-> C)
     boxEl.addEventListener("mouseenter", () => setHighlightBlock(b.uid, true, false));
     boxEl.addEventListener("mouseleave", () => {
       if (hoveredUid === b.uid) setHighlightBlock(null, false, false);
     });
 
-    // Kéo thả & chọn khung (click vùng trên ảnh)
+    // Kéo thả & chọn khung (click chuột trái vùng trên ảnh)
     boxEl.addEventListener("mousedown", (ev) => {
       if (ev.target.classList.contains("resize-handle")) return;
       if (editingUid === b.uid) return;
       startBoxDragOrSelect(ev, b, boxEl);
     });
 
-    // Nhấp đúp để sửa trực tiếp bản dịch trên ảnh (Item 8)
+    // Chuột phải (Context Menu) cho từng hộp văn bản
+    boxEl.addEventListener("contextmenu", (ev) => {
+      showBoxContextMenu(ev, b.uid);
+    });
+
+    // Nhấp đúp để sửa trực tiếp bản dịch trên ảnh
     boxEl.addEventListener("dblclick", (ev) => {
       ev.stopPropagation();
       enterInlineEditOnBox(b, textEl);
@@ -689,17 +828,15 @@ function renderAllImageOverlay() {
   });
 
   renderConnectorsSvg();
-  updateBoxContextBar();
 }
 
 // =========================================================================
-// LIÊN THÔNG 3 VÙNG: VÙNG ẢNH - VĂN BẢN GỐC - VĂN BẢN DỊCH
-// (ĐỒNG BỘ HIGHLIGHT KHI HOVER / CLICK VÀO 1 TRONG 3, BỎ SỐ #1, #2)
+// LIÊN THÔNG 3 VÙNG: VÙNG ẢNH (A) - VĂN BẢN GỐC (B) - VĂN BẢN DỊCH (C)
 // =========================================================================
 function setHighlightBlock(uid, scrollToRow = false, scrollToStage = false) {
   hoveredUid = uid;
 
-  // 1. Highlight vùng / box trên ảnh
+  // 1. Highlight vùng / box trên ảnh (Vùng A)
   for (const el of overlayBoxesLayer.querySelectorAll(".trans-box")) {
     const isMatch = Number(el.dataset.uid) === uid;
     el.classList.toggle("highlighted", isMatch);
@@ -708,12 +845,12 @@ function setHighlightBlock(uid, scrollToRow = false, scrollToStage = false) {
     }
   }
 
-  // 2. Highlight đoạn văn bản đối xứng tương ứng ở danh sách bên dưới
-  for (const row of dualFlowContainer.querySelectorAll(".flow-para-row")) {
-    const isMatch = Number(row.dataset.uid) === uid;
-    row.classList.toggle("highlighted", isMatch);
+  // 2. Highlight vùng chữ tương ứng ở 2 cột Văn bản gốc (Vùng B) & Văn bản dịch (Vùng C)
+  for (const seg of dualFlowContainer.querySelectorAll(".doc-seg")) {
+    const isMatch = Number(seg.dataset.uid) === uid;
+    seg.classList.toggle("highlighted", isMatch);
     if (isMatch && scrollToRow) {
-      row.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      seg.scrollIntoView({ block: "nearest", behavior: "smooth" });
     }
   }
 
@@ -731,7 +868,7 @@ function selectBlock(uid, multi = false, scrollToStage = false) {
     selectedUids = new Set(uid ? [uid] : []);
   }
 
-  // 1. Cập nhật selected trên ảnh
+  // 1. Cập nhật selected trên ảnh (Vùng A)
   for (const el of overlayBoxesLayer.querySelectorAll(".trans-box")) {
     const isSel = selectedUids.has(Number(el.dataset.uid));
     el.classList.toggle("selected", isSel);
@@ -740,17 +877,13 @@ function selectBlock(uid, multi = false, scrollToStage = false) {
     }
   }
 
-  // 2. Cập nhật selected ở danh sách đoạn văn bản đối xứng dưới
-  for (const row of dualFlowContainer.querySelectorAll(".flow-para-row")) {
-    const isSel = selectedUids.has(Number(row.dataset.uid));
-    row.classList.toggle("selected", isSel);
-    if (isSel && !scrollToStage) {
-      row.scrollIntoView({ block: "nearest", behavior: "smooth" });
-    }
+  // 2. Cập nhật selected trên 2 cột văn bản thông thường (Vùng B & C)
+  for (const seg of dualFlowContainer.querySelectorAll(".doc-seg")) {
+    const isSel = selectedUids.has(Number(seg.dataset.uid));
+    seg.classList.toggle("selected", isSel);
   }
 
   renderConnectorsSvg();
-  updateBoxContextBar();
 }
 
 function getPrimarySelectedBlock() {
@@ -761,73 +894,118 @@ function getPrimarySelectedBlock() {
   return null;
 }
 
-function updateBoxContextBar() {
-  if (selectedUids.size === 0) {
-    boxContextBar.classList.add("hidden");
-    return;
-  }
-  boxContextBar.classList.remove("hidden");
+// =========================================================================
+// HIỂN THỊ VÙNG B & C NHƯ VĂN BẢN THÔNG THƯỜNG + HIGHLIGHT LIÊN THÔNG
+// =========================================================================
+function renderDualSegments() {
+  if (!docSourceCol || !docTargetCol) return;
+  docSourceCol.innerHTML = "";
+  docTargetCol.innerHTML = "";
 
-  if (selectedUids.size > 1) {
-    ctxBoxLabel.textContent = `${selectedUids.size} ô đã chọn`;
-    $("btnCtxMerge").textContent = `⊕ Gộp ${selectedUids.size} ô`;
-  } else {
-    const b = getPrimarySelectedBlock();
-    ctxBoxLabel.textContent = "Khung đang chọn";
-    $("btnCtxMerge").textContent = "⊕ Gộp ô kế";
-    $("btnCtxLock").textContent = b?.locked ? "🔒 Mở khóa" : "🔓 Khóa";
-  }
+  ocrBlocks.forEach((b, idx) => {
+    // 1. Đoạn văn bản gốc inline (Vùng B)
+    const srcSpan = document.createElement("span");
+    srcSpan.className = "doc-seg doc-src-seg";
+    srcSpan.dataset.uid = String(b.uid);
+    srcSpan.textContent = b.text || "";
+    if (hoveredUid === b.uid) srcSpan.classList.add("highlighted");
+    if (selectedUids.has(b.uid)) srcSpan.classList.add("selected");
+
+    // 2. Đoạn văn bản dịch inline (Vùng C)
+    const trSpan = document.createElement("span");
+    trSpan.className = "doc-seg doc-tr-seg";
+    trSpan.dataset.uid = String(b.uid);
+    trSpan.textContent = b.translation || "";
+    if (hoveredUid === b.uid) trSpan.classList.add("highlighted");
+    if (selectedUids.has(b.uid)) trSpan.classList.add("selected");
+
+    // Sự kiện hover liên thông 3 vùng (B <-> C <-> A)
+    const onEnter = () => setHighlightBlock(b.uid, false, false);
+    const onLeave = () => {
+      if (hoveredUid === b.uid) setHighlightBlock(null, false, false);
+    };
+    srcSpan.addEventListener("mouseenter", onEnter);
+    srcSpan.addEventListener("mouseleave", onLeave);
+    trSpan.addEventListener("mouseenter", onEnter);
+    trSpan.addEventListener("mouseleave", onLeave);
+
+    // Click chọn đoạn tương ứng (chỉ kích hoạt khi người dùng không bôi đen quét chọn chữ)
+    const onClickSeg = (ev) => {
+      const sel = window.getSelection();
+      if (sel && sel.toString().length > 0) return;
+      selectBlock(b.uid, ev.shiftKey, true);
+    };
+    srcSpan.addEventListener("click", onClickSeg);
+    trSpan.addEventListener("click", onClickSeg);
+
+    // Chuột phải mở Context Menu (Dịch lại, Gộp, Tách, Xóa hộp dịch này)
+    srcSpan.addEventListener("contextmenu", (ev) => showBoxContextMenu(ev, b.uid));
+    trSpan.addEventListener("contextmenu", (ev) => showBoxContextMenu(ev, b.uid));
+
+    docSourceCol.appendChild(srcSpan);
+    docTargetCol.appendChild(trSpan);
+
+    if (idx < ocrBlocks.length - 1) {
+      docSourceCol.appendChild(document.createTextNode("\n"));
+      docTargetCol.appendChild(document.createTextNode("\n"));
+    }
+  });
 }
 
-function renderDualSegments() {
-  dualFlowContainer.innerHTML = "";
+// Đồng bộ khi người dùng sửa tự do ở Vùng B (Văn bản gốc) hoặc Vùng C (Văn bản dịch)
+docSourceCol?.addEventListener("focusin", () => pushUndoState());
+docSourceCol?.addEventListener("input", () => {
+  for (const b of ocrBlocks) {
+    const seg = docSourceCol.querySelector(`.doc-seg[data-uid="${b.uid}"]`);
+    if (seg) {
+      b.text = seg.innerText.replace(/\r/g, "");
+    }
+  }
+  syncRawTextsFromBlocks();
+});
 
-  ocrBlocks.forEach((b) => {
-    const row = document.createElement("div");
-    row.className = "flow-para-row";
-    row.dataset.uid = String(b.uid);
-    if (hoveredUid === b.uid) row.classList.add("highlighted");
-    if (selectedUids.has(b.uid)) row.classList.add("selected");
+docTargetCol?.addEventListener("focusin", () => pushUndoState());
+docTargetCol?.addEventListener("input", () => {
+  for (const b of ocrBlocks) {
+    const seg = docTargetCol.querySelector(`.doc-seg[data-uid="${b.uid}"]`);
+    if (seg) {
+      b.translation = seg.innerText.replace(/\r/g, "");
+    }
+  }
+  syncRawTextsFromBlocks();
+  renderAllImageOverlay();
+});
 
-    // ===== CỘT TRÁI: ĐOẠN VĂN BẢN GỐC (MỀM MẠI, LIỀN MẠCH NHƯ TÀI LIỆU) =====
-    const srcEl = document.createElement("div");
-    srcEl.className = "flow-src-para";
-    srcEl.textContent = b.text || "(Trống)";
+// =========================================================================
+// CUSTOM RIGHT-CLICK CONTEXT MENU CHO HỘP VĂN BẢN (VÙNG A, B, C)
+// =========================================================================
+function showBoxContextMenu(ev, uid) {
+  ev.preventDefault();
+  ev.stopPropagation();
+  contextMenuUid = uid;
+  if (!selectedUids.has(uid)) {
+    selectBlock(uid, false, false);
+  }
+  if (ctxMenuMergeLabel) {
+    ctxMenuMergeLabel.textContent =
+      selectedUids.size > 1
+        ? `Gộp ${selectedUids.size} hộp đã chọn`
+        : "Gộp với ô kế tiếp";
+  }
+  if (!boxContextMenu) return;
+  boxContextMenu.classList.remove("hidden");
 
-    // ===== CỘT PHẢI: ĐOẠN VĂN BẢN DỊCH (CHO PHÉP CHỈNH SỬA TRỰC TIẾP) =====
-    const trEl = document.createElement("div");
-    trEl.className = "flow-tr-para";
-    trEl.contentEditable = "true";
-    trEl.spellcheck = false;
-    trEl.textContent = b.translation || "";
-    trEl.title = "Bấm để sửa bản dịch — Tự đồng bộ lên ảnh";
+  const menuW = 204;
+  const menuH = 152;
+  const x = Math.min(ev.clientX, window.innerWidth - menuW - 8);
+  const y = Math.min(ev.clientY, window.innerHeight - menuH - 8);
+  boxContextMenu.style.left = `${Math.max(8, x)}px`;
+  boxContextMenu.style.top = `${Math.max(8, y)}px`;
+}
 
-    trEl.addEventListener("focus", () => {
-      pushUndoState();
-      selectBlock(b.uid, false, true);
-    });
-
-    trEl.addEventListener("input", () => {
-      b.translation = trEl.innerText;
-      syncRawTextsFromBlocks();
-      renderAllImageOverlay();
-    });
-
-    // Sự kiện tương tác liên thông 3 vùng:
-    row.addEventListener("mouseenter", () => setHighlightBlock(b.uid, false, false));
-    row.addEventListener("mouseleave", () => {
-      if (hoveredUid === b.uid) setHighlightBlock(null, false, false);
-    });
-
-    row.addEventListener("click", (ev) => {
-      if (ev.target === trEl && document.activeElement === trEl) return;
-      selectBlock(b.uid, ev.shiftKey, true);
-    });
-
-    row.appendChild(srcEl);
-    row.appendChild(trEl);
-    dualFlowContainer.appendChild(row);
-  });
+function hideBoxContextMenu() {
+  boxContextMenu?.classList.add("hidden");
+  contextMenuUid = null;
 }
 
 function syncRawTextsFromBlocks() {
@@ -853,7 +1031,6 @@ function startBoxDragOrSelect(ev, block, boxEl) {
   ev.stopPropagation();
 
   selectBlock(block.uid, ev.shiftKey);
-  if (block.locked) return;
 
   const scale = getStageScale();
   const startMouseX = ev.clientX;
@@ -874,6 +1051,11 @@ function startBoxDragOrSelect(ev, block, boxEl) {
 
     block.targetBox.x = origX + dxDisp / scale;
     block.targetBox.y = origY + dyDisp / scale;
+    if (imageDisplayMode === "overlay") {
+      block.overlayBox = { ...block.targetBox };
+    } else {
+      block.calloutBox = { ...block.targetBox };
+    }
 
     const eff = getEffectiveTargetRect(block);
     boxEl.style.left = `${(eff.x * scale).toFixed(1)}px`;
@@ -893,7 +1075,7 @@ function startBoxDragOrSelect(ev, block, boxEl) {
 }
 
 function startBoxResize(ev, block, dir, boxEl) {
-  if (ev.button !== 0 || block.locked) return;
+  if (ev.button !== 0) return;
   ev.stopPropagation();
   ev.preventDefault();
 
@@ -930,6 +1112,11 @@ function startBoxResize(ev, block, dir, boxEl) {
     }
 
     block.targetBox = { x: nx, y: ny, w: nw, h: nh };
+    if (imageDisplayMode === "overlay") {
+      block.overlayBox = { ...block.targetBox };
+    } else {
+      block.calloutBox = { ...block.targetBox };
+    }
     const eff = getEffectiveTargetRect(block);
     const dispW = eff.w * scale;
     const dispH = eff.h * scale;
@@ -985,31 +1172,35 @@ function enterInlineEditOnBox(block, textEl) {
   });
 }
 
-//Click blank area on stage deselects boxes
+// Click blank area on stage deselects boxes
 imageViewport.addEventListener("mousedown", (ev) => {
-  if (ev.target === imageViewport || ev.target === stageContainer) {
+  if (
+    ev.target === imageViewport ||
+    ev.target === stageContainer ||
+    ev.target === origStageContainer
+  ) {
     selectBlock(null, false);
   }
 });
 
 // =========================================================================
-// BOX OPERATIONS: RE-TRANSLATE SINGLE, MERGE, SPLIT, ADD, DELETE, LOCK (ITEMS 9, 10)
+// BOX OPERATIONS: RE-TRANSLATE SINGLE, MERGE, SPLIT, ADD, DELETE
 // =========================================================================
 async function retranslateSingleBlock(uid) {
   const b = ocrBlocks.find((x) => x.uid === uid);
   if (!b || !b.text.trim()) {
-    setStatus("Khung này chưa có văn bản nguồn để dịch lại.", "warn");
+    setStatus("Đoạn này chưa có văn bản nguồn để dịch lại.", "warn");
     return;
   }
   pushUndoState();
-  setStatus(`Đang dịch lại khung "${b.text.slice(0, 28)}…"`, "warn");
+  setStatus(`Đang dịch lại đoạn "${b.text.slice(0, 28)}…"`, "warn");
   try {
     const r = await invoke("translate", { text: b.text });
     b.translation = r.translation;
     syncRawTextsFromBlocks();
     renderAllImageOverlay();
     renderDualSegments();
-    setStatus("Đã dịch lại khung thành công.", "ok");
+    setStatus("Đã dịch lại thành công.", "ok");
   } catch (e) {
     setStatus(String(e), "error");
   }
@@ -1030,7 +1221,7 @@ function mergeSelectedBoxes() {
     }
   }
   if (toMerge.length < 2) {
-    setStatus("Không có khung kế tiếp để gộp.", "warn");
+    setStatus("Không có hộp kế tiếp để gộp.", "warn");
     return;
   }
 
@@ -1051,6 +1242,12 @@ function mergeSelectedBoxes() {
     w: maxSx - minSx,
     h: maxSy - minSy,
   };
+  const mergedTargetBox = {
+    x: minTx,
+    y: minTy,
+    w: maxTx - minTx,
+    h: maxTy - minTy,
+  };
   const { bgRgb, fgColor } = sampleBackgroundForBox(mergedSourceBox);
 
   const mergedBlock = {
@@ -1058,10 +1255,11 @@ function mergeSelectedBoxes() {
     text: toMerge.map((b) => b.text).filter(Boolean).join("\n"),
     translation: toMerge.map((b) => b.translation).filter(Boolean).join("\n"),
     sourceBox: mergedSourceBox,
-    targetBox: { x: minTx, y: minTy, w: maxTx - minTx, h: maxTy - minTy },
+    overlayBox: { ...mergedSourceBox },
+    calloutBox: { ...mergedTargetBox },
+    targetBox: imageDisplayMode === "overlay" ? { ...mergedSourceBox } : { ...mergedTargetBox },
     bgRgb,
     fgColor,
-    locked: false,
   };
 
   const mergeSet = new Set(toMerge.map((b) => b.uid));
@@ -1073,16 +1271,13 @@ function mergeSelectedBoxes() {
   syncRawTextsFromBlocks();
   renderAllImageOverlay();
   renderDualSegments();
-  setStatus(`Đã gộp ${toMerge.length} khung thành 1 khung.`, "ok");
+  setStatus(`Đã gộp ${toMerge.length} hộp thành 1 hộp.`, "ok");
 }
 
 function splitSelectedBox() {
   const b = getPrimarySelectedBlock();
   if (!b) return;
   pushUndoState();
-
-  const srcLines = (b.text || "").split("\n");
-  const transLines = (b.translation || "").split("\n");
 
   const splitTextPair = (str) => {
     const lines = str.split("\n");
@@ -1101,29 +1296,38 @@ function splitSelectedBox() {
   const halfH = Math.max(14, b.targetBox.h / 2 - 2);
   const halfSrcH = Math.max(14, b.sourceBox.h / 2 - 2);
 
+  const srcBox1 = { ...b.sourceBox, h: halfSrcH };
+  const srcBox2 = {
+    ...b.sourceBox,
+    y: b.sourceBox.y + halfSrcH + 4,
+    h: halfSrcH,
+  };
+  const tgtBox1 = { ...b.targetBox, h: halfH };
+  const tgtBox2 = {
+    ...b.targetBox,
+    y: b.targetBox.y + halfH + 4,
+    h: halfH,
+  };
+
   const b1 = {
     ...b,
     uid: nextBlockUid++,
     text: src1,
     translation: tr1,
-    sourceBox: { ...b.sourceBox, h: halfSrcH },
-    targetBox: { ...b.targetBox, h: halfH },
+    sourceBox: srcBox1,
+    overlayBox: { ...srcBox1 },
+    calloutBox: { ...tgtBox1 },
+    targetBox: imageDisplayMode === "overlay" ? { ...srcBox1 } : { ...tgtBox1 },
   };
   const b2 = {
     ...b,
     uid: nextBlockUid++,
     text: src2 || "...",
     translation: tr2 || "...",
-    sourceBox: {
-      ...b.sourceBox,
-      y: b.sourceBox.y + halfSrcH + 4,
-      h: halfSrcH,
-    },
-    targetBox: {
-      ...b.targetBox,
-      y: b.targetBox.y + halfH + 4,
-      h: halfH,
-    },
+    sourceBox: srcBox2,
+    overlayBox: { ...srcBox2 },
+    calloutBox: { ...tgtBox2 },
+    targetBox: imageDisplayMode === "overlay" ? { ...srcBox2 } : { ...tgtBox2 },
   };
 
   const idx = ocrBlocks.findIndex((x) => x.uid === b.uid);
@@ -1132,7 +1336,7 @@ function splitSelectedBox() {
   syncRawTextsFromBlocks();
   renderAllImageOverlay();
   renderDualSegments();
-  setStatus("Đã tách đôi khung văn bản.", "ok");
+  setStatus("Đã tách đôi hộp văn bản.", "ok");
 }
 
 function addNewCustomBox() {
@@ -1151,17 +1355,18 @@ function addNewCustomBox() {
     text: "",
     translation: "Nhấp đúp để nhập bản dịch…",
     sourceBox: { ...box },
+    overlayBox: { ...box },
+    calloutBox: { ...box },
     targetBox: { ...box },
     bgRgb,
     fgColor,
-    locked: false,
   };
   ocrBlocks.push(newBlock);
   selectedUids = new Set([newBlock.uid]);
   syncRawTextsFromBlocks();
   renderAllImageOverlay();
   renderDualSegments();
-  setStatus("Đã thêm khung mới (Kéo thả tới vị trí mong muốn và nhấp đúp để sửa chữ).", "ok");
+  setStatus("Đã thêm hộp mới (Kéo thả tới vị trí mong muốn và nhấp đúp để sửa chữ).", "ok");
 }
 
 function deleteSelectedBoxes() {
@@ -1172,33 +1377,7 @@ function deleteSelectedBoxes() {
   syncRawTextsFromBlocks();
   renderAllImageOverlay();
   renderDualSegments();
-  setStatus("Đã xóa khung đã chọn.", "ok");
-}
-
-function toggleLockSelectedBoxes() {
-  const b = getPrimarySelectedBlock();
-  if (!b) return;
-  const nextLocked = !b.locked;
-  for (const item of ocrBlocks) {
-    if (selectedUids.has(item.uid)) item.locked = nextLocked;
-  }
-  renderAllImageOverlay();
-  renderDualSegments();
-  setStatus(nextLocked ? "Đã khóa vị trí khung." : "Đã mở khóa khung.", "ok");
-}
-
-function resetSelectedBoxesPosition() {
-  if (selectedUids.size === 0) return;
-  pushUndoState();
-  for (const item of ocrBlocks) {
-    if (selectedUids.has(item.uid)) {
-      item.targetBox = item.defaultTargetBox
-        ? { ...item.defaultTargetBox }
-        : { ...item.sourceBox };
-    }
-  }
-  renderAllImageOverlay();
-  setStatus("Đã đặt lại khung về vị trí mặc định xung quanh ảnh.", "ok");
+  setStatus("Đã xóa hộp dịch đã chọn.", "ok");
 }
 
 function resetAllBoxesAndOffsets() {
@@ -1209,6 +1388,10 @@ function resetAllBoxesAndOffsets() {
   const imgW = stageImage.naturalWidth || 800;
   const imgH = stageImage.naturalHeight || 600;
   layoutBlocksAroundPerimeter(ocrBlocks, imgW, imgH);
+  for (const b of ocrBlocks) {
+    b.overlayBox = { ...b.sourceBox };
+    b.targetBox = imageDisplayMode === "overlay" ? { ...b.overlayBox } : { ...b.calloutBox };
+  }
   syncOffsetSlidersUi();
   renderAllImageOverlay();
   setStatus("Đã đặt lại toàn bộ vị trí và độ lệch các khung về mặc định.", "ok");
@@ -1222,16 +1405,17 @@ function renderTranslatedImageToBase64() {
   const imgH = stageImage.naturalHeight;
   if (!imgW || !imgH) throw new Error("Ảnh chưa sẵn sàng.");
 
-  // Tính toán vùng bao phủ cả ảnh và các ô dịch dạt ra xung quanh 4 phía
   let minX = 0, minY = 0, maxX = imgW, maxY = imgH;
-  for (const b of ocrBlocks) {
-    const eff = getEffectiveTargetRect(b);
-    minX = Math.min(minX, eff.x);
-    minY = Math.min(minY, eff.y);
-    maxX = Math.max(maxX, eff.x + eff.w);
-    maxY = Math.max(maxY, eff.y + eff.h + 20);
+  if (imageDisplayMode === "callout") {
+    for (const b of ocrBlocks) {
+      const eff = getEffectiveTargetRect(b);
+      minX = Math.min(minX, eff.x);
+      minY = Math.min(minY, eff.y);
+      maxX = Math.max(maxX, eff.x + eff.w);
+      maxY = Math.max(maxY, eff.y + eff.h + 20);
+    }
   }
-  const pad = 16;
+  const pad = imageDisplayMode === "callout" ? 16 : 0;
   const canvasW = Math.round(maxX - minX + pad * 2);
   const canvasH = Math.round(maxY - minY + pad * 2);
   const offsetX = Math.round(-minX + pad);
@@ -1242,7 +1426,6 @@ function renderTranslatedImageToBase64() {
   outCanvas.height = canvasH;
   const ctx = outCanvas.getContext("2d");
 
-  // Nền theo giao diện đang chọn cho ảnh xuất (nếu có ô dạt ra ngoài mép ảnh)
   ctx.fillStyle =
     currentTheme === "light"
       ? "#e2e8f0"
@@ -1254,37 +1437,56 @@ function renderTranslatedImageToBase64() {
   // 1. Vẽ ảnh gốc tại tọa độ offset
   ctx.drawImage(stageImage, offsetX, offsetY, imgW, imgH);
 
-  // 2. Vẽ đường nối nét đứt (luôn bật)
+  // 2. Vẽ đường nối kèm mũi tên khi ở chế độ Giải thích (hoặc khi ô bị kéo lệch)
   if (connectorEnabled) {
     ctx.save();
     for (const b of ocrBlocks) {
       const eff = getEffectiveTargetRect(b);
+      if (imageDisplayMode === "overlay" && !isBlockDisplaced(b, eff)) continue;
+
       const sx = b.sourceBox.x + offsetX;
       const sy = b.sourceBox.y + offsetY;
+      const sw = b.sourceBox.w;
+      const sh = b.sourceBox.h;
       const tx = eff.x + offsetX;
       const ty = eff.y + offsetY;
 
-      const scx = sx + b.sourceBox.w / 2;
-      const scy = sy + b.sourceBox.h / 2;
-      const endX = Math.max(tx, Math.min(tx + eff.w, scx));
-      const endY = Math.max(ty, Math.min(ty + eff.h, scy));
+      const scx = sx + sw / 2;
+      const scy = sy + sh / 2;
+      const startX = Math.max(tx, Math.min(tx + eff.w, scx));
+      const startY = Math.max(ty, Math.min(ty + eff.h, scy));
+      const targetX = Math.max(sx, Math.min(sx + sw, startX));
+      const targetY = Math.max(sy, Math.min(sy + sh, startY));
 
       ctx.strokeStyle = "rgba(56, 189, 248, 0.85)";
       ctx.lineWidth = 1.5;
       ctx.setLineDash([5, 4]);
-      ctx.strokeRect(sx, sy, b.sourceBox.w, b.sourceBox.h);
+      ctx.strokeRect(sx, sy, sw, sh);
 
-      ctx.beginPath();
-      ctx.moveTo(scx, scy);
-      ctx.lineTo(endX, endY);
-      ctx.stroke();
+      if (Math.hypot(targetX - startX, targetY - startY) > 3) {
+        ctx.beginPath();
+        ctx.moveTo(startX, startY);
+        ctx.lineTo(targetX, targetY);
+        ctx.stroke();
 
-      ctx.setLineDash([]);
-      ctx.fillStyle = "#38bdf8";
-      ctx.beginPath();
-      ctx.arc(scx, scy, 3, 0, Math.PI * 2);
-      ctx.arc(endX, endY, 3, 0, Math.PI * 2);
-      ctx.fill();
+        // Vẽ đầu mũi tên tại (targetX, targetY)
+        const angle = Math.atan2(targetY - startY, targetX - startX);
+        const headLen = 7;
+        ctx.setLineDash([]);
+        ctx.fillStyle = "#38bdf8";
+        ctx.beginPath();
+        ctx.moveTo(targetX, targetY);
+        ctx.lineTo(
+          targetX - headLen * Math.cos(angle - Math.PI / 6),
+          targetY - headLen * Math.sin(angle - Math.PI / 6)
+        );
+        ctx.lineTo(
+          targetX - headLen * Math.cos(angle + Math.PI / 6),
+          targetY - headLen * Math.sin(angle + Math.PI / 6)
+        );
+        ctx.closePath();
+        ctx.fill();
+      }
     }
     ctx.restore();
   }
@@ -1409,6 +1611,8 @@ async function exitImageMode() {
   undoStack = [];
   redoStack = [];
   stageImage.src = "";
+  if (origStageImage) origStageImage.src = "";
+  hideBoxContextMenu();
   btnTranslate.textContent = "Dịch • Ctrl+Enter";
   updateImageWorkspaceVisibility();
 }
@@ -1662,8 +1866,10 @@ function layoutBlocksAroundPerimeter(blocks, imgW, imgH) {
   solveHorizontalBand(topBlocks, imgW, -marginGap, -1, itemGap);
   solveHorizontalBand(bottomBlocks, imgW, imgH + marginGap, 1, itemGap);
 
-  // Lưu lại vị trí mặc định để nút "Đặt lại" có thể khôi phục chuẩn xác
+  // Lưu lại tọa độ kiểu giải thích (calloutBox) và kiểu đè (overlayBox)
   for (const b of blocks) {
+    b.calloutBox = { ...b.targetBox };
+    if (!b.overlayBox) b.overlayBox = { ...b.sourceBox };
     b.defaultTargetBox = { ...b.targetBox };
   }
 
@@ -1689,15 +1895,10 @@ function buildOcrBlocksFromResponse(res) {
         sh = Math.max(16, ((ymax - ymin) / 1000) * imgH);
       }
       const sourceBox = { x: sx, y: sy, w: Math.max(16, sw), h: Math.max(12, sh) };
-      // Ước lượng số dòng của văn bản GỐC. Nếu model trả line_count thì tin nó;
-      // nếu không, giả định box bao khít văn bản được bố cục đều: với n dòng,
-      // font gốc ≈ 0.72·boxH/n và tổng rộng text ≤ n·boxW → n² ≥ w(1px)·0.72·boxH/boxW.
-      // Sai lệch chỗ này làm refLineH = tổng chiều cao đoạn văn → font dịch phóng
-      // to n lần (lỗi đảo cỡ chữ giữa heading và paragraph).
       let lineCount = b.line_count || 1;
       if (!b.line_count && b.text && sourceBox.w > 24) {
         measureCtx.font = `500 1px ${typoSettings.fontFamily}`;
-        const w1 = measureCtx.measureText(b.text).width; // độ rộng văn bản gốc ở cỡ 1px
+        const w1 = measureCtx.measureText(b.text).width;
         const n = Math.sqrt((w1 * 0.72 * sourceBox.h) / Math.max(24, sourceBox.w));
         lineCount = Math.max(1, Math.min(20, Math.ceil(n - 0.001)));
       }
@@ -1708,12 +1909,12 @@ function buildOcrBlocksFromResponse(res) {
         text: b.text || "",
         translation: b.translation || "",
         sourceBox,
+        overlayBox: { ...sourceBox },
         targetBox: { ...sourceBox },
         lineHeight: refLineH,
         lineCount: lineCount,
         bgRgb,
         fgColor,
-        locked: false,
       };
     });
   } else {
@@ -1742,17 +1943,21 @@ function buildOcrBlocksFromResponse(res) {
         text: srcParas[i] || "",
         translation: tr,
         sourceBox,
+        overlayBox: { ...sourceBox },
         targetBox: { ...sourceBox },
         lineHeight: sourceBox.h,
         lineCount: 1,
         bgRgb,
         fgColor,
-        locked: false,
       };
     });
   }
 
-  return layoutBlocksAroundPerimeter(blocks, imgW, imgH);
+  layoutBlocksAroundPerimeter(blocks, imgW, imgH);
+  for (const b of blocks) {
+    b.targetBox = imageDisplayMode === "overlay" ? { ...b.overlayBox } : { ...b.calloutBox };
+  }
+  return blocks;
 }
 
 async function doTranslateImage(base64Png, screenRect = null) {
@@ -1765,22 +1970,26 @@ async function doTranslateImage(base64Png, screenRect = null) {
   undoStack = [];
   redoStack = [];
   updateUndoRedoButtons();
+  hideBoxContextMenu();
 
+  const dataUri = `data:image/png;base64,${base64Png}`;
+  if (origStageImage) origStageImage.src = dataUri;
   await new Promise((resolve) => {
     stageImage.onload = () => {
       prepareSampleCanvas();
       resolve();
     };
     stageImage.onerror = () => resolve();
-    stageImage.src = `data:image/png;base64,${base64Png}`;
+    stageImage.src = dataUri;
   });
 
   updateImageWorkspaceVisibility();
-  dualFlowContainer.innerHTML = "";
+  if (docSourceCol) docSourceCol.innerHTML = "";
+  if (docTargetCol) docTargetCol.innerHTML = "";
 
   btnTranslate.disabled = true;
   const t0 = performance.now();
-  setStatus("Đang nhận diện tọa độ vùng chữ từ ảnh & dịch đè…", "warn");
+  setStatus("Đang nhận diện tọa độ vùng chữ từ ảnh & dịch…", "warn");
 
   try {
     const r = await invoke("translate_image", {
@@ -1797,7 +2006,7 @@ async function doTranslateImage(base64Png, screenRect = null) {
     const isGemmaNoBox = (r.blocks || []).length === 0 && ocrBlocks.length > 0;
     if (r.auto_switched) {
       setStatus(
-        `Đã dịch đè ${ocrBlocks.length} khối (${elapsed}s) — Tự chuyển sang ${r.switched_to}`,
+        `Đã dịch ${ocrBlocks.length} vùng chữ (${elapsed}s) — Tự chuyển sang ${r.switched_to}`,
         "warn"
       );
     } else if (isGemmaNoBox) {
@@ -1807,7 +2016,7 @@ async function doTranslateImage(base64Png, screenRect = null) {
       );
     } else {
       setStatus(
-        `Đã nhận diện & dịch đè ${ocrBlocks.length} khối văn bản (${elapsed}s)`,
+        `Đã nhận diện & dịch ${ocrBlocks.length} vùng văn bản (${elapsed}s)`,
         "ok"
       );
     }
@@ -1857,13 +2066,20 @@ async function doTranslate() {
 }
 
 // =========================================================================
-// TOOLBAR & POPOVER EVENTS
+// TOOLBAR, DISPLAY MODE & CONTEXT MENU EVENTS
 // =========================================================================
+
+// Khởi tạo trạng thái nút 2 chế độ hiển thị: Kiểu đè vs Kiểu giải thích
+btnModeOverlay?.classList.toggle("active", imageDisplayMode === "overlay");
+btnModeCallout?.classList.toggle("active", imageDisplayMode === "callout");
+btnModeOverlay?.addEventListener("click", () => setImageDisplayMode("overlay", true));
+btnModeCallout?.addEventListener("click", () => setImageDisplayMode("callout", true));
 
 // Popover Chỉnh lệch & Nền
 $("btnToggleOffsetPanel").addEventListener("click", (ev) => {
   ev.stopPropagation();
   typoPopover.classList.add("hidden");
+  hideBoxContextMenu();
   offsetPopover.classList.toggle("hidden");
 });
 
@@ -1871,6 +2087,7 @@ $("btnToggleOffsetPanel").addEventListener("click", (ev) => {
 $("btnToggleTypoPanel").addEventListener("click", (ev) => {
   ev.stopPropagation();
   offsetPopover.classList.add("hidden");
+  hideBoxContextMenu();
   typoPopover.classList.toggle("hidden");
 });
 
@@ -1887,7 +2104,12 @@ window.addEventListener("mousedown", (ev) => {
   ) {
     typoPopover.classList.add("hidden");
   }
+  if (boxContextMenu && !boxContextMenu.contains(ev.target)) {
+    hideBoxContextMenu();
+  }
 });
+
+window.addEventListener("scroll", hideBoxContextMenu, true);
 
 function syncOffsetSlidersUi() {
   rangeGlobalDx.value = String(globalDx);
@@ -1991,35 +2213,29 @@ $("btnResetTypo").addEventListener("click", () => {
   renderAllImageOverlay();
 });
 
-// Undo / Redo / Add Box / Context Bar buttons
+// Undo / Redo / Add Box
 $("btnUndo").addEventListener("click", doUndo);
 $("btnRedo").addEventListener("click", doRedo);
 $("btnAddBox").addEventListener("click", addNewCustomBox);
 
-$("btnCtxEdit").addEventListener("click", () => {
-  const b = getPrimarySelectedBlock();
-  if (!b) return;
-  const boxEl = overlayBoxesLayer.querySelector(`.trans-box[data-uid="${b.uid}"]`);
-  const textEl = boxEl?.querySelector(".trans-box-text");
-  if (textEl) enterInlineEditOnBox(b, textEl);
+// Sự kiện các nút trong Menu chuột phải (Context Menu)
+$("ctxMenuRetranslate")?.addEventListener("click", () => {
+  const uid = contextMenuUid ?? getPrimarySelectedBlock()?.uid;
+  hideBoxContextMenu();
+  if (uid) retranslateSingleBlock(uid);
 });
-$("btnCtxRetranslate").addEventListener("click", () => {
-  const b = getPrimarySelectedBlock();
-  if (b) retranslateSingleBlock(b.uid);
+$("ctxMenuMerge")?.addEventListener("click", () => {
+  hideBoxContextMenu();
+  mergeSelectedBoxes();
 });
-$("btnCtxMerge").addEventListener("click", mergeSelectedBoxes);
-$("btnCtxSplit").addEventListener("click", splitSelectedBox);
-$("btnCtxLock").addEventListener("click", toggleLockSelectedBoxes);
-$("btnCtxResetBox").addEventListener("click", resetSelectedBoxesPosition);
-$("btnCtxCopyBox").addEventListener("click", async () => {
-  const b = getPrimarySelectedBlock();
-  if (!b) return;
-  await invoke("plugin:clipboard-manager|write_text", {
-    text: b.translation || "",
-  });
-  setStatus("Đã sao chép bản dịch của khung đang chọn.", "ok");
+$("ctxMenuSplit")?.addEventListener("click", () => {
+  hideBoxContextMenu();
+  splitSelectedBox();
 });
-$("btnCtxDelete").addEventListener("click", deleteSelectedBoxes);
+$("ctxMenuDelete")?.addEventListener("click", () => {
+  hideBoxContextMenu();
+  deleteSelectedBoxes();
+});
 
 $("btnCopyAllSegments").addEventListener("click", async () => {
   const all = ocrBlocks
@@ -2540,9 +2756,14 @@ window.addEventListener("keydown", async (e) => {
       const dx = e.key === "ArrowLeft" ? -step : e.key === "ArrowRight" ? step : 0;
       const dy = e.key === "ArrowUp" ? -step : e.key === "ArrowDown" ? step : 0;
       for (const b of ocrBlocks) {
-        if (selectedUids.has(b.uid) && !b.locked) {
+        if (selectedUids.has(b.uid)) {
           b.targetBox.x += dx;
           b.targetBox.y += dy;
+          if (imageDisplayMode === "overlay") {
+            b.overlayBox = { ...b.targetBox };
+          } else {
+            b.calloutBox = { ...b.targetBox };
+          }
         }
       }
       renderAllImageOverlay();
@@ -2551,7 +2772,9 @@ window.addEventListener("keydown", async (e) => {
   }
 
   if (e.key === "Escape") {
-    if (!settingsDrawer.classList.contains("hidden")) {
+    if (boxContextMenu && !boxContextMenu.classList.contains("hidden")) {
+      hideBoxContextMenu();
+    } else if (!settingsDrawer.classList.contains("hidden")) {
       closeDrawer();
     } else if (isInPlaceMode) {
       await exitPinInPlace();

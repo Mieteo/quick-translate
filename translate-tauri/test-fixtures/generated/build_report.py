@@ -10,6 +10,8 @@ Chạy:  python build_report.py
 """
 
 import html
+import sys
+sys.stdout.reconfigure(encoding="utf-8")
 import json
 import os
 from PIL import Image, ImageDraw, ImageFont
