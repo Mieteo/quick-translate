@@ -380,13 +380,19 @@ pub async fn translate_image(
         }
     }
 
+    let clean_b64 = image_base64
+        .strip_prefix("data:image/png;base64,")
+        .unwrap_or(&image_base64)
+        .trim();
+
     let mut final_out: Option<ImageTranslateOutput> = None;
     for _ in 0..MODELS.len() {
-        match state
+        let translate_res = state
             .gemini
-            .translate_image(&image_base64, &source, &target, &api_key, &model, &gran)
-            .await
-        {
+            .translate_image(clean_b64, &source, &target, &api_key, &model, &gran)
+            .await;
+
+        match translate_res {
             Ok(out) => {
                 final_out = Some(out);
                 break;
@@ -615,6 +621,26 @@ pub async fn clear_cache(
 pub async fn open_key_page() -> Result<(), String> {
     tauri_plugin_opener::open_url("https://aistudio.google.com/apikey", None::<&str>)
         .map_err(|e| e.to_string())
+}
+
+#[derive(Serialize)]
+pub struct AppInfo {
+    pub version: String,
+    pub commit_hash: String,
+    pub author: String,
+    pub repo_url: String,
+}
+
+#[tauri::command]
+pub async fn get_app_info() -> Result<AppInfo, String> {
+    Ok(AppInfo {
+        version: env!("CARGO_PKG_VERSION").to_string(),
+        commit_hash: option_env!("GIT_COMMIT_HASH")
+            .unwrap_or("701c096")
+            .to_string(),
+        author: "XavisTech".to_string(),
+        repo_url: "https://github.com/Mieteo/quick-translate".to_string(),
+    })
 }
 
 #[tauri::command]

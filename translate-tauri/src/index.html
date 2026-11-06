@@ -339,12 +339,12 @@
           Nhấn vào ô phím tắt rồi bấm phím mới (hỗ trợ F1–F12 độc lập như F7 hoặc tổ hợp Ctrl/Alt/Shift).
         </div>
 
-        <!-- Theme & Pin Transparency (Nằm giữa Phím tắt toàn hệ thống và Hệ thống & dữ liệu) -->
-        <div class="drawer-section-title">GIAO DIỆN &amp; ĐỘ TRONG SUỐT</div>
+        <!-- Theme & Pin Transparency -->
+        <div class="drawer-section-title">GIAO DIỆN</div>
         <div class="setting-row">
           <span>Giao diện (Theme)</span>
           <div class="theme-selector" id="themeSelector">
-            <button type="button" class="theme-chip active" data-theme="dark" title="Giao diện Tối (Dark)">
+            <button type="button" class="theme-chip" data-theme="dark" title="Giao diện Tối (Dark)">
               <span class="theme-swatch swatch-dark"></span>
               <span>Tối</span>
             </button>
@@ -352,7 +352,7 @@
               <span class="theme-swatch swatch-light"></span>
               <span>Sáng</span>
             </button>
-            <button type="button" class="theme-chip" data-theme="warm" title="Giao diện Xám ngà cam nhạt (Dịu mắt)">
+            <button type="button" class="theme-chip active" data-theme="warm" title="Giao diện Xám ngà cam nhạt (Dịu mắt)">
               <span class="theme-swatch swatch-warm"></span>
               <span>Xám ngà</span>
             </button>
@@ -366,11 +366,11 @@
           <input type="range" id="rangePinTransparency" min="0" max="65" step="1" value="10" style="width: 100%; accent-color: var(--accent); cursor: pointer;" />
         </div>
         <div class="drawer-note" style="margin-bottom: 6px;">
-          Chỉ áp dụng độ trong suốt khi đang bật <b>Ghim cửa sổ</b> (📌 góc phải trên). Khi bỏ ghim, cửa sổ tự động tắt trong suốt (hiển thị 100%).
+          Chỉ áp dụng cho Ghim cửa sổ (📌 góc bên phải).
         </div>
 
-        <!-- System & Data -->
-        <div class="drawer-section-title">HỆ THỐNG &amp; DỮ LIỆU</div>
+        <!-- System -->
+        <div class="drawer-section-title">HỆ THỐNG</div>
         <div class="setting-row">
           <span>Khởi động cùng Windows</span>
           <label class="switch">
@@ -382,11 +382,33 @@
           <span id="cacheInfoText">Bộ nhớ đệm: 0 bản dịch đã lưu</span>
           <button class="btn ghost sm" id="btnClearCache">[Xóa cache]</button>
         </div>
+
+        <!-- Phiên bản & Cập nhật -->
+        <div class="drawer-section-title">PHIÊN BẢN &amp; CẬP NHẬT</div>
+        <div class="setting-row">
+          <span>Phiên bản hiện tại</span>
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <b id="appVersionText">v1.0.0</b>
+            <span id="appCommitText" style="color: var(--text-muted); font-size: 11.5px; font-family: monospace;">(701c096)</span>
+          </div>
+        </div>
+        <div class="setting-row">
+          <span>Tác giả</span>
+          <a href="https://github.com/Mieteo/quick-translate" target="_blank" class="vcard-link" id="appAuthorLink">
+            XavisTech ↗
+          </a>
+        </div>
+        <div class="setting-row" style="margin-top: 6px;">
+          <span style="font-size: 12px; color: var(--text-secondary);">Cập nhật</span>
+          <button class="btn primary sm" id="btnCheckUpdate" style="padding: 0 12px; height: 26px; gap: 5px;">
+            <span id="iconUpdateSpin">🔄</span>
+            <span id="textCheckUpdate">Kiểm tra</span>
+          </button>
+        </div>
       </div>
 
-      <div class="drawer-footer">
-        <button class="btn primary flex-1" id="btnSaveSettings">Lưu cài đặt</button>
-        <button class="btn danger flex-1" id="btnQuitApp">Thoát ứng dụng</button>
+      <div class="drawer-footer" style="justify-content: flex-end;">
+        <button class="btn danger" id="btnQuitApp" style="width: 100%;">Thoát ứng dụng</button>
       </div>
     </aside>
   </div>

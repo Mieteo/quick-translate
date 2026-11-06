@@ -26,6 +26,7 @@ pub fn run() {
         ))
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .setup(|app| {
             let data_dir = app.path().app_data_dir()?;
@@ -101,6 +102,7 @@ pub fn run() {
             commands::save_translated_image,
             commands::clear_cache,
             commands::open_key_page,
+            commands::get_app_info,
             commands::quit_app,
         ])
         .run(tauri::generate_context!())

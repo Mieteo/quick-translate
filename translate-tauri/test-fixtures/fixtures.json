@@ -1,0 +1,236 @@
+{
+  "description": "Bộ dữ liệu kiểm thử tổng quát cho bộ nhận diện bố cục chữ (OCR) và thuật toán hiển thị/tính font",
+  "version": "1.0",
+  "test_cases": [
+    {
+      "id": "case1_single_commit",
+      "name": "Dòng commit đơn lẻ có icon phía trước",
+      "image": "case1_single_commit_raw.png",
+      "image_dimensions": { "w": 480, "h": 42 },
+      "ocr_blocks": [
+        {
+          "id": 1,
+          "text": "Fix footprint rotation tolerance around 90 degrees",
+          "translation": "Sửa dung sai xoay footprint quanh 90 độ",
+          "pixel_rect": [38, 12, 420, 18],
+          "line_height": 18.0,
+          "line_count": 1,
+          "type": "single_line"
+        }
+      ],
+      "assertions": {
+        "expected_block_count": 1,
+        "is_single_line": true,
+        "min_font_px": 10.5,
+        "max_font_px": 15.0
+      }
+    },
+    {
+      "id": "case2_commit_list",
+      "name": "Danh sách nhiều dòng commit độc lập (Single-line list)",
+      "image": "case2_commit_list_raw.png",
+      "image_dimensions": { "w": 560, "h": 80 },
+      "ocr_blocks": [
+        {
+          "id": 1,
+          "text": "Fix exclude region offset when the footprint crop is clipped",
+          "translation": "Sửa lỗi độ lệch vùng loại trừ khi cắt xén footprint",
+          "pixel_rect": [38, 10, 480, 18],
+          "line_height": 18.0,
+          "line_count": 1,
+          "type": "single_line"
+        },
+        {
+          "id": 2,
+          "text": "Fix rotated frame export coordinate handling",
+          "translation": "Sửa lỗi xử lý tọa độ khi xuất khung hình đã xoay",
+          "pixel_rect": [38, 44, 400, 18],
+          "line_height": 18.0,
+          "line_count": 1,
+          "type": "single_line"
+        }
+      ],
+      "assertions": {
+        "expected_block_count": 2,
+        "all_single_line": true,
+        "font_size_delta_max": 1.5
+      }
+    },
+    {
+      "id": "case3_website_cards",
+      "name": "Bố cục thẻ website 3 cột (Mỗi thẻ gồm Tiêu đề + Đoạn văn gộp thành 1 khối)",
+      "image": "case3_website_cards.png",
+      "image_dimensions": { "w": 988, "h": 105 },
+      "ocr_blocks": [
+        {
+          "id": 1,
+          "column": 1,
+          "type": "card",
+          "text": "Introducing Fathom™\nThe electric vehicle you've been waiting for is on the way, starting at MSRP $28,350 011 with a standard-range battery.",
+          "translation": "Giới thiệu Fathom™\nChiếc xe điện mà bạn hằng mong đợi đang trên đường ra mắt, với mức giá bán lẻ đề xuất (MSRP) từ 28.350 USD011 kèm theo gói pin tiêu chuẩn.",
+          "pixel_rect": [20, 13, 285, 82],
+          "line_height": 14.5,
+          "line_count": 4
+        },
+        {
+          "id": 2,
+          "column": 2,
+          "type": "card",
+          "text": "Real Parts. Real Pros. Real Easy.\nThat's what makes us the best choice to service your Ford. We've got Nate, and you, covered. And we've got decent coffee, too.",
+          "translation": "Phụ tùng chính hãng. Chuyên gia thực thụ. Dễ dàng tuyệt đối.\nĐó là điều khiến chúng tôi trở thành lựa chọn tốt nhất để bảo dưỡng chiếc Ford của bạn. Chúng tôi có Nate và luôn hỗ trợ bạn. Và chúng tôi cũng có cả cà phê ngon nữa.",
+          "pixel_rect": [356, 13, 288, 82],
+          "line_height": 14.5,
+          "line_count": 4
+        },
+        {
+          "id": 3,
+          "column": 3,
+          "type": "card",
+          "text": "Pickup & Delivery\nLet your dealer pick up, service, and return your vehicle. It's complimentary.",
+          "translation": "Nhận & Giao xe\nHãy để đại lý của chúng tôi đến nhận, bảo dưỡng và trả xe lại cho bạn. Hoàn toàn miễn phí.",
+          "pixel_rect": [692, 13, 279, 64],
+          "line_height": 14.5,
+          "line_count": 3
+        }
+      ],
+      "assertions": {
+        "expected_block_count": 3,
+        "is_column_card": true
+      }
+    },
+    {
+      "id": "case4_large_banner_title",
+      "name": "Tiêu đề Banner khổ lớn và dòng phụ đề chú thích",
+      "image_dimensions": { "w": 800, "h": 200 },
+      "ocr_blocks": [
+        {
+          "id": 1,
+          "type": "title",
+          "text": "ULTRA FAST SCREEN TRANSLATION",
+          "translation": "DỊCH MÀN HÌNH SIÊU NHANH",
+          "pixel_rect": [40, 30, 620, 50],
+          "line_height": 42.0,
+          "line_count": 1
+        },
+        {
+          "id": 2,
+          "type": "subtitle",
+          "text": "Translate any text on your desktop in real-time with on-device OCR and AI",
+          "translation": "Dịch bất kỳ văn bản nào trên máy tính theo thời gian thực với AI và OCR nội bộ",
+          "pixel_rect": [40, 100, 580, 26],
+          "line_height": 18.0,
+          "line_count": 1
+        }
+      ],
+      "assertions": {
+        "title_font_greater_than_subtitle": true,
+        "min_title_font": 22.0
+      }
+    },
+    {
+      "id": "case5_compact_action_button",
+      "name": "Nút bấm / Thẻ tag ngắn (Button / Badge)",
+      "image_dimensions": { "w": 300, "h": 100 },
+      "ocr_blocks": [
+        {
+          "id": 1,
+          "type": "button",
+          "text": "Download now",
+          "translation": "Tải ngay",
+          "pixel_rect": [80, 35, 120, 34],
+          "line_height": 22.0,
+          "line_count": 1
+        }
+      ],
+      "assertions": {
+        "is_single_line": true,
+        "fits_in_compact_box": true
+      }
+    },
+    {
+      "id": "case6_commit_prefixes",
+      "name": "Danh sách commit có các tiền tố Fix: / Update: (Không bị cắt rời tiền tố)",
+      "image": "case6_commit_prefixes.png",
+      "image_dimensions": { "w": 665, "h": 270 },
+      "ocr_blocks": [
+        {
+          "id": 1,
+          "text": "Update: Help read all unicode path",
+          "translation": "Cập nhật: Hỗ trợ đọc tất cả đường dẫn unicode",
+          "pixel_rect": [39, 8, 261, 13],
+          "line_height": 13.0,
+          "line_count": 1
+        },
+        {
+          "id": 2,
+          "text": "Fix: Remove redundant sprintf overwriting strftime buffer in CResu1tFrame",
+          "translation": "Sửa lỗi: Loại bỏ sprintf dư thừa ghi đè bộ đệm strftime trong CResultFrame",
+          "pixel_rect": [40, 38, 560, 13],
+          "line_height": 13.0,
+          "line_count": 1
+        },
+        {
+          "id": 3,
+          "text": "Update: Fix detect void",
+          "translation": "Cập nhật: Sửa lỗi phát hiện vùng trống",
+          "pixel_rect": [39, 68, 176, 13],
+          "line_height": 13.0,
+          "line_count": 1
+        },
+        {
+          "id": 4,
+          "text": "Thanh/fix ecc tool",
+          "translation": "Thành/sửa công cụ ecc",
+          "pixel_rect": [39, 98, 138, 11],
+          "line_height": 11.0,
+          "line_count": 1
+        },
+        {
+          "id": 5,
+          "text": "Update: ECC key library exportations.",
+          "translation": "Cập nhật: Xuất thư viện khóa ECC.",
+          "pixel_rect": [39, 128, 282, 13],
+          "line_height": 13.0,
+          "line_count": 1
+        },
+        {
+          "id": 6,
+          "text": "update inference: support 3-channel models",
+          "translation": "cập nhật suy luận: hỗ trợ mô hình 3 kênh",
+          "pixel_rect": [55, 158, 322, 13],
+          "line_height": 13.0,
+          "line_count": 1
+        },
+        {
+          "id": 7,
+          "text": "Fix: alternative logic for check Void Result",
+          "translation": "Sửa lỗi: logic thay thế để kiểm tra kết quả vùng trống",
+          "pixel_rect": [40, 188, 360, 13],
+          "line_height": 13.0,
+          "line_count": 1
+        },
+        {
+          "id": 8,
+          "text": "Fix: Refix commit 37S6f1ea - fill void and rotated image in detect short",
+          "translation": "Sửa lỗi: Sửa lại commit 3756f1ea - điền vùng trống và xoay ảnh khi phát hiện ngắn mạch",
+          "pixel_rect": [40, 218, 552, 13],
+          "line_height": 13.0,
+          "line_count": 1
+        },
+        {
+          "id": 9,
+          "text": "Fix: Draw short crash when fill void feature is enable",
+          "translation": "Sửa lỗi: Vẽ ngắn mạch bị crash khi tính năng điền vùng trống được bật",
+          "pixel_rect": [40, 248, 414, 10],
+          "line_height": 10.0,
+          "line_count": 1
+        }
+      ],
+      "assertions": {
+        "expected_block_count": 9,
+        "no_isolated_prefixes": true,
+        "all_single_line": true
+      }
+    }
+  ]
+}

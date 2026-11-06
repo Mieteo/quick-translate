@@ -90,7 +90,7 @@ let validHotkey = "F7";
 let validImageHotkey = "Shift+F7";
 // Mặc định sau khi cài app là được Ghim (true), và lưu lại sau mỗi lần bật/tắt app
 let isPinned = localStorage.getItem("translate_is_pinned") !== "0";
-let currentTheme = localStorage.getItem("translate_theme") || "dark";
+let currentTheme = localStorage.getItem("translate_theme") || "warm";
 // Mặc định độ trong suốt khi ghim là 10% (nếu chưa từng chỉnh), và lưu lại mỗi lần bật/tắt app
 const savedPinTrans = localStorage.getItem("translate_pin_transparency_v2");
 let pinTransparency = Math.max(
@@ -366,7 +366,7 @@ function wrapTextLines(ctx, text, maxWidth) {
   return lines;
 }
 
-function computeAutoFitFontSize(text, boxW, boxH) {
+function computeAutoFitFontSize(text, boxW, boxH, refLineH = null, stageScale = 1, isSingleLine = false) {
   const clean = String(text || "").trim();
   if (!clean || boxW <= 8 || boxH <= 8) return 11;
 
@@ -375,10 +375,43 @@ function computeAutoFitFontSize(text, boxW, boxH) {
   const availW = Math.max(16, boxW - padX);
   const availH = Math.max(12, boxH - padY);
 
-  const maxFont = Math.min(40, Math.max(10, Math.floor(availH * 0.8)));
-  const minFont = 8.5;
   const weight = typoSettings.bold ? "700" : "500";
   const style = typoSettings.italic ? "italic" : "normal";
+
+  // Nếu là ô đơn dòng (single-line), bắt buộc căn chỉnh font size sao cho text nằm trọn vẹn 1 dòng không bao giờ bị bẻ dòng khi zoom
+  if (isSingleLine) {
+    const origFontPx = refLineH ? refLineH * stageScale * 0.72 : availH * 0.72;
+    const maxAllowedFont = Math.min(42, Math.max(8.5, origFontPx));
+    for (let size = maxAllowedFont; size >= 7.5; size -= 0.5) {
+      measureCtx.font = `${style} ${weight} ${size}px ${typoSettings.fontFamily}`;
+      const textW = measureCtx.measureText(clean).width;
+      if (textW <= availW - 4 && size * 1.22 <= availH + 4) {
+        return Math.max(7.5, Math.min(48, size + typoSettings.fontDelta));
+      }
+    }
+    return 7.5;
+  }
+
+  // Nếu có chiều cao của 1 dòng chữ đơn (refLineH), font size đích bám sát font chữ gốc trong ảnh (tránh nhầm tổng chiều cao cả đoạn văn)
+  if (refLineH && refLineH > 5) {
+    const origFontPx = refLineH * stageScale * 0.72;
+    const baseTarget = Math.max(8.5, Math.min(42, origFontPx));
+    
+    // Thử áp dụng font size từ baseTarget trở xuống xem có vừa trong ô không
+    for (let size = baseTarget; size >= 8.0; size -= 0.5) {
+      measureCtx.font = `${style} ${weight} ${size}px ${typoSettings.fontFamily}`;
+      const lines = wrapTextLines(measureCtx, clean, availW);
+      const lineHeight = size * 1.22;
+      const totalH = lines.length * lineHeight;
+      if (totalH <= availH + 4) {
+        return Math.max(7.5, Math.min(48, size + typoSettings.fontDelta));
+      }
+    }
+    return 8.0;
+  }
+
+  const maxFont = Math.min(40, Math.max(10, Math.floor(availH * 0.8)));
+  const minFont = 8.5;
 
   let best = minFont;
   for (let size = maxFont; size >= minFont; size -= 0.75) {
@@ -603,7 +636,13 @@ function renderAllImageOverlay() {
     boxEl.style.backgroundColor = `rgba(${r}, ${g}, ${bl}, ${alpha})`;
     boxEl.style.color = b.fgColor || "#f8fafc";
 
-    const fontSize = computeAutoFitFontSize(b.translation, dispW, dispH);
+    const isSingleLine = Boolean(b.isSingleLine);
+    if (isSingleLine) {
+      boxEl.classList.add("single-line");
+    }
+
+    const refLineH = b.lineHeight || (b.sourceBox?.h / (b.lineCount || 1));
+    const fontSize = computeAutoFitFontSize(b.translation, dispW, dispH, refLineH, scale, isSingleLine);
     boxEl.style.fontFamily = typoSettings.fontFamily;
     boxEl.style.fontSize = `${fontSize.toFixed(1)}px`;
     boxEl.style.fontWeight = typoSettings.bold ? "700" : "500";
@@ -899,7 +938,8 @@ function startBoxResize(ev, block, dir, boxEl) {
     boxEl.style.width = `${dispW.toFixed(1)}px`;
     boxEl.style.height = `${dispH.toFixed(1)}px`;
     boxEl.style.setProperty("--box-min-h", `${dispH.toFixed(1)}px`);
-    const fontSize = computeAutoFitFontSize(block.translation, dispW, dispH);
+    const refLineH = block.lineHeight || (block.sourceBox?.h / (block.lineCount || 1));
+    const fontSize = computeAutoFitFontSize(block.translation, dispW, dispH, refLineH, scale, Boolean(block.isSingleLine));
     boxEl.style.fontSize = `${fontSize.toFixed(1)}px`;
     renderConnectorsSvg();
   };
@@ -1255,7 +1295,8 @@ function renderTranslatedImageToBase64() {
     const eff = getEffectiveTargetRect(b);
     const drawX = eff.x + offsetX;
     const drawY = eff.y + offsetY;
-    const fontSize = computeAutoFitFontSize(b.translation, eff.w, eff.h);
+    const refLineH = b.lineHeight || (b.sourceBox?.h / (b.lineCount || 1));
+    const fontSize = computeAutoFitFontSize(b.translation, eff.w, eff.h, refLineH, 1, Boolean(b.isSingleLine));
     const weight = typoSettings.bold ? "700" : "500";
     const style = typoSettings.italic ? "italic" : "normal";
     ctx.font = `${style} ${weight} ${fontSize}px ${typoSettings.fontFamily}`;
@@ -1382,31 +1423,33 @@ function estimateCalloutSize(b, side, imgW, imgH, unit) {
   const s = b.sourceBox;
   const text = String(b.translation || "").trim();
   const len = text.length;
-  const fontPx = Math.max(10.5, Math.round(12.5 * unit));
-  measureCtx.font = `500 ${fontPx}px ${typoSettings.fontFamily}`;
+
+  // Lấy font size tự nhiên bám sát theo chiều cao chữ của 1 DÒNG (line_height), không lấy tổng chiều cao của cả đoạn văn (s.h)
+  const lineCount = b.lineCount || 1;
+  const refLineH = b.lineHeight || (s.h / lineCount);
+  const approxFontPx = Math.max(9.0, Math.min(36, refLineH * 0.72));
+  measureCtx.font = `500 ${approxFontPx}px ${typoSettings.fontFamily}`;
+  const measuredSingleLineWidth = measureCtx.measureText(text).width + 18;
 
   let estW;
-  if (side === "left" || side === "right") {
-    const minSideW = Math.round(92 * unit);
-    const maxSideW = Math.round(Math.max(150 * unit, Math.min(imgW * 0.78, 255 * unit)));
-    if (len <= 14) {
-      const measured = measureCtx.measureText(text).width + 20 * unit;
-      estW = Math.max(minSideW, Math.min(maxSideW, Math.round(measured)));
-    } else if (len <= 55) {
-      estW = Math.max(Math.round(145 * unit), Math.min(maxSideW, Math.round(190 * unit)));
-    } else {
-      estW = maxSideW;
-    }
+  if (lineCount > 1) {
+    // Đoạn văn nhiều dòng: giữ độ rộng cột tự nhiên của đoạn văn gốc (hoặc tối thiểu 140px)
+    estW = Math.round(Math.max(140, Math.min(s.w * 1.15, imgW * 0.85)));
+  } else if (side === "left" || side === "right") {
+    // Với 2 bên trái/phải: nếu chuỗi dịch ngắn hoặc vừa phải, cho phép dài tối đa để tránh bị bẻ dòng vụn
+    const maxSideW = Math.round(Math.max(180, Math.min(imgW * 0.85, 380)));
+    estW = Math.max(110, Math.min(maxSideW, Math.round(measuredSingleLineWidth * 1.06 + 14)));
   } else {
-    const minTopW = Math.round(92 * unit);
-    const maxTopW = Math.round(Math.max(s.w, Math.min(imgW * 0.65, 280 * unit)));
-    estW = Math.max(minTopW, Math.min(maxTopW, Math.max(s.w, Math.round(135 * unit))));
+    // Với trên/dưới: ưu tiên giữ nguyên 1 dòng nằm ngang tương ứng với dòng gốc
+    const maxTopW = Math.round(Math.max(s.w * 1.25, Math.min(imgW * 0.95, 520)));
+    estW = Math.max(s.w, Math.min(maxTopW, Math.round(measuredSingleLineWidth * 1.06 + 14)));
   }
 
-  const lines = wrapTextLines(measureCtx, text, Math.max(36, estW - 14 * unit));
+  const lines = wrapTextLines(measureCtx, text, Math.max(36, estW - 14));
+  b.isSingleLine = (lines.length <= 1);
   const estH = Math.max(
-    Math.round(24 * unit),
-    Math.ceil(lines.length * fontPx * 1.28 + 10 * unit)
+    Math.round(s.h || 20),
+    Math.ceil(lines.length * approxFontPx * 1.28 + 8)
   );
   return { w: estW, h: estH };
 }
@@ -1635,12 +1678,30 @@ function buildOcrBlocksFromResponse(res) {
   let blocks = [];
   if (rawBlocks.length > 0) {
     blocks = rawBlocks.map((b) => {
-      const [ymin, xmin, ymax, xmax] = b.box_2d || [100, 100, 200, 800];
-      const sx = (xmin / 1000) * imgW;
-      const sy = (ymin / 1000) * imgH;
-      const sw = Math.max(24, ((xmax - xmin) / 1000) * imgW);
-      const sh = Math.max(16, ((ymax - ymin) / 1000) * imgH);
-      const sourceBox = { x: sx, y: sy, w: sw, h: sh };
+      let sx, sy, sw, sh;
+      if (Array.isArray(b.pixel_rect) && b.pixel_rect.length === 4) {
+        [sx, sy, sw, sh] = b.pixel_rect;
+      } else {
+        const [ymin, xmin, ymax, xmax] = b.box_2d || [100, 100, 200, 800];
+        sx = (xmin / 1000) * imgW;
+        sy = (ymin / 1000) * imgH;
+        sw = Math.max(24, ((xmax - xmin) / 1000) * imgW);
+        sh = Math.max(16, ((ymax - ymin) / 1000) * imgH);
+      }
+      const sourceBox = { x: sx, y: sy, w: Math.max(16, sw), h: Math.max(12, sh) };
+      // Ước lượng số dòng của văn bản GỐC. Nếu model trả line_count thì tin nó;
+      // nếu không, giả định box bao khít văn bản được bố cục đều: với n dòng,
+      // font gốc ≈ 0.72·boxH/n và tổng rộng text ≤ n·boxW → n² ≥ w(1px)·0.72·boxH/boxW.
+      // Sai lệch chỗ này làm refLineH = tổng chiều cao đoạn văn → font dịch phóng
+      // to n lần (lỗi đảo cỡ chữ giữa heading và paragraph).
+      let lineCount = b.line_count || 1;
+      if (!b.line_count && b.text && sourceBox.w > 24) {
+        measureCtx.font = `500 1px ${typoSettings.fontFamily}`;
+        const w1 = measureCtx.measureText(b.text).width; // độ rộng văn bản gốc ở cỡ 1px
+        const n = Math.sqrt((w1 * 0.72 * sourceBox.h) / Math.max(24, sourceBox.w));
+        lineCount = Math.max(1, Math.min(20, Math.ceil(n - 0.001)));
+      }
+      const refLineH = b.line_height || (sourceBox.h / lineCount);
       const { bgRgb, fgColor } = sampleBackgroundForBox(sourceBox);
       return {
         uid: nextBlockUid++,
@@ -1648,6 +1709,8 @@ function buildOcrBlocksFromResponse(res) {
         translation: b.translation || "",
         sourceBox,
         targetBox: { ...sourceBox },
+        lineHeight: refLineH,
+        lineCount: lineCount,
         bgRgb,
         fgColor,
         locked: false,
@@ -1680,6 +1743,8 @@ function buildOcrBlocksFromResponse(res) {
         translation: tr,
         sourceBox,
         targetBox: { ...sourceBox },
+        lineHeight: sourceBox.h,
+        lineCount: 1,
         bgRgb,
         fgColor,
         locked: false,
@@ -2371,6 +2436,7 @@ function bindHotkeyRecorder(inputEl, getValid, setValid) {
     const combo = [...mods, normalizedKey].join("+");
     setValid(combo);
     inputEl.value = `[ ${combo} ]`;
+    autoSaveSettings();
   });
 
   inputEl.addEventListener("blur", () => {
@@ -2400,36 +2466,36 @@ $("btnClearCache").addEventListener("click", async () => {
   setStatus("Đã xóa bộ nhớ đệm.", "ok");
 });
 
-$("btnSaveSettings").addEventListener("click", async () => {
-  const btn = $("btnSaveSettings");
-  btn.disabled = true;
-  try {
-    if (apiKeyEl.dataset.masked !== "1") {
-      const k = apiKeyEl.value.trim();
-      await invoke("set_api_key", { key: k });
+// =========================================================================
+// CƠ CHẾ TỰ ĐỘNG LƯU CÀI ĐẶT (AUTO-SAVE)
+// =========================================================================
+let saveTimeout = null;
+function autoSaveSettings() {
+  if (saveTimeout) clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(async () => {
+    try {
+      if (apiKeyEl.dataset.masked !== "1") {
+        const k = apiKeyEl.value.trim();
+        await invoke("set_api_key", { key: k });
+      }
+      await invoke("save_settings", {
+        model: modelSelect.value,
+        sourceLang: topSourceLang.value,
+        targetLang: topTargetLang.value,
+        hotkey: validHotkey,
+        imageHotkey: validImageHotkey,
+        startWithWindows: startupCheck.checked,
+      });
+      setStatus("Đã tự động lưu cài đặt.", "ok");
+    } catch (e) {
+      console.error("Lỗi tự động lưu cài đặt:", e);
     }
-    await invoke("save_settings", {
-      model: modelSelect.value,
-      sourceLang: topSourceLang.value,
-      targetLang: topTargetLang.value,
-      hotkey: validHotkey,
-      imageHotkey: validImageHotkey,
-      startWithWindows: startupCheck.checked,
-    });
-    btn.textContent = "Đã lưu ✓";
-    setStatus("Đã lưu cài đặt thành công.", "ok");
-    setTimeout(() => {
-      btn.textContent = "Lưu cài đặt";
-      closeDrawer();
-    }, 650);
-  } catch (e) {
-    const fresh = await invoke("get_state");
-    syncUiFromState(fresh);
-    alert(String(e));
-  } finally {
-    btn.disabled = false;
-  }
-});
+  }, 400);
+}
+
+apiKeyEl.addEventListener("change", autoSaveSettings);
+modelSelect.addEventListener("change", autoSaveSettings);
+startupCheck.addEventListener("change", autoSaveSettings);
 
 $("btnQuitApp").addEventListener("click", () => invoke("quit_app"));
 
@@ -2514,5 +2580,121 @@ try {
 } catch {
   /* bỏ qua */
 }
+
+// =========================================================================
+// THÔNG TIN PHIÊN BẢN & TỰ ĐỘNG CẬP NHẬT (TAURI UPDATER)
+// =========================================================================
+const appVersionText = $("appVersionText");
+const appCommitText = $("appCommitText");
+const appAuthorLink = $("appAuthorLink");
+const btnCheckUpdate = $("btnCheckUpdate");
+const iconUpdateSpin = $("iconUpdateSpin");
+const textCheckUpdate = $("textCheckUpdate");
+const updateStatusNote = $("updateStatusNote");
+
+let pendingUpdate = null;
+let isUpdating = false;
+
+// Tải thông tin phiên bản từ backend Rust
+try {
+  const info = await invoke("get_app_info");
+  if (info) {
+    if (appVersionText) appVersionText.textContent = `v${info.version}`;
+    if (appCommitText) appCommitText.textContent = `(${info.commit_hash})`;
+    if (appAuthorLink && info.repo_url) {
+      appAuthorLink.href = info.repo_url;
+      appAuthorLink.textContent = `${info.author} ↗`;
+    }
+  }
+} catch (e) {
+  console.warn("Không lấy được thông tin app info:", e);
+}
+
+// Logic kiểm tra và tải cập nhật
+async function checkForAppUpdates(isManual = false) {
+  if (isUpdating) return;
+  
+  // Nếu đã tải xong bản cập nhật và đang ở trạng thái chờ người dùng cài đặt
+  if (pendingUpdate && btnCheckUpdate.classList.contains("ready-to-install")) {
+    try {
+      textCheckUpdate.textContent = "Đang cài đặt & khởi động lại…";
+      btnCheckUpdate.disabled = true;
+      // Kích hoạt cài đặt đè bản mới
+      await pendingUpdate.install();
+    } catch (e) {
+      alert(`Lỗi khi cài đặt cập nhật: ${e}`);
+      btnCheckUpdate.disabled = false;
+      textCheckUpdate.textContent = "🚀 Cài đặt & Khởi động lại";
+    }
+    return;
+  }
+
+  const updaterModule = window.__TAURI__?.updater;
+  if (!updaterModule || !updaterModule.check) {
+    return;
+  }
+
+  isUpdating = true;
+  if (iconUpdateSpin) iconUpdateSpin.style.display = "inline-block";
+  textCheckUpdate.textContent = "Đang kiểm tra…";
+  btnCheckUpdate.disabled = true;
+
+  try {
+    const update = await updaterModule.check();
+    if (!update || !update.available) {
+      textCheckUpdate.textContent = "Bản mới nhất ✓";
+      setTimeout(() => {
+        textCheckUpdate.textContent = "Kiểm tra";
+        btnCheckUpdate.disabled = false;
+        isUpdating = false;
+      }, 3000);
+      return;
+    }
+
+    // Có bản mới! Tự động tải ngầm về máy
+    textCheckUpdate.textContent = `Tải ${update.version} (0%)`;
+
+    let downloaded = 0;
+    let contentLength = 0;
+
+    await update.download((event) => {
+      if (event.event === "Started") {
+        contentLength = event.data.contentLength || 0;
+      } else if (event.event === "Progress") {
+        downloaded += event.data.chunkLength || 0;
+        if (contentLength > 0) {
+          const pct = Math.min(100, Math.round((downloaded / contentLength) * 100));
+          textCheckUpdate.textContent = `${pct}%`;
+        }
+      } else if (event.event === "Finished") {
+        textCheckUpdate.textContent = "100%";
+      }
+    });
+
+    // Tải xong -> Đổi nút thành "Cài đặt & Khởi động lại" với màu xanh nổi bật
+    pendingUpdate = update;
+    btnCheckUpdate.classList.add("ready-to-install");
+    btnCheckUpdate.disabled = false;
+    iconUpdateSpin.textContent = "🚀";
+    textCheckUpdate.textContent = "Cài đặt & Khởi động lại";
+    setStatus(`Đã tải xong bản cập nhật ${update.version}. Mở Cài đặt để cài đặt ngay.`, "ok");
+  } catch (err) {
+    console.error("Update check error:", err);
+    textCheckUpdate.textContent = "Kiểm tra";
+    btnCheckUpdate.disabled = false;
+  } finally {
+    if (!pendingUpdate) {
+      isUpdating = false;
+    }
+  }
+}
+
+// Bắt sự kiện bấm nút kiểm tra/cài đặt
+btnCheckUpdate?.addEventListener("click", () => checkForAppUpdates(true));
+
+// Tự động kiểm tra cập nhật sau khi khởi động (delay 6 giây để không nghẽn hiệu năng mở app)
+setTimeout(() => {
+  checkForAppUpdates(false);
+}, 6000);
 
 input.focus();

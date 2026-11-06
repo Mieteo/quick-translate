@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Báo Cáo Kiểm Thử Tổng Quát - Bố Cục & Tỷ Lệ Font Chữ Dịch</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #38bdf8;
+      --pass: #4ade80;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 24px; }
+    h1 { font-size: 24px; margin-bottom: 8px; color: var(--accent); }
+    .subtitle { color: var(--text-muted); margin-bottom: 24px; font-size: 14px; }
+    .summary-bar { background: var(--card-bg); border: 1px solid var(--border); padding: 16px 20px; border-radius: 8px; margin-bottom: 24px; display: flex; gap: 32px; align-items: center; }
+    .stat { display: flex; flex-direction: column; }
+    .stat-val { font-size: 22px; font-weight: bold; color: var(--pass); }
+    .stat-label { font-size: 12px; color: var(--text-muted); }
+    .test-case { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 24px; }
+    .case-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+    .case-title { font-size: 16px; font-weight: 600; color: #fff; }
+    .badge { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; background: rgba(74, 222, 128, 0.15); color: var(--pass); border: 1px solid var(--pass); }
+    .preview-stage { position: relative; background: #2a2824; border: 1px dashed var(--border); border-radius: 6px; padding: 20px; min-height: 120px; margin-top: 12px; overflow: auto; }
+    .callout-box { background: rgba(255, 255, 255, 0.95); color: #1e293b; padding: 6px 10px; border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); line-height: 1.25; margin-bottom: 12px; display: inline-block; }
+    .heading-box { border-left: 4px solid #3b82f6; }
+    .para-box { border-left: 4px solid #10b981; }
+    .metrics { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
+    .metrics b { color: #f1f5f9; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
+    th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--border); }
+    th { color: var(--text-muted); font-weight: 500; }
+  </style>
+</head>
+<body>
+  <h1>Báo Cáo Kiểm Thử Tự Động Tổng Quát</h1>
+  <div class="subtitle">Kiểm chứng quy tắc bảo toàn thứ bậc cỡ chữ (Font Hierarchy Invariant) và ổn định đa tỷ lệ zoom</div>
+
+  <div class="summary-bar">
+    <div class="stat">
+      <span class="stat-val">29 / 29</span>
+      <span class="stat-label">Tổng số bài test Passed</span>
+    </div>
+    <div class="stat">
+      <span class="stat-val">100%</span>
+      <span class="stat-label">Tỷ lệ thành công</span>
+    </div>
+    <div class="stat">
+      <span class="stat-val">5 Ca test</span>
+      <span class="stat-label">Bao phủ Commit, Website, Banner, Button</span>
+    </div>
+  </div>
+
+  <!-- Case 1 -->
+  <div class="test-case">
+    <div class="case-header">
+      <span class="case-title">Ca 1: Dòng commit đơn lẻ có icon</span>
+      <span class="badge">PASS (isSingleLine: true)</span>
+    </div>
+    <p class="metrics">Chiều cao dòng gốc: <b>18px</b> | Số dòng: <b>1</b> | Cỡ chữ dịch: <b>13.0px</b></p>
+    <div class="preview-stage">
+      <div class="callout-box heading-box" style="font-size: 13px; font-weight: 500;">
+        Sửa dung sai xoay footprint quanh 90 độ
+      </div>
+    </div>
+  </div>
+
+  <!-- Case 2 -->
+  <div class="test-case">
+    <div class="case-header">
+      <span class="case-title">Ca 2: Danh sách commit nhiều dòng độc lập</span>
+      <span class="badge">PASS (Delta font: 0px)</span>
+    </div>
+    <div class="preview-stage">
+      <div class="callout-box heading-box" style="font-size: 13px; font-weight: 500; display: block; width: fit-content;">
+        Sửa lỗi độ lệch vùng loại trừ khi cắt xén footprint
+      </div>
+      <div class="callout-box heading-box" style="font-size: 13px; font-weight: 500; display: block; width: fit-content;">
+        Sửa lỗi xử lý tọa độ khi xuất khung hình đã xoay
+      </div>
+    </div>
+  </div>
+
+  <!-- Case 3 -->
+  <div class="test-case">
+    <div class="case-header">
+      <span class="case-title">Ca 3: Thẻ website 3 cột (Tiêu đề lớn + Đoạn văn nhiều dòng)</span>
+      <span class="badge">PASS (Heading 14.4px >= Paragraph 9.7px)</span>
+    </div>
+    <div class="metrics">Khắc phục hoàn toàn lỗi đảo ngược font: Tiêu đề luôn lớn hơn đoạn văn tương ứng!</div>
+    <div class="preview-stage" style="display: flex; gap: 24px;">
+      <div style="flex: 1;">
+        <div class="callout-box heading-box" style="font-size: 14.4px; font-weight: 700; width: 100%;">Giới thiệu Fathom™</div>
+        <div class="callout-box para-box" style="font-size: 9.7px; width: 100%;">Chiếc xe điện mà bạn hằng mong đợi đang trên đường ra mắt, với mức giá bán lẻ đề xuất (MSRP) từ 28.350 đô la 011 đi kèm pin tiêu chuẩn.</div>
+      </div>
+      <div style="flex: 1;">
+        <div class="callout-box heading-box" style="font-size: 14.4px; font-weight: 700; width: 100%;">Phụ tùng chính hãng. Chuyên gia thực thụ. Cực kỳ dễ dàng.</div>
+        <div class="callout-box para-box" style="font-size: 9.7px; width: 100%;">Đó là điều khiến chúng tôi trở thành lựa chọn tốt nhất để bảo dưỡng chiếc Ford của bạn. Chúng tôi luôn hỗ trợ Nate và cả bạn nữa. Chúng tôi cũng có cả cà phê ngon nữa đấy.</div>
+      </div>
+      <div style="flex: 1;">
+        <div class="callout-box heading-box" style="font-size: 14.4px; font-weight: 700; width: 100%;">Nhận & Giao xe</div>
+        <div class="callout-box para-box" style="font-size: 9.7px; width: 100%;">Hãy để đại lý của chúng tôi đến nhận, bảo dưỡng và trả xe tận nơi cho bạn. Hoàn toàn miễn phí.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Case 4 & 5 -->
+  <div class="test-case">
+    <div class="case-header">
+      <span class="case-title">Ca 4 & 5: Banner khổ lớn & Nút bấm nhỏ</span>
+      <span class="badge">PASS (Title 30.2px > Subtitle 13.0px)</span>
+    </div>
+    <div class="preview-stage">
+      <div class="callout-box heading-box" style="font-size: 30.2px; font-weight: 700; display: block; width: fit-content;">DỊCH MÀN HÌNH SIÊU NHANH</div>
+      <div class="callout-box" style="font-size: 13.0px; color: #475569; display: block; width: fit-content;">Dịch bất kỳ văn bản nào trên máy tính theo thời gian thực với AI và OCR nội bộ</div>
+      <div class="callout-box" style="font-size: 15.8px; font-weight: 600; background: #3b82f6; color: white; margin-top: 10px; display: inline-block;">Tải ngay</div>
+    </div>
+  </div>
+</body>
+</html>

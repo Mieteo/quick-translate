@@ -1,0 +1,2149 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Test Report — generated_fixtures (398 case)</title>
+<style>
+  body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 16px; background:#0f172a; color:#e2e8f0; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  .sub { color:#94a3b8; margin-bottom: 12px; font-size: 13px; }
+  .filters { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px; align-items:center; }
+  select, button { background:#1e293b; color:#e2e8f0; border:1px solid #334155; border-radius:6px; padding:6px 10px; font-size:13px; }
+  .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap:14px; }
+  .card { background:#1e293b; border:1px solid #334155; border-radius:10px; padding:10px; }
+  .meta { font-size:12px; color:#94a3b8; margin-bottom:6px; }
+  .imgwrap { overflow-x:auto; background:#fff; border-radius:6px; }
+  .imgwrap img { display:block; max-width:none; }
+  .tr { font-size:12px; color:#cbd5e1; margin-top:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+</style>
+</head>
+<body>
+<h1>Báo cáo trực quan — bộ dữ liệu test tự sinh</h1>
+<div class="sub">398 case · nhãn xanh lá = ground-truth box (pixel-exact) · sinh bởi build_report.py</div>
+<div class="filters">
+  <label>Nhóm: <select id="fcat"><option value="">Tất cả</option><option value="badge">badge</option>
+<option value="banner">banner</option>
+<option value="cards">cards</option>
+<option value="chat">chat</option>
+<option value="code">code</option>
+<option value="full">full</option>
+<option value="list">list</option>
+<option value="narrow">narrow</option>
+<option value="para">para</option>
+<option value="prefix">prefix</option>
+<option value="single">single</option>
+<option value="title">title</option>
+<option value="webarticle">webarticle</option>
+<option value="webcards">webcards</option>
+<option value="webforum">webforum</option>
+<option value="webgrid">webgrid</option>
+<option value="weblanding">weblanding</option>
+<option value="webnews">webnews</option>
+<option value="webpoll">webpoll</option>
+<option value="webproduct">webproduct</option>
+<option value="webranked">webranked</option></select></label>
+  <label>Ngôn ngữ: <select id="flang"><option value="">Tất cả</option><option value="de">de</option>
+<option value="en">en</option>
+<option value="ja">ja</option>
+<option value="ko">ko</option>
+<option value="ru">ru</option>
+<option value="vi">vi</option>
+<option value="zh">zh</option>
+<option value="zht">zht</option></select></label>
+  <label>Số khối: <select id="fblocks"><option value="">Tất cả</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5+">5+</option></select></label>
+  <button onclick="resetF()">Reset</button>
+  <span id="count" style="color:#94a3b8;font-size:13px"></span>
+</div>
+<div class="grid">
+<div class="card" data-cat="badge" data-lang="en" data-blocks="1">
+  <div class="meta"><b>gen001_badge_en</b> · badge · en · 172×72 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen001_badge_en.png" alt="gen001_badge_en"></div>
+  <div class="tr" title="Cài đặt">→ Cài đặt</div>
+</div>
+<div class="card" data-cat="badge" data-lang="vi" data-blocks="1">
+  <div class="meta"><b>gen002_badge_vi</b> · badge · vi · 177×74 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen002_badge_vi.png" alt="gen002_badge_vi"></div>
+  <div class="tr" title="Cài đặt">→ Cài đặt</div>
+</div>
+<div class="card" data-cat="badge" data-lang="de" data-blocks="1">
+  <div class="meta"><b>gen003_badge_de</b> · badge · de · 179×66 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen003_badge_de.png" alt="gen003_badge_de"></div>
+  <div class="tr" title="Lưu">→ Lưu</div>
+</div>
+<div class="card" data-cat="badge" data-lang="ru" data-blocks="1">
+  <div class="meta"><b>gen004_badge_ru</b> · badge · ru · 171×69 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen004_badge_ru.png" alt="gen004_badge_ru"></div>
+  <div class="tr" title="Hủy">→ Hủy</div>
+</div>
+<div class="card" data-cat="badge" data-lang="ko" data-blocks="1">
+  <div class="meta"><b>gen005_badge_ko</b> · badge · ko · 163×75 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen005_badge_ko.png" alt="gen005_badge_ko"></div>
+  <div class="tr" title="Trợ giúp">→ Trợ giúp</div>
+</div>
+<div class="card" data-cat="badge" data-lang="ja" data-blocks="1">
+  <div class="meta"><b>gen006_badge_ja</b> · badge · ja · 130×64 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen006_badge_ja.png" alt="gen006_badge_ja"></div>
+  <div class="tr" title="Cài đặt">→ Cài đặt</div>
+</div>
+<div class="card" data-cat="badge" data-lang="zh" data-blocks="1">
+  <div class="meta"><b>gen007_badge_zh</b> · badge · zh · 142×75 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen007_badge_zh.png" alt="gen007_badge_zh"></div>
+  <div class="tr" title="Lưu">→ Lưu</div>
+</div>
+<div class="card" data-cat="badge" data-lang="zht" data-blocks="1">
+  <div class="meta"><b>gen008_badge_zht</b> · badge · zht · 136×71 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen008_badge_zht.png" alt="gen008_badge_zht"></div>
+  <div class="tr" title="Hủy">→ Hủy</div>
+</div>
+<div class="card" data-cat="badge" data-lang="en" data-blocks="1">
+  <div class="meta"><b>gen009_badge_en</b> · badge · en · 146×67 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen009_badge_en.png" alt="gen009_badge_en"></div>
+  <div class="tr" title="Tìm kiếm">→ Tìm kiếm</div>
+</div>
+<div class="card" data-cat="badge" data-lang="vi" data-blocks="1">
+  <div class="meta"><b>gen010_badge_vi</b> · badge · vi · 140×73 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen010_badge_vi.png" alt="gen010_badge_vi"></div>
+  <div class="tr" title="Lưu">→ Lưu</div>
+</div>
+<div class="card" data-cat="badge" data-lang="de" data-blocks="1">
+  <div class="meta"><b>gen011_badge_de</b> · badge · de · 141×68 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen011_badge_de.png" alt="gen011_badge_de"></div>
+  <div class="tr" title="Trợ giúp">→ Trợ giúp</div>
+</div>
+<div class="card" data-cat="badge" data-lang="ru" data-blocks="1">
+  <div class="meta"><b>gen012_badge_ru</b> · badge · ru · 162×64 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen012_badge_ru.png" alt="gen012_badge_ru"></div>
+  <div class="tr" title="Trợ giúp">→ Trợ giúp</div>
+</div>
+<div class="card" data-cat="badge" data-lang="ko" data-blocks="1">
+  <div class="meta"><b>gen013_badge_ko</b> · badge · ko · 138×72 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen013_badge_ko.png" alt="gen013_badge_ko"></div>
+  <div class="tr" title="Cài đặt">→ Cài đặt</div>
+</div>
+<div class="card" data-cat="badge" data-lang="ja" data-blocks="1">
+  <div class="meta"><b>gen014_badge_ja</b> · badge · ja · 196×65 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen014_badge_ja.png" alt="gen014_badge_ja"></div>
+  <div class="tr" title="Tải xuống">→ Tải xuống</div>
+</div>
+<div class="card" data-cat="badge" data-lang="zh" data-blocks="1">
+  <div class="meta"><b>gen015_badge_zh</b> · badge · zh · 130×66 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen015_badge_zh.png" alt="gen015_badge_zh"></div>
+  <div class="tr" title="Lưu">→ Lưu</div>
+</div>
+<div class="card" data-cat="badge" data-lang="zht" data-blocks="1">
+  <div class="meta"><b>gen016_badge_zht</b> · badge · zht · 134×69 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen016_badge_zht.png" alt="gen016_badge_zht"></div>
+  <div class="tr" title="Trợ giúp">→ Trợ giúp</div>
+</div>
+<div class="card" data-cat="badge" data-lang="en" data-blocks="1">
+  <div class="meta"><b>gen017_badge_en</b> · badge · en · 142×72 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen017_badge_en.png" alt="gen017_badge_en"></div>
+  <div class="tr" title="Trợ giúp">→ Trợ giúp</div>
+</div>
+<div class="card" data-cat="badge" data-lang="vi" data-blocks="1">
+  <div class="meta"><b>gen018_badge_vi</b> · badge · vi · 203×73 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen018_badge_vi.png" alt="gen018_badge_vi"></div>
+  <div class="tr" title="Tải xuống">→ Tải xuống</div>
+</div>
+<div class="card" data-cat="badge" data-lang="de" data-blocks="1">
+  <div class="meta"><b>gen019_badge_de</b> · badge · de · 185×62 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen019_badge_de.png" alt="gen019_badge_de"></div>
+  <div class="tr" title="Cài đặt">→ Cài đặt</div>
+</div>
+<div class="card" data-cat="badge" data-lang="ru" data-blocks="1">
+  <div class="meta"><b>gen020_badge_ru</b> · badge · ru · 167×67 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen020_badge_ru.png" alt="gen020_badge_ru"></div>
+  <div class="tr" title="Hủy">→ Hủy</div>
+</div>
+<div class="card" data-cat="badge" data-lang="ko" data-blocks="1">
+  <div class="meta"><b>gen021_badge_ko</b> · badge · ko · 144×76 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen021_badge_ko.png" alt="gen021_badge_ko"></div>
+  <div class="tr" title="Tìm kiếm">→ Tìm kiếm</div>
+</div>
+<div class="card" data-cat="badge" data-lang="ja" data-blocks="1">
+  <div class="meta"><b>gen022_badge_ja</b> · badge · ja · 138×68 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen022_badge_ja.png" alt="gen022_badge_ja"></div>
+  <div class="tr" title="Lưu">→ Lưu</div>
+</div>
+<div class="card" data-cat="badge" data-lang="zh" data-blocks="1">
+  <div class="meta"><b>gen023_badge_zh</b> · badge · zh · 144×76 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen023_badge_zh.png" alt="gen023_badge_zh"></div>
+  <div class="tr" title="Hủy">→ Hủy</div>
+</div>
+<div class="card" data-cat="badge" data-lang="zht" data-blocks="1">
+  <div class="meta"><b>gen024_badge_zht</b> · badge · zht · 138×72 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen024_badge_zht.png" alt="gen024_badge_zht"></div>
+  <div class="tr" title="Trợ giúp">→ Trợ giúp</div>
+</div>
+<div class="card" data-cat="single" data-lang="en" data-blocks="1">
+  <div class="meta"><b>gen025_single_en</b> · single · en · 300×46 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen025_single_en.png" alt="gen025_single_en"></div>
+  <div class="tr" title="Xóa import không sử dụng">→ Xóa import không sử dụng</div>
+</div>
+<div class="card" data-cat="single" data-lang="vi" data-blocks="1">
+  <div class="meta"><b>gen026_single_vi</b> · single · vi · 300×44 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen026_single_vi.png" alt="gen026_single_vi"></div>
+  <div class="tr" title="Quá thờ̀i gian chờ kết nối">→ Quá thờ̀i gian chờ kết nối</div>
+</div>
+<div class="card" data-cat="single" data-lang="de" data-blocks="1">
+  <div class="meta"><b>gen027_single_de</b> · single · de · 300×41 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen027_single_de.png" alt="gen027_single_de"></div>
+  <div class="tr" title="Cập nhật phiên bản thư viện phụ thuộc">→ Cập nhật phiên bản thư viện phụ thuộc</div>
+</div>
+<div class="card" data-cat="single" data-lang="ru" data-blocks="1">
+  <div class="meta"><b>gen028_single_ru</b> · single · ru · 308×33 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen028_single_ru.png" alt="gen028_single_ru"></div>
+  <div class="tr" title="Sửa vòng lặp chuyển hướng đăng nhập">→ Sửa vòng lặp chuyển hướng đăng nhập</div>
+</div>
+<div class="card" data-cat="single" data-lang="ko" data-blocks="1">
+  <div class="meta"><b>gen029_single_ko</b> · single · ko · 300×39 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen029_single_ko.png" alt="gen029_single_ko"></div>
+  <div class="tr" title="Sửa vòng lặp chuyển hướng đăng nhập">→ Sửa vòng lặp chuyển hướng đăng nhập</div>
+</div>
+<div class="card" data-cat="single" data-lang="ja" data-blocks="1">
+  <div class="meta"><b>gen030_single_ja</b> · single · ja · 300×41 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen030_single_ja.png" alt="gen030_single_ja"></div>
+  <div class="tr" title="Cập nhật phiên bản thư viện phụ thuộc">→ Cập nhật phiên bản thư viện phụ thuộc</div>
+</div>
+<div class="card" data-cat="single" data-lang="zh" data-blocks="1">
+  <div class="meta"><b>gen031_single_zh</b> · single · zh · 300×46 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen031_single_zh.png" alt="gen031_single_zh"></div>
+  <div class="tr" title="Xóa import không sử dụng">→ Xóa import không sử dụng</div>
+</div>
+<div class="card" data-cat="single" data-lang="zht" data-blocks="1">
+  <div class="meta"><b>gen032_single_zht</b> · single · zht · 300×41 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen032_single_zht.png" alt="gen032_single_zht"></div>
+  <div class="tr" title="Đã lưu tệp thành công">→ Đã lưu tệp thành công</div>
+</div>
+<div class="card" data-cat="single" data-lang="en" data-blocks="1">
+  <div class="meta"><b>gen033_single_en</b> · single · en · 300×36 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen033_single_en.png" alt="gen033_single_en"></div>
+  <div class="tr" title="Đã lưu tệp thành công">→ Đã lưu tệp thành công</div>
+</div>
+<div class="card" data-cat="single" data-lang="vi" data-blocks="1">
+  <div class="meta"><b>gen034_single_vi</b> · single · vi · 300×44 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen034_single_vi.png" alt="gen034_single_vi"></div>
+  <div class="tr" title="Quá thờ̀i gian chờ kết nối">→ Quá thờ̀i gian chờ kết nối</div>
+</div>
+<div class="card" data-cat="single" data-lang="de" data-blocks="1">
+  <div class="meta"><b>gen035_single_de</b> · single · de · 300×33 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen035_single_de.png" alt="gen035_single_de"></div>
+  <div class="tr" title="Cập nhật phiên bản thư viện phụ thuộc">→ Cập nhật phiên bản thư viện phụ thuộc</div>
+</div>
+<div class="card" data-cat="single" data-lang="ru" data-blocks="1">
+  <div class="meta"><b>gen036_single_ru</b> · single · ru · 338×33 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen036_single_ru.png" alt="gen036_single_ru"></div>
+  <div class="tr" title="Sửa vòng lặp chuyển hướng đăng nhập">→ Sửa vòng lặp chuyển hướng đăng nhập</div>
+</div>
+<div class="card" data-cat="single" data-lang="ko" data-blocks="1">
+  <div class="meta"><b>gen037_single_ko</b> · single · ko · 300×41 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen037_single_ko.png" alt="gen037_single_ko"></div>
+  <div class="tr" title="Quá thờ̀i gian chờ kết nối">→ Quá thờ̀i gian chờ kết nối</div>
+</div>
+<div class="card" data-cat="single" data-lang="ja" data-blocks="1">
+  <div class="meta"><b>gen038_single_ja</b> · single · ja · 300×36 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen038_single_ja.png" alt="gen038_single_ja"></div>
+  <div class="tr" title="Thêm chế độ nền tối">→ Thêm chế độ nền tối</div>
+</div>
+<div class="card" data-cat="single" data-lang="zh" data-blocks="1">
+  <div class="meta"><b>gen039_single_zh</b> · single · zh · 300×46 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen039_single_zh.png" alt="gen039_single_zh"></div>
+  <div class="tr" title="Sửa vòng lặp chuyển hướng đăng nhập">→ Sửa vòng lặp chuyển hướng đăng nhập</div>
+</div>
+<div class="card" data-cat="single" data-lang="zht" data-blocks="1">
+  <div class="meta"><b>gen040_single_zht</b> · single · zht · 300×44 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen040_single_zht.png" alt="gen040_single_zht"></div>
+  <div class="tr" title="Thêm chế độ nền tối">→ Thêm chế độ nền tối</div>
+</div>
+<div class="card" data-cat="single" data-lang="en" data-blocks="1">
+  <div class="meta"><b>gen041_single_en</b> · single · en · 300×44 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen041_single_en.png" alt="gen041_single_en"></div>
+  <div class="tr" title="Cập nhật phiên bản thư viện phụ thuộc">→ Cập nhật phiên bản thư viện phụ thuộc</div>
+</div>
+<div class="card" data-cat="single" data-lang="vi" data-blocks="1">
+  <div class="meta"><b>gen042_single_vi</b> · single · vi · 311×33 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen042_single_vi.png" alt="gen042_single_vi"></div>
+  <div class="tr" title="Cập nhật phiên bản thư viện phụ thuộc">→ Cập nhật phiên bản thư viện phụ thuộc</div>
+</div>
+<div class="card" data-cat="single" data-lang="de" data-blocks="1">
+  <div class="meta"><b>gen043_single_de</b> · single · de · 300×36 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen043_single_de.png" alt="gen043_single_de"></div>
+  <div class="tr" title="Quá thờ̀i gian chờ kết nối">→ Quá thờ̀i gian chờ kết nối</div>
+</div>
+<div class="card" data-cat="single" data-lang="ru" data-blocks="1">
+  <div class="meta"><b>gen044_single_ru</b> · single · ru · 368×41 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen044_single_ru.png" alt="gen044_single_ru"></div>
+  <div class="tr" title="Sửa vòng lặp chuyển hướng đăng nhập">→ Sửa vòng lặp chuyển hướng đăng nhập</div>
+</div>
+<div class="card" data-cat="single" data-lang="ko" data-blocks="1">
+  <div class="meta"><b>gen045_single_ko</b> · single · ko · 300×39 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen045_single_ko.png" alt="gen045_single_ko"></div>
+  <div class="tr" title="Quá thờ̀i gian chờ kết nối">→ Quá thờ̀i gian chờ kết nối</div>
+</div>
+<div class="card" data-cat="single" data-lang="ja" data-blocks="1">
+  <div class="meta"><b>gen046_single_ja</b> · single · ja · 300×33 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen046_single_ja.png" alt="gen046_single_ja"></div>
+  <div class="tr" title="Thêm chế độ nền tối">→ Thêm chế độ nền tối</div>
+</div>
+<div class="card" data-cat="single" data-lang="zh" data-blocks="1">
+  <div class="meta"><b>gen047_single_zh</b> · single · zh · 300×39 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen047_single_zh.png" alt="gen047_single_zh"></div>
+  <div class="tr" title="Quá thờ̀i gian chờ kết nối">→ Quá thờ̀i gian chờ kết nối</div>
+</div>
+<div class="card" data-cat="single" data-lang="zht" data-blocks="1">
+  <div class="meta"><b>gen048_single_zht</b> · single · zht · 300×33 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen048_single_zht.png" alt="gen048_single_zht"></div>
+  <div class="tr" title="Cập nhật phiên bản thư viện phụ thuộc">→ Cập nhật phiên bản thư viện phụ thuộc</div>
+</div>
+<div class="card" data-cat="list" data-lang="en" data-blocks="2">
+  <div class="meta"><b>gen049_list_en</b> · list · en · 205×88 · 2 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen049_list_en.png" alt="gen049_list_en"></div>
+  <div class="tr" title="Đã lưu tệp thành công">→ Đã lưu tệp thành công</div>
+</div>
+<div class="card" data-cat="list" data-lang="vi" data-blocks="2">
+  <div class="meta"><b>gen050_list_vi</b> · list · vi · 249×89 · 2 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen050_list_vi.png" alt="gen050_list_vi"></div>
+  <div class="tr" title="Xóa import không sử dụng">→ Xóa import không sử dụng</div>
+</div>
+<div class="card" data-cat="list" data-lang="de" data-blocks="4">
+  <div class="meta"><b>gen051_list_de</b> · list · de · 283×133 · 4 khối / 4 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen051_list_de.png" alt="gen051_list_de"></div>
+  <div class="tr" title="Sửa vòng lặp chuyển hướng đăng nhập">→ Sửa vòng lặp chuyển hướng đăng nhập</div>
+</div>
+<div class="card" data-cat="list" data-lang="ru" data-blocks="3">
+  <div class="meta"><b>gen052_list_ru</b> · list · ru · 383×103 · 3 khối / 3 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen052_list_ru.png" alt="gen052_list_ru"></div>
+  <div class="tr" title="Xóa import không sử dụng">→ Xóa import không sử dụng</div>
+</div>
+<div class="card" data-cat="list" data-lang="ko" data-blocks="3">
+  <div class="meta"><b>gen053_list_ko</b> · list · ko · 231×110 · 3 khối / 3 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen053_list_ko.png" alt="gen053_list_ko"></div>
+  <div class="tr" title="Quá thờ̀i gian chờ kết nối">→ Quá thờ̀i gian chờ kết nối</div>
+</div>
+<div class="card" data-cat="list" data-lang="ja" data-blocks="4">
+  <div class="meta"><b>gen054_list_ja</b> · list · ja · 356×143 · 4 khối / 4 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen054_list_ja.png" alt="gen054_list_ja"></div>
+  <div class="tr" title="Sửa vòng lặp chuyển hướng đăng nhập">→ Sửa vòng lặp chuyển hướng đăng nhập</div>
+</div>
+<div class="card" data-cat="list" data-lang="zh" data-blocks="5">
+  <div class="meta"><b>gen055_list_zh</b> · list · zh · 177×179 · 5 khối / 5 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen055_list_zh.png" alt="gen055_list_zh"></div>
+  <div class="tr" title="Quá thờ̀i gian chờ kết nối">→ Quá thờ̀i gian chờ kết nối</div>
+</div>
+<div class="card" data-cat="list" data-lang="zht" data-blocks="3">
+  <div class="meta"><b>gen056_list_zht</b> · list · zht · 240×119 · 3 khối / 3 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen056_list_zht.png" alt="gen056_list_zht"></div>
+  <div class="tr" title="Xóa import không sử dụng">→ Xóa import không sử dụng</div>
+</div>
+<div class="card" data-cat="list" data-lang="en" data-blocks="2">
+  <div class="meta"><b>gen057_list_en</b> · list · en · 207×81 · 2 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen057_list_en.png" alt="gen057_list_en"></div>
+  <div class="tr" title="Sửa vòng lặp chuyển hướng đăng nhập">→ Sửa vòng lặp chuyển hướng đăng nhập</div>
+</div>
+<div class="card" data-cat="list" data-lang="vi" data-blocks="2">
+  <div class="meta"><b>gen058_list_vi</b> · list · vi · 242×68 · 2 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen058_list_vi.png" alt="gen058_list_vi"></div>
+  <div class="tr" title="Đã lưu tệp thành công">→ Đã lưu tệp thành công</div>
+</div>
+<div class="card" data-cat="list" data-lang="de" data-blocks="5">
+  <div class="meta"><b>gen059_list_de</b> · list · de · 283×157 · 5 khối / 5 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen059_list_de.png" alt="gen059_list_de"></div>
+  <div class="tr" title="Đã lưu tệp thành công">→ Đã lưu tệp thành công</div>
+</div>
+<div class="card" data-cat="list" data-lang="ru" data-blocks="5">
+  <div class="meta"><b>gen060_list_ru</b> · list · ru · 373×194 · 5 khối / 5 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen060_list_ru.png" alt="gen060_list_ru"></div>
+  <div class="tr" title="Xóa import không sử dụng">→ Xóa import không sử dụng</div>
+</div>
+<div class="card" data-cat="list" data-lang="ko" data-blocks="4">
+  <div class="meta"><b>gen061_list_ko</b> · list · ko · 255×164 · 4 khối / 4 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen061_list_ko.png" alt="gen061_list_ko"></div>
+  <div class="tr" title="Quá thờ̀i gian chờ kết nối">→ Quá thờ̀i gian chờ kết nối</div>
+</div>
+<div class="card" data-cat="list" data-lang="ja" data-blocks="2">
+  <div class="meta"><b>gen062_list_ja</b> · list · ja · 282×73 · 2 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen062_list_ja.png" alt="gen062_list_ja"></div>
+  <div class="tr" title="Thêm chế độ nền tối">→ Thêm chế độ nền tối</div>
+</div>
+<div class="card" data-cat="list" data-lang="zh" data-blocks="2">
+  <div class="meta"><b>gen063_list_zh</b> · list · zh · 178×78 · 2 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen063_list_zh.png" alt="gen063_list_zh"></div>
+  <div class="tr" title="Cập nhật phiên bản thư viện phụ thuộc">→ Cập nhật phiên bản thư viện phụ thuộc</div>
+</div>
+<div class="card" data-cat="list" data-lang="zht" data-blocks="5">
+  <div class="meta"><b>gen064_list_zht</b> · list · zht · 190×171 · 5 khối / 5 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen064_list_zht.png" alt="gen064_list_zht"></div>
+  <div class="tr" title="Đã lưu tệp thành công">→ Đã lưu tệp thành công</div>
+</div>
+<div class="card" data-cat="list" data-lang="en" data-blocks="2">
+  <div class="meta"><b>gen065_list_en</b> · list · en · 247×84 · 2 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen065_list_en.png" alt="gen065_list_en"></div>
+  <div class="tr" title="Thêm chế độ nền tối">→ Thêm chế độ nền tối</div>
+</div>
+<div class="card" data-cat="list" data-lang="vi" data-blocks="5">
+  <div class="meta"><b>gen066_list_vi</b> · list · vi · 317×200 · 5 khối / 5 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen066_list_vi.png" alt="gen066_list_vi"></div>
+  <div class="tr" title="Cập nhật phiên bản thư viện phụ thuộc">→ Cập nhật phiên bản thư viện phụ thuộc</div>
+</div>
+<div class="card" data-cat="list" data-lang="de" data-blocks="5">
+  <div class="meta"><b>gen067_list_de</b> · list · de · 290×136 · 5 khối / 5 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen067_list_de.png" alt="gen067_list_de"></div>
+  <div class="tr" title="Quá thờ̀i gian chờ kết nối">→ Quá thờ̀i gian chờ kết nối</div>
+</div>
+<div class="card" data-cat="list" data-lang="ru" data-blocks="2">
+  <div class="meta"><b>gen068_list_ru</b> · list · ru · 349×67 · 2 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen068_list_ru.png" alt="gen068_list_ru"></div>
+  <div class="tr" title="Quá thờ̀i gian chờ kết nối">→ Quá thờ̀i gian chờ kết nối</div>
+</div>
+<div class="card" data-cat="prefix" data-lang="en" data-blocks="5">
+  <div class="meta"><b>gen069_prefix_en</b> · prefix · en · 445×217 · 5 khối / 5 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen069_prefix_en.png" alt="gen069_prefix_en"></div>
+  <div class="tr" title="Thêm chế độ nền tối">→ Thêm chế độ nền tối</div>
+</div>
+<div class="card" data-cat="prefix" data-lang="vi" data-blocks="5">
+  <div class="meta"><b>gen070_prefix_vi</b> · prefix · vi · 460×188 · 5 khối / 5 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen070_prefix_vi.png" alt="gen070_prefix_vi"></div>
+  <div class="tr" title="Đã lưu tệp thành công">→ Đã lưu tệp thành công</div>
+</div>
+<div class="card" data-cat="prefix" data-lang="ru" data-blocks="8">
+  <div class="meta"><b>gen071_prefix_ru</b> · prefix · ru · 517×261 · 8 khối / 8 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen071_prefix_ru.png" alt="gen071_prefix_ru"></div>
+  <div class="tr" title="Quá thờ̀i gian chờ kết nối">→ Quá thờ̀i gian chờ kết nối</div>
+</div>
+<div class="card" data-cat="prefix" data-lang="de" data-blocks="4">
+  <div class="meta"><b>gen072_prefix_de</b> · prefix · de · 461×129 · 4 khối / 4 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen072_prefix_de.png" alt="gen072_prefix_de"></div>
+  <div class="tr" title="Đã lưu tệp thành công">→ Đã lưu tệp thành công</div>
+</div>
+<div class="card" data-cat="prefix" data-lang="en" data-blocks="8">
+  <div class="meta"><b>gen073_prefix_en</b> · prefix · en · 455×309 · 8 khối / 8 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen073_prefix_en.png" alt="gen073_prefix_en"></div>
+  <div class="tr" title="Quá thờ̀i gian chờ kết nối">→ Quá thờ̀i gian chờ kết nối</div>
+</div>
+<div class="card" data-cat="prefix" data-lang="vi" data-blocks="7">
+  <div class="meta"><b>gen074_prefix_vi</b> · prefix · vi · 488×235 · 7 khối / 7 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen074_prefix_vi.png" alt="gen074_prefix_vi"></div>
+  <div class="tr" title="Sửa vòng lặp chuyển hướng đăng nhập">→ Sửa vòng lặp chuyển hướng đăng nhập</div>
+</div>
+<div class="card" data-cat="prefix" data-lang="ru" data-blocks="7">
+  <div class="meta"><b>gen075_prefix_ru</b> · prefix · ru · 501×242 · 7 khối / 7 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen075_prefix_ru.png" alt="gen075_prefix_ru"></div>
+  <div class="tr" title="Cập nhật phiên bản thư viện phụ thuộc">→ Cập nhật phiên bản thư viện phụ thuộc</div>
+</div>
+<div class="card" data-cat="prefix" data-lang="de" data-blocks="9">
+  <div class="meta"><b>gen076_prefix_de</b> · prefix · de · 474×302 · 9 khối / 9 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen076_prefix_de.png" alt="gen076_prefix_de"></div>
+  <div class="tr" title="Xóa import không sử dụng">→ Xóa import không sử dụng</div>
+</div>
+<div class="card" data-cat="prefix" data-lang="en" data-blocks="6">
+  <div class="meta"><b>gen077_prefix_en</b> · prefix · en · 449×252 · 6 khối / 6 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen077_prefix_en.png" alt="gen077_prefix_en"></div>
+  <div class="tr" title="Quá thờ̀i gian chờ kết nối">→ Quá thờ̀i gian chờ kết nối</div>
+</div>
+<div class="card" data-cat="prefix" data-lang="vi" data-blocks="5">
+  <div class="meta"><b>gen078_prefix_vi</b> · prefix · vi · 460×164 · 5 khối / 5 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen078_prefix_vi.png" alt="gen078_prefix_vi"></div>
+  <div class="tr" title="Xóa import không sử dụng">→ Xóa import không sử dụng</div>
+</div>
+<div class="card" data-cat="prefix" data-lang="ru" data-blocks="7">
+  <div class="meta"><b>gen079_prefix_ru</b> · prefix · ru · 536×281 · 7 khối / 7 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen079_prefix_ru.png" alt="gen079_prefix_ru"></div>
+  <div class="tr" title="Sửa vòng lặp chuyển hướng đăng nhập">→ Sửa vòng lặp chuyển hướng đăng nhập</div>
+</div>
+<div class="card" data-cat="prefix" data-lang="de" data-blocks="4">
+  <div class="meta"><b>gen080_prefix_de</b> · prefix · de · 482×130 · 4 khối / 4 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen080_prefix_de.png" alt="gen080_prefix_de"></div>
+  <div class="tr" title="Cập nhật phiên bản thư viện phụ thuộc">→ Cập nhật phiên bản thư viện phụ thuộc</div>
+</div>
+<div class="card" data-cat="para" data-lang="en" data-blocks="1">
+  <div class="meta"><b>gen081_para_en</b> · para · en · 307×101 · 1 khối / 3 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen081_para_en.png" alt="gen081_para_en"></div>
+  <div class="tr" title="Gói cài đặt bao gồm mọi thành phần cần thiết và có thể chạy không cần kết nối internet.">→ Gói cài đặt bao gồm mọi thành phần cần thiết và có thể chạy không cần kết nối internet.</div>
+</div>
+<div class="card" data-cat="para" data-lang="vi" data-blocks="1">
+  <div class="meta"><b>gen082_para_vi</b> · para · vi · 402×67 · 1 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen082_para_vi.png" alt="gen082_para_vi"></div>
+  <div class="tr" title="Nhấn nút bên dưới để bắt đầu quá trình chuyển đổi. Việc này có thể mất vài phút tùy theo dung lượng dữ liệu.">→ Nhấn nút bên dưới để bắt đầu quá trình chuyển đổi. Việc này có thể mất vài phút tùy theo d</div>
+</div>
+<div class="card" data-cat="para" data-lang="de" data-blocks="1">
+  <div class="meta"><b>gen083_para_de</b> · para · de · 414×84 · 1 khối / 3 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen083_para_de.png" alt="gen083_para_de"></div>
+  <div class="tr" title="Nhấn nút bên dưới để bắt đầu quá trình chuyển đổi. Việc này có thể mất vài phút tùy theo dung lượng dữ liệu.">→ Nhấn nút bên dưới để bắt đầu quá trình chuyển đổi. Việc này có thể mất vài phút tùy theo d</div>
+</div>
+<div class="card" data-cat="para" data-lang="ru" data-blocks="1">
+  <div class="meta"><b>gen084_para_ru</b> · para · ru · 309×116 · 1 khối / 4 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen084_para_ru.png" alt="gen084_para_ru"></div>
+  <div class="tr" title="Gói cài đặt bao gồm mọi thành phần cần thiết và có thể chạy không cần kết nối internet.">→ Gói cài đặt bao gồm mọi thành phần cần thiết và có thể chạy không cần kết nối internet.</div>
+</div>
+<div class="card" data-cat="para" data-lang="ko" data-blocks="1">
+  <div class="meta"><b>gen085_para_ko</b> · para · ko · 469×48 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen085_para_ko.png" alt="gen085_para_ko"></div>
+  <div class="tr" title="Bạn có thể thay đổi ngôn ngữ hiển thị, phím tắt và tùy chọn thông báo trong bảng cài đặt.">→ Bạn có thể thay đổi ngôn ngữ hiển thị, phím tắt và tùy chọn thông báo trong bảng cài đặt.</div>
+</div>
+<div class="card" data-cat="para" data-lang="ja" data-blocks="1">
+  <div class="meta"><b>gen086_para_ja</b> · para · ja · 462×43 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen086_para_ja.png" alt="gen086_para_ja"></div>
+  <div class="tr" title="Bạn có thể thay đổi ngôn ngữ hiển thị, phím tắt và tùy chọn thông báo trong bảng cài đặt.">→ Bạn có thể thay đổi ngôn ngữ hiển thị, phím tắt và tùy chọn thông báo trong bảng cài đặt.</div>
+</div>
+<div class="card" data-cat="para" data-lang="zh" data-blocks="1">
+  <div class="meta"><b>gen087_para_zh</b> · para · zh · 383×46 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen087_para_zh.png" alt="gen087_para_zh"></div>
+  <div class="tr" title="Nhấn nút bên dưới để bắt đầu quá trình chuyển đổi. Việc này có thể mất vài phút tùy theo dung lượng dữ liệu.">→ Nhấn nút bên dưới để bắt đầu quá trình chuyển đổi. Việc này có thể mất vài phút tùy theo d</div>
+</div>
+<div class="card" data-cat="para" data-lang="zht" data-blocks="1">
+  <div class="meta"><b>gen088_para_zht</b> · para · zht · 339×76 · 1 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen088_para_zht.png" alt="gen088_para_zht"></div>
+  <div class="tr" title="Bạn có thể thay đổi ngôn ngữ hiển thị, phím tắt và tùy chọn thông báo trong bảng cài đặt.">→ Bạn có thể thay đổi ngôn ngữ hiển thị, phím tắt và tùy chọn thông báo trong bảng cài đặt.</div>
+</div>
+<div class="card" data-cat="para" data-lang="en" data-blocks="1">
+  <div class="meta"><b>gen089_para_en</b> · para · en · 277×141 · 1 khối / 4 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen089_para_en.png" alt="gen089_para_en"></div>
+  <div class="tr" title="Bạn có thể thay đổi ngôn ngữ hiển thị, phím tắt và tùy chọn thông báo trong bảng cài đặt.">→ Bạn có thể thay đổi ngôn ngữ hiển thị, phím tắt và tùy chọn thông báo trong bảng cài đặt.</div>
+</div>
+<div class="card" data-cat="para" data-lang="vi" data-blocks="1">
+  <div class="meta"><b>gen090_para_vi</b> · para · vi · 357×71 · 1 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen090_para_vi.png" alt="gen090_para_vi"></div>
+  <div class="tr" title="Gói cài đặt bao gồm mọi thành phần cần thiết và có thể chạy không cần kết nối internet.">→ Gói cài đặt bao gồm mọi thành phần cần thiết và có thể chạy không cần kết nối internet.</div>
+</div>
+<div class="card" data-cat="para" data-lang="de" data-blocks="1">
+  <div class="meta"><b>gen091_para_de</b> · para · de · 328×76 · 1 khối / 3 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen091_para_de.png" alt="gen091_para_de"></div>
+  <div class="tr" title="Các thay đổi của bạn đã được lưu tự động và sẽ đồng bộ vào lần tới khi kết nối máy chủ.">→ Các thay đổi của bạn đã được lưu tự động và sẽ đồng bộ vào lần tới khi kết nối máy chủ.</div>
+</div>
+<div class="card" data-cat="para" data-lang="ru" data-blocks="1">
+  <div class="meta"><b>gen092_para_ru</b> · para · ru · 386×95 · 1 khối / 3 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen092_para_ru.png" alt="gen092_para_ru"></div>
+  <div class="tr" title="Nhấn nút bên dưới để bắt đầu quá trình chuyển đổi. Việc này có thể mất vài phút tùy theo dung lượng dữ liệu.">→ Nhấn nút bên dưới để bắt đầu quá trình chuyển đổi. Việc này có thể mất vài phút tùy theo d</div>
+</div>
+<div class="card" data-cat="para" data-lang="ko" data-blocks="1">
+  <div class="meta"><b>gen093_para_ko</b> · para · ko · 325×92 · 1 khối / 3 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen093_para_ko.png" alt="gen093_para_ko"></div>
+  <div class="tr" title="Gói cài đặt bao gồm mọi thành phần cần thiết và có thể chạy không cần kết nối internet.">→ Gói cài đặt bao gồm mọi thành phần cần thiết và có thể chạy không cần kết nối internet.</div>
+</div>
+<div class="card" data-cat="para" data-lang="ja" data-blocks="1">
+  <div class="meta"><b>gen094_para_ja</b> · para · ja · 404×65 · 1 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen094_para_ja.png" alt="gen094_para_ja"></div>
+  <div class="tr" title="Các thay đổi của bạn đã được lưu tự động và sẽ đồng bộ vào lần tới khi kết nối máy chủ.">→ Các thay đổi của bạn đã được lưu tự động và sẽ đồng bộ vào lần tới khi kết nối máy chủ.</div>
+</div>
+<div class="card" data-cat="para" data-lang="zh" data-blocks="1">
+  <div class="meta"><b>gen095_para_zh</b> · para · zh · 355×78 · 1 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen095_para_zh.png" alt="gen095_para_zh"></div>
+  <div class="tr" title="Các thay đổi của bạn đã được lưu tự động và sẽ đồng bộ vào lần tới khi kết nối máy chủ.">→ Các thay đổi của bạn đã được lưu tự động và sẽ đồng bộ vào lần tới khi kết nối máy chủ.</div>
+</div>
+<div class="card" data-cat="para" data-lang="zht" data-blocks="1">
+  <div class="meta"><b>gen096_para_zht</b> · para · zht · 309×72 · 1 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen096_para_zht.png" alt="gen096_para_zht"></div>
+  <div class="tr" title="Các thay đổi của bạn đã được lưu tự động và sẽ đồng bộ vào lần tới khi kết nối máy chủ.">→ Các thay đổi của bạn đã được lưu tự động và sẽ đồng bộ vào lần tới khi kết nối máy chủ.</div>
+</div>
+<div class="card" data-cat="para" data-lang="en" data-blocks="1">
+  <div class="meta"><b>gen097_para_en</b> · para · en · 323×94 · 1 khối / 3 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen097_para_en.png" alt="gen097_para_en"></div>
+  <div class="tr" title="Các thay đổi của bạn đã được lưu tự động và sẽ đồng bộ vào lần tới khi kết nối máy chủ.">→ Các thay đổi của bạn đã được lưu tự động và sẽ đồng bộ vào lần tới khi kết nối máy chủ.</div>
+</div>
+<div class="card" data-cat="para" data-lang="vi" data-blocks="1">
+  <div class="meta"><b>gen098_para_vi</b> · para · vi · 268×101 · 1 khối / 3 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen098_para_vi.png" alt="gen098_para_vi"></div>
+  <div class="tr" title="Các thay đổi của bạn đã được lưu tự động và sẽ đồng bộ vào lần tới khi kết nối máy chủ.">→ Các thay đổi của bạn đã được lưu tự động và sẽ đồng bộ vào lần tới khi kết nối máy chủ.</div>
+</div>
+<div class="card" data-cat="para" data-lang="de" data-blocks="1">
+  <div class="meta"><b>gen099_para_de</b> · para · de · 401×83 · 1 khối / 3 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen099_para_de.png" alt="gen099_para_de"></div>
+  <div class="tr" title="Các thay đổi của bạn đã được lưu tự động và sẽ đồng bộ vào lần tới khi kết nối máy chủ.">→ Các thay đổi của bạn đã được lưu tự động và sẽ đồng bộ vào lần tới khi kết nối máy chủ.</div>
+</div>
+<div class="card" data-cat="para" data-lang="ru" data-blocks="1">
+  <div class="meta"><b>gen100_para_ru</b> · para · ru · 401×61 · 1 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen100_para_ru.png" alt="gen100_para_ru"></div>
+  <div class="tr" title="Gói cài đặt bao gồm mọi thành phần cần thiết và có thể chạy không cần kết nối internet.">→ Gói cài đặt bao gồm mọi thành phần cần thiết và có thể chạy không cần kết nối internet.</div>
+</div>
+<div class="card" data-cat="para" data-lang="ko" data-blocks="1">
+  <div class="meta"><b>gen101_para_ko</b> · para · ko · 275×70 · 1 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen101_para_ko.png" alt="gen101_para_ko"></div>
+  <div class="tr" title="Bạn có thể thay đổi ngôn ngữ hiển thị, phím tắt và tùy chọn thông báo trong bảng cài đặt.">→ Bạn có thể thay đổi ngôn ngữ hiển thị, phím tắt và tùy chọn thông báo trong bảng cài đặt.</div>
+</div>
+<div class="card" data-cat="para" data-lang="ja" data-blocks="1">
+  <div class="meta"><b>gen102_para_ja</b> · para · ja · 396×62 · 1 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen102_para_ja.png" alt="gen102_para_ja"></div>
+  <div class="tr" title="Các thay đổi của bạn đã được lưu tự động và sẽ đồng bộ vào lần tới khi kết nối máy chủ.">→ Các thay đổi của bạn đã được lưu tự động và sẽ đồng bộ vào lần tới khi kết nối máy chủ.</div>
+</div>
+<div class="card" data-cat="para" data-lang="zh" data-blocks="1">
+  <div class="meta"><b>gen103_para_zh</b> · para · zh · 280×69 · 1 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen103_para_zh.png" alt="gen103_para_zh"></div>
+  <div class="tr" title="Gói cài đặt bao gồm mọi thành phần cần thiết và có thể chạy không cần kết nối internet.">→ Gói cài đặt bao gồm mọi thành phần cần thiết và có thể chạy không cần kết nối internet.</div>
+</div>
+<div class="card" data-cat="para" data-lang="zht" data-blocks="1">
+  <div class="meta"><b>gen104_para_zht</b> · para · zht · 394×47 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen104_para_zht.png" alt="gen104_para_zht"></div>
+  <div class="tr" title="Nhấn nút bên dưới để bắt đầu quá trình chuyển đổi. Việc này có thể mất vài phút tùy theo dung lượng dữ liệu.">→ Nhấn nút bên dưới để bắt đầu quá trình chuyển đổi. Việc này có thể mất vài phút tùy theo d</div>
+</div>
+<div class="card" data-cat="cards" data-lang="en" data-blocks="2">
+  <div class="meta"><b>gen105_cards_en</b> · cards · en · 554×153 · 2 khối / 9 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen105_cards_en.png" alt="gen105_cards_en"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN
+Gói cài đặt bao gồm mọi thành phần cần thiết và có thể chạy không cần kết nối internet.">→ CÀI ĐẶT DỰ ÁN
+Gói cài đặt bao gồm mọi thành phần cần thiết và có thể chạy không cần kết nố</div>
+</div>
+<div class="card" data-cat="cards" data-lang="vi" data-blocks="4">
+  <div class="meta"><b>gen106_cards_vi</b> · cards · vi · 1194×115 · 4 khối / 16 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen106_cards_vi.png" alt="gen106_cards_vi"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN
+Các thay đổi của bạn đã được lưu tự động và sẽ đồng bộ vào lần tới khi kết nối máy chủ.">→ CÀI ĐẶT DỰ ÁN
+Các thay đổi của bạn đã được lưu tự động và sẽ đồng bộ vào lần tới khi kết n</div>
+</div>
+<div class="card" data-cat="cards" data-lang="de" data-blocks="4">
+  <div class="meta"><b>gen107_cards_de</b> · cards · de · 1033×111 · 4 khối / 20 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen107_cards_de.png" alt="gen107_cards_de"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN
+Gói cài đặt bao gồm mọi thành phần cần thiết và có thể chạy không cần kết nối internet.">→ CÀI ĐẶT DỰ ÁN
+Gói cài đặt bao gồm mọi thành phần cần thiết và có thể chạy không cần kết nố</div>
+</div>
+<div class="card" data-cat="cards" data-lang="ru" data-blocks="3">
+  <div class="meta"><b>gen108_cards_ru</b> · cards · ru · 788×169 · 3 khối / 15 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen108_cards_ru.png" alt="gen108_cards_ru"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN
+Bạn có thể thay đổi ngôn ngữ hiển thị, phím tắt và tùy chọn thông báo trong bảng cài đặt.">→ CÀI ĐẶT DỰ ÁN
+Bạn có thể thay đổi ngôn ngữ hiển thị, phím tắt và tùy chọn thông báo trong </div>
+</div>
+<div class="card" data-cat="cards" data-lang="ko" data-blocks="4">
+  <div class="meta"><b>gen109_cards_ko</b> · cards · ko · 1090×120 · 4 khối / 14 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen109_cards_ko.png" alt="gen109_cards_ko"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN
+Bạn có thể thay đổi ngôn ngữ hiển thị, phím tắt và tùy chọn thông báo trong bảng cài đặt.">→ CÀI ĐẶT DỰ ÁN
+Bạn có thể thay đổi ngôn ngữ hiển thị, phím tắt và tùy chọn thông báo trong </div>
+</div>
+<div class="card" data-cat="cards" data-lang="ja" data-blocks="4">
+  <div class="meta"><b>gen110_cards_ja</b> · cards · ja · 1264×120 · 4 khối / 14 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen110_cards_ja.png" alt="gen110_cards_ja"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI
+Gói cài đặt bao gồm mọi thành phần cần thiết và có thể chạy không cần kết nối internet.">→ CHÀO MỪNG TRỞ LẠI
+Gói cài đặt bao gồm mọi thành phần cần thiết và có thể chạy không cần kế</div>
+</div>
+<div class="card" data-cat="cards" data-lang="zh" data-blocks="2">
+  <div class="meta"><b>gen111_cards_zh</b> · cards · zh · 526×109 · 2 khối / 6 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen111_cards_zh.png" alt="gen111_cards_zh"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI
+Các thay đổi của bạn đã được lưu tự động và sẽ đồng bộ vào lần tới khi kết nối máy chủ.">→ CHÀO MỪNG TRỞ LẠI
+Các thay đổi của bạn đã được lưu tự động và sẽ đồng bộ vào lần tới khi k</div>
+</div>
+<div class="card" data-cat="cards" data-lang="zht" data-blocks="4">
+  <div class="meta"><b>gen112_cards_zht</b> · cards · zht · 935×134 · 4 khối / 16 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen112_cards_zht.png" alt="gen112_cards_zht"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI
+Bạn có thể thay đổi ngôn ngữ hiển thị, phím tắt và tùy chọn thông báo trong bảng cài đặt.">→ CHÀO MỪNG TRỞ LẠI
+Bạn có thể thay đổi ngôn ngữ hiển thị, phím tắt và tùy chọn thông báo tr</div>
+</div>
+<div class="card" data-cat="cards" data-lang="en" data-blocks="2">
+  <div class="meta"><b>gen113_cards_en</b> · cards · en · 571×129 · 2 khối / 8 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen113_cards_en.png" alt="gen113_cards_en"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC
+Gói cài đặt bao gồm mọi thành phần cần thiết và có thể chạy không cần kết nối internet.">→ DỊCH THUẬT SIÊU TỐC
+Gói cài đặt bao gồm mọi thành phần cần thiết và có thể chạy không cần </div>
+</div>
+<div class="card" data-cat="cards" data-lang="vi" data-blocks="2">
+  <div class="meta"><b>gen114_cards_vi</b> · cards · vi · 453×135 · 2 khối / 9 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen114_cards_vi.png" alt="gen114_cards_vi"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI
+Bạn có thể thay đổi ngôn ngữ hiển thị, phím tắt và tùy chọn thông báo trong bảng cài đặt.">→ CHÀO MỪNG TRỞ LẠI
+Bạn có thể thay đổi ngôn ngữ hiển thị, phím tắt và tùy chọn thông báo tr</div>
+</div>
+<div class="card" data-cat="cards" data-lang="de" data-blocks="2">
+  <div class="meta"><b>gen115_cards_de</b> · cards · de · 588×135 · 2 khối / 10 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen115_cards_de.png" alt="gen115_cards_de"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI
+Các thay đổi của bạn đã được lưu tự động và sẽ đồng bộ vào lần tới khi kết nối máy chủ.">→ CHÀO MỪNG TRỞ LẠI
+Các thay đổi của bạn đã được lưu tự động và sẽ đồng bộ vào lần tới khi k</div>
+</div>
+<div class="card" data-cat="cards" data-lang="ru" data-blocks="3">
+  <div class="meta"><b>gen116_cards_ru</b> · cards · ru · 764×148 · 3 khối / 15 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen116_cards_ru.png" alt="gen116_cards_ru"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN
+Bạn có thể thay đổi ngôn ngữ hiển thị, phím tắt và tùy chọn thông báo trong bảng cài đặt.">→ CÀI ĐẶT DỰ ÁN
+Bạn có thể thay đổi ngôn ngữ hiển thị, phím tắt và tùy chọn thông báo trong </div>
+</div>
+<div class="card" data-cat="cards" data-lang="ko" data-blocks="3">
+  <div class="meta"><b>gen117_cards_ko</b> · cards · ko · 946×129 · 3 khối / 11 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen117_cards_ko.png" alt="gen117_cards_ko"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI
+Các thay đổi của bạn đã được lưu tự động và sẽ đồng bộ vào lần tới khi kết nối máy chủ.">→ CHÀO MỪNG TRỞ LẠI
+Các thay đổi của bạn đã được lưu tự động và sẽ đồng bộ vào lần tới khi k</div>
+</div>
+<div class="card" data-cat="cards" data-lang="ja" data-blocks="3">
+  <div class="meta"><b>gen118_cards_ja</b> · cards · ja · 958×147 · 3 khối / 13 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen118_cards_ja.png" alt="gen118_cards_ja"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC
+Các thay đổi của bạn đã được lưu tự động và sẽ đồng bộ vào lần tới khi kết nối máy chủ.">→ DỊCH THUẬT SIÊU TỐC
+Các thay đổi của bạn đã được lưu tự động và sẽ đồng bộ vào lần tới khi</div>
+</div>
+<div class="card" data-cat="cards" data-lang="zh" data-blocks="4">
+  <div class="meta"><b>gen119_cards_zh</b> · cards · zh · 1052×109 · 4 khối / 12 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen119_cards_zh.png" alt="gen119_cards_zh"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI
+Gói cài đặt bao gồm mọi thành phần cần thiết và có thể chạy không cần kết nối internet.">→ CHÀO MỪNG TRỞ LẠI
+Gói cài đặt bao gồm mọi thành phần cần thiết và có thể chạy không cần kế</div>
+</div>
+<div class="card" data-cat="cards" data-lang="zht" data-blocks="4">
+  <div class="meta"><b>gen120_cards_zht</b> · cards · zht · 1276×99 · 4 khối / 11 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen120_cards_zht.png" alt="gen120_cards_zht"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC
+Bạn có thể thay đổi ngôn ngữ hiển thị, phím tắt và tùy chọn thông báo trong bảng cài đặt.">→ DỊCH THUẬT SIÊU TỐC
+Bạn có thể thay đổi ngôn ngữ hiển thị, phím tắt và tùy chọn thông báo </div>
+</div>
+<div class="card" data-cat="title" data-lang="en" data-blocks="2">
+  <div class="meta"><b>gen121_title_en</b> · title · en · 437×130 · 2 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen121_title_en.png" alt="gen121_title_en"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN">→ CÀI ĐẶT DỰ ÁN</div>
+</div>
+<div class="card" data-cat="title" data-lang="vi" data-blocks="2">
+  <div class="meta"><b>gen122_title_vi</b> · title · vi · 380×117 · 2 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen122_title_vi.png" alt="gen122_title_vi"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN">→ CÀI ĐẶT DỰ ÁN</div>
+</div>
+<div class="card" data-cat="title" data-lang="de" data-blocks="2">
+  <div class="meta"><b>gen123_title_de</b> · title · de · 451×103 · 2 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen123_title_de.png" alt="gen123_title_de"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN">→ CÀI ĐẶT DỰ ÁN</div>
+</div>
+<div class="card" data-cat="title" data-lang="ru" data-blocks="2">
+  <div class="meta"><b>gen124_title_ru</b> · title · ru · 523×116 · 2 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen124_title_ru.png" alt="gen124_title_ru"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="title" data-lang="ko" data-blocks="2">
+  <div class="meta"><b>gen125_title_ko</b> · title · ko · 308×132 · 2 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen125_title_ko.png" alt="gen125_title_ko"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN">→ CÀI ĐẶT DỰ ÁN</div>
+</div>
+<div class="card" data-cat="title" data-lang="ja" data-blocks="2">
+  <div class="meta"><b>gen126_title_ja</b> · title · ja · 392×122 · 2 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen126_title_ja.png" alt="gen126_title_ja"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN">→ CÀI ĐẶT DỰ ÁN</div>
+</div>
+<div class="card" data-cat="title" data-lang="zh" data-blocks="2">
+  <div class="meta"><b>gen127_title_zh</b> · title · zh · 240×123 · 2 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen127_title_zh.png" alt="gen127_title_zh"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="title" data-lang="zht" data-blocks="2">
+  <div class="meta"><b>gen128_title_zht</b> · title · zht · 234×118 · 2 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen128_title_zht.png" alt="gen128_title_zht"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN">→ CÀI ĐẶT DỰ ÁN</div>
+</div>
+<div class="card" data-cat="title" data-lang="en" data-blocks="2">
+  <div class="meta"><b>gen129_title_en</b> · title · en · 542×136 · 2 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen129_title_en.png" alt="gen129_title_en"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="title" data-lang="vi" data-blocks="2">
+  <div class="meta"><b>gen130_title_vi</b> · title · vi · 408×119 · 2 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen130_title_vi.png" alt="gen130_title_vi"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="title" data-lang="de" data-blocks="2">
+  <div class="meta"><b>gen131_title_de</b> · title · de · 403×119 · 2 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen131_title_de.png" alt="gen131_title_de"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="title" data-lang="ru" data-blocks="2">
+  <div class="meta"><b>gen132_title_ru</b> · title · ru · 523×114 · 2 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen132_title_ru.png" alt="gen132_title_ru"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="title" data-lang="ko" data-blocks="2">
+  <div class="meta"><b>gen133_title_ko</b> · title · ko · 427×125 · 2 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen133_title_ko.png" alt="gen133_title_ko"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="title" data-lang="ja" data-blocks="2">
+  <div class="meta"><b>gen134_title_ja</b> · title · ja · 369×111 · 2 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen134_title_ja.png" alt="gen134_title_ja"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN">→ CÀI ĐẶT DỰ ÁN</div>
+</div>
+<div class="card" data-cat="title" data-lang="zh" data-blocks="2">
+  <div class="meta"><b>gen135_title_zh</b> · title · zh · 250×120 · 2 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen135_title_zh.png" alt="gen135_title_zh"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="title" data-lang="zht" data-blocks="2">
+  <div class="meta"><b>gen136_title_zht</b> · title · zht · 256×121 · 2 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen136_title_zht.png" alt="gen136_title_zht"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN">→ CÀI ĐẶT DỰ ÁN</div>
+</div>
+<div class="card" data-cat="code" data-lang="en" data-blocks="1">
+  <div class="meta"><b>gen137_code_en</b> · code · en · 380×186 · 1 khối / 7 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen137_code_en.png" alt="gen137_code_en"></div>
+  <div class="tr" title="Đoạn mã nguồn mẫu để kiểm tra hiển thị">→ Đoạn mã nguồn mẫu để kiểm tra hiển thị</div>
+</div>
+<div class="card" data-cat="code" data-lang="en" data-blocks="1">
+  <div class="meta"><b>gen138_code_en</b> · code · en · 345×132 · 1 khối / 5 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen138_code_en.png" alt="gen138_code_en"></div>
+  <div class="tr" title="Đoạn mã nguồn mẫu để kiểm tra hiển thị">→ Đoạn mã nguồn mẫu để kiểm tra hiển thị</div>
+</div>
+<div class="card" data-cat="code" data-lang="en" data-blocks="1">
+  <div class="meta"><b>gen139_code_en</b> · code · en · 338×169 · 1 khối / 7 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen139_code_en.png" alt="gen139_code_en"></div>
+  <div class="tr" title="Đoạn mã nguồn mẫu để kiểm tra hiển thị">→ Đoạn mã nguồn mẫu để kiểm tra hiển thị</div>
+</div>
+<div class="card" data-cat="code" data-lang="en" data-blocks="1">
+  <div class="meta"><b>gen140_code_en</b> · code · en · 380×177 · 1 khối / 7 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen140_code_en.png" alt="gen140_code_en"></div>
+  <div class="tr" title="Đoạn mã nguồn mẫu để kiểm tra hiển thị">→ Đoạn mã nguồn mẫu để kiểm tra hiển thị</div>
+</div>
+<div class="card" data-cat="code" data-lang="en" data-blocks="1">
+  <div class="meta"><b>gen141_code_en</b> · code · en · 388×144 · 1 khối / 5 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen141_code_en.png" alt="gen141_code_en"></div>
+  <div class="tr" title="Đoạn mã nguồn mẫu để kiểm tra hiển thị">→ Đoạn mã nguồn mẫu để kiểm tra hiển thị</div>
+</div>
+<div class="card" data-cat="code" data-lang="en" data-blocks="1">
+  <div class="meta"><b>gen142_code_en</b> · code · en · 380×186 · 1 khối / 7 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen142_code_en.png" alt="gen142_code_en"></div>
+  <div class="tr" title="Đoạn mã nguồn mẫu để kiểm tra hiển thị">→ Đoạn mã nguồn mẫu để kiểm tra hiển thị</div>
+</div>
+<div class="card" data-cat="code" data-lang="en" data-blocks="1">
+  <div class="meta"><b>gen143_code_en</b> · code · en · 380×186 · 1 khối / 7 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen143_code_en.png" alt="gen143_code_en"></div>
+  <div class="tr" title="Đoạn mã nguồn mẫu để kiểm tra hiển thị">→ Đoạn mã nguồn mẫu để kiểm tra hiển thị</div>
+</div>
+<div class="card" data-cat="code" data-lang="en" data-blocks="1">
+  <div class="meta"><b>gen144_code_en</b> · code · en · 345×132 · 1 khối / 5 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen144_code_en.png" alt="gen144_code_en"></div>
+  <div class="tr" title="Đoạn mã nguồn mẫu để kiểm tra hiển thị">→ Đoạn mã nguồn mẫu để kiểm tra hiển thị</div>
+</div>
+<div class="card" data-cat="code" data-lang="en" data-blocks="1">
+  <div class="meta"><b>gen145_code_en</b> · code · en · 345×132 · 1 khối / 5 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen145_code_en.png" alt="gen145_code_en"></div>
+  <div class="tr" title="Đoạn mã nguồn mẫu để kiểm tra hiển thị">→ Đoạn mã nguồn mẫu để kiểm tra hiển thị</div>
+</div>
+<div class="card" data-cat="code" data-lang="en" data-blocks="1">
+  <div class="meta"><b>gen146_code_en</b> · code · en · 388×144 · 1 khối / 5 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen146_code_en.png" alt="gen146_code_en"></div>
+  <div class="tr" title="Đoạn mã nguồn mẫu để kiểm tra hiển thị">→ Đoạn mã nguồn mẫu để kiểm tra hiển thị</div>
+</div>
+<div class="card" data-cat="code" data-lang="en" data-blocks="1">
+  <div class="meta"><b>gen147_code_en</b> · code · en · 380×186 · 1 khối / 7 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen147_code_en.png" alt="gen147_code_en"></div>
+  <div class="tr" title="Đoạn mã nguồn mẫu để kiểm tra hiển thị">→ Đoạn mã nguồn mẫu để kiểm tra hiển thị</div>
+</div>
+<div class="card" data-cat="code" data-lang="en" data-blocks="1">
+  <div class="meta"><b>gen148_code_en</b> · code · en · 388×138 · 1 khối / 5 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen148_code_en.png" alt="gen148_code_en"></div>
+  <div class="tr" title="Đoạn mã nguồn mẫu để kiểm tra hiển thị">→ Đoạn mã nguồn mẫu để kiểm tra hiển thị</div>
+</div>
+<div class="card" data-cat="chat" data-lang="ko" data-blocks="2">
+  <div class="meta"><b>gen149_chat_ko</b> · chat · ko · 456×134 · 2 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen149_chat_ko.png" alt="gen149_chat_ko"></div>
+  <div class="tr" title="Hủy">→ Hủy</div>
+</div>
+<div class="card" data-cat="chat" data-lang="ja" data-blocks="2">
+  <div class="meta"><b>gen150_chat_ja</b> · chat · ja · 467×128 · 2 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen150_chat_ja.png" alt="gen150_chat_ja"></div>
+  <div class="tr" title="Cập nhật phiên bản thư viện phụ thuộc">→ Cập nhật phiên bản thư viện phụ thuộc</div>
+</div>
+<div class="card" data-cat="chat" data-lang="zh" data-blocks="3">
+  <div class="meta"><b>gen151_chat_zh</b> · chat · zh · 417×172 · 3 khối / 3 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen151_chat_zh.png" alt="gen151_chat_zh"></div>
+  <div class="tr" title="Tìm kiếm">→ Tìm kiếm</div>
+</div>
+<div class="card" data-cat="chat" data-lang="zht" data-blocks="3">
+  <div class="meta"><b>gen152_chat_zht</b> · chat · zht · 376×184 · 3 khối / 3 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen152_chat_zht.png" alt="gen152_chat_zht"></div>
+  <div class="tr" title="Cập nhật phiên bản thư viện phụ thuộc">→ Cập nhật phiên bản thư viện phụ thuộc</div>
+</div>
+<div class="card" data-cat="chat" data-lang="en" data-blocks="3">
+  <div class="meta"><b>gen153_chat_en</b> · chat · en · 470×175 · 3 khối / 3 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen153_chat_en.png" alt="gen153_chat_en"></div>
+  <div class="tr" title="Thêm chế độ nền tối">→ Thêm chế độ nền tối</div>
+</div>
+<div class="card" data-cat="chat" data-lang="vi" data-blocks="2">
+  <div class="meta"><b>gen154_chat_vi</b> · chat · vi · 464×130 · 2 khối / 3 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen154_chat_vi.png" alt="gen154_chat_vi"></div>
+  <div class="tr" title="Sửa vòng lặp chuyển hướng đăng nhập">→ Sửa vòng lặp chuyển hướng đăng nhập</div>
+</div>
+<div class="card" data-cat="chat" data-lang="de" data-blocks="2">
+  <div class="meta"><b>gen155_chat_de</b> · chat · de · 364×124 · 2 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen155_chat_de.png" alt="gen155_chat_de"></div>
+  <div class="tr" title="Lưu">→ Lưu</div>
+</div>
+<div class="card" data-cat="chat" data-lang="ru" data-blocks="2">
+  <div class="meta"><b>gen156_chat_ru</b> · chat · ru · 438×150 · 2 khối / 3 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen156_chat_ru.png" alt="gen156_chat_ru"></div>
+  <div class="tr" title="Tải xuống">→ Tải xuống</div>
+</div>
+<div class="card" data-cat="chat" data-lang="ko" data-blocks="3">
+  <div class="meta"><b>gen157_chat_ko</b> · chat · ko · 423×181 · 3 khối / 3 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen157_chat_ko.png" alt="gen157_chat_ko"></div>
+  <div class="tr" title="Cài đặt">→ Cài đặt</div>
+</div>
+<div class="card" data-cat="chat" data-lang="ja" data-blocks="3">
+  <div class="meta"><b>gen158_chat_ja</b> · chat · ja · 458×169 · 3 khối / 3 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen158_chat_ja.png" alt="gen158_chat_ja"></div>
+  <div class="tr" title="Tìm kiếm">→ Tìm kiếm</div>
+</div>
+<div class="card" data-cat="chat" data-lang="zh" data-blocks="3">
+  <div class="meta"><b>gen159_chat_zh</b> · chat · zh · 414×184 · 3 khối / 3 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen159_chat_zh.png" alt="gen159_chat_zh"></div>
+  <div class="tr" title="Đã lưu tệp thành công">→ Đã lưu tệp thành công</div>
+</div>
+<div class="card" data-cat="chat" data-lang="zht" data-blocks="2">
+  <div class="meta"><b>gen160_chat_zht</b> · chat · zht · 472×128 · 2 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen160_chat_zht.png" alt="gen160_chat_zht"></div>
+  <div class="tr" title="Tìm kiếm">→ Tìm kiếm</div>
+</div>
+<div class="card" data-cat="full" data-lang="en" data-blocks="13">
+  <div class="meta"><b>gen161_full_en</b> · full · en · 1920×1080 · 13 khối / 13 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen161_full_en.png" alt="gen161_full_en"></div>
+  <div class="tr" title="Ứng dụng dịch thuật">→ Ứng dụng dịch thuật</div>
+</div>
+<div class="card" data-cat="full" data-lang="vi" data-blocks="13">
+  <div class="meta"><b>gen162_full_vi</b> · full · vi · 1920×1080 · 13 khối / 13 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen162_full_vi.png" alt="gen162_full_vi"></div>
+  <div class="tr" title="Ứng dụng dịch thuật">→ Ứng dụng dịch thuật</div>
+</div>
+<div class="card" data-cat="full" data-lang="de" data-blocks="13">
+  <div class="meta"><b>gen163_full_de</b> · full · de · 1920×1080 · 13 khối / 13 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen163_full_de.png" alt="gen163_full_de"></div>
+  <div class="tr" title="Ứng dụng dịch thuật">→ Ứng dụng dịch thuật</div>
+</div>
+<div class="card" data-cat="full" data-lang="ru" data-blocks="13">
+  <div class="meta"><b>gen164_full_ru</b> · full · ru · 1920×1080 · 13 khối / 13 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen164_full_ru.png" alt="gen164_full_ru"></div>
+  <div class="tr" title="Ứng dụng dịch thuật">→ Ứng dụng dịch thuật</div>
+</div>
+<div class="card" data-cat="full" data-lang="ko" data-blocks="13">
+  <div class="meta"><b>gen165_full_ko</b> · full · ko · 1920×1080 · 13 khối / 13 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen165_full_ko.png" alt="gen165_full_ko"></div>
+  <div class="tr" title="Ứng dụng dịch thuật">→ Ứng dụng dịch thuật</div>
+</div>
+<div class="card" data-cat="full" data-lang="ja" data-blocks="13">
+  <div class="meta"><b>gen166_full_ja</b> · full · ja · 1920×1080 · 13 khối / 13 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen166_full_ja.png" alt="gen166_full_ja"></div>
+  <div class="tr" title="Ứng dụng dịch thuật">→ Ứng dụng dịch thuật</div>
+</div>
+<div class="card" data-cat="full" data-lang="zh" data-blocks="13">
+  <div class="meta"><b>gen167_full_zh</b> · full · zh · 1920×1080 · 13 khối / 13 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen167_full_zh.png" alt="gen167_full_zh"></div>
+  <div class="tr" title="Ứng dụng dịch thuật">→ Ứng dụng dịch thuật</div>
+</div>
+<div class="card" data-cat="full" data-lang="zht" data-blocks="13">
+  <div class="meta"><b>gen168_full_zht</b> · full · zht · 1920×1080 · 13 khối / 13 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen168_full_zht.png" alt="gen168_full_zht"></div>
+  <div class="tr" title="Ứng dụng dịch thuật">→ Ứng dụng dịch thuật</div>
+</div>
+<div class="card" data-cat="full" data-lang="en" data-blocks="13">
+  <div class="meta"><b>gen169_full_en</b> · full · en · 1920×1080 · 13 khối / 13 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen169_full_en.png" alt="gen169_full_en"></div>
+  <div class="tr" title="Ứng dụng dịch thuật">→ Ứng dụng dịch thuật</div>
+</div>
+<div class="card" data-cat="full" data-lang="vi" data-blocks="13">
+  <div class="meta"><b>gen170_full_vi</b> · full · vi · 1920×1080 · 13 khối / 13 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen170_full_vi.png" alt="gen170_full_vi"></div>
+  <div class="tr" title="Ứng dụng dịch thuật">→ Ứng dụng dịch thuật</div>
+</div>
+<div class="card" data-cat="full" data-lang="de" data-blocks="13">
+  <div class="meta"><b>gen171_full_de</b> · full · de · 1920×1080 · 13 khối / 13 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen171_full_de.png" alt="gen171_full_de"></div>
+  <div class="tr" title="Ứng dụng dịch thuật">→ Ứng dụng dịch thuật</div>
+</div>
+<div class="card" data-cat="full" data-lang="ru" data-blocks="13">
+  <div class="meta"><b>gen172_full_ru</b> · full · ru · 1920×1080 · 13 khối / 13 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen172_full_ru.png" alt="gen172_full_ru"></div>
+  <div class="tr" title="Ứng dụng dịch thuật">→ Ứng dụng dịch thuật</div>
+</div>
+<div class="card" data-cat="full" data-lang="ko" data-blocks="13">
+  <div class="meta"><b>gen173_full_ko</b> · full · ko · 1920×1080 · 13 khối / 13 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen173_full_ko.png" alt="gen173_full_ko"></div>
+  <div class="tr" title="Ứng dụng dịch thuật">→ Ứng dụng dịch thuật</div>
+</div>
+<div class="card" data-cat="full" data-lang="ja" data-blocks="13">
+  <div class="meta"><b>gen174_full_ja</b> · full · ja · 1920×1080 · 13 khối / 13 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen174_full_ja.png" alt="gen174_full_ja"></div>
+  <div class="tr" title="Ứng dụng dịch thuật">→ Ứng dụng dịch thuật</div>
+</div>
+<div class="card" data-cat="full" data-lang="zh" data-blocks="13">
+  <div class="meta"><b>gen175_full_zh</b> · full · zh · 1920×1080 · 13 khối / 13 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen175_full_zh.png" alt="gen175_full_zh"></div>
+  <div class="tr" title="Ứng dụng dịch thuật">→ Ứng dụng dịch thuật</div>
+</div>
+<div class="card" data-cat="full" data-lang="zht" data-blocks="13">
+  <div class="meta"><b>gen176_full_zht</b> · full · zht · 1920×1080 · 13 khối / 13 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen176_full_zht.png" alt="gen176_full_zht"></div>
+  <div class="tr" title="Ứng dụng dịch thuật">→ Ứng dụng dịch thuật</div>
+</div>
+<div class="card" data-cat="narrow" data-lang="en" data-blocks="3">
+  <div class="meta"><b>gen177_narrow_en</b> · narrow · en · 220×113 · 3 khối / 3 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen177_narrow_en.png" alt="gen177_narrow_en"></div>
+  <div class="tr" title="Lưu">→ Lưu</div>
+</div>
+<div class="card" data-cat="narrow" data-lang="vi" data-blocks="5">
+  <div class="meta"><b>gen178_narrow_vi</b> · narrow · vi · 235×180 · 5 khối / 5 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen178_narrow_vi.png" alt="gen178_narrow_vi"></div>
+  <div class="tr" title="Xóa import không sử dụng">→ Xóa import không sử dụng</div>
+</div>
+<div class="card" data-cat="narrow" data-lang="de" data-blocks="5">
+  <div class="meta"><b>gen179_narrow_de</b> · narrow · de · 230×122 · 5 khối / 5 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen179_narrow_de.png" alt="gen179_narrow_de"></div>
+  <div class="tr" title="Lưu">→ Lưu</div>
+</div>
+<div class="card" data-cat="narrow" data-lang="ru" data-blocks="6">
+  <div class="meta"><b>gen180_narrow_ru</b> · narrow · ru · 262×177 · 6 khối / 6 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen180_narrow_ru.png" alt="gen180_narrow_ru"></div>
+  <div class="tr" title="Tải xuống">→ Tải xuống</div>
+</div>
+<div class="card" data-cat="narrow" data-lang="ko" data-blocks="4">
+  <div class="meta"><b>gen181_narrow_ko</b> · narrow · ko · 245×179 · 4 khối / 4 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen181_narrow_ko.png" alt="gen181_narrow_ko"></div>
+  <div class="tr" title="Trợ giúp">→ Trợ giúp</div>
+</div>
+<div class="card" data-cat="narrow" data-lang="ja" data-blocks="5">
+  <div class="meta"><b>gen182_narrow_ja</b> · narrow · ja · 220×197 · 5 khối / 5 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen182_narrow_ja.png" alt="gen182_narrow_ja"></div>
+  <div class="tr" title="Tải xuống">→ Tải xuống</div>
+</div>
+<div class="card" data-cat="narrow" data-lang="zh" data-blocks="5">
+  <div class="meta"><b>gen183_narrow_zh</b> · narrow · zh · 220×197 · 5 khối / 5 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen183_narrow_zh.png" alt="gen183_narrow_zh"></div>
+  <div class="tr" title="Trợ giúp">→ Trợ giúp</div>
+</div>
+<div class="card" data-cat="narrow" data-lang="zht" data-blocks="6">
+  <div class="meta"><b>gen184_narrow_zht</b> · narrow · zht · 220×227 · 6 khối / 6 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen184_narrow_zht.png" alt="gen184_narrow_zht"></div>
+  <div class="tr" title="Cài đặt">→ Cài đặt</div>
+</div>
+<div class="card" data-cat="narrow" data-lang="en" data-blocks="6">
+  <div class="meta"><b>gen185_narrow_en</b> · narrow · en · 240×239 · 6 khối / 6 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen185_narrow_en.png" alt="gen185_narrow_en"></div>
+  <div class="tr" title="Cập nhật phiên bản thư viện phụ thuộc">→ Cập nhật phiên bản thư viện phụ thuộc</div>
+</div>
+<div class="card" data-cat="narrow" data-lang="vi" data-blocks="3">
+  <div class="meta"><b>gen186_narrow_vi</b> · narrow · vi · 235×115 · 3 khối / 3 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen186_narrow_vi.png" alt="gen186_narrow_vi"></div>
+  <div class="tr" title="Cài đặt">→ Cài đặt</div>
+</div>
+<div class="card" data-cat="narrow" data-lang="de" data-blocks="6">
+  <div class="meta"><b>gen187_narrow_de</b> · narrow · de · 220×146 · 6 khối / 6 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen187_narrow_de.png" alt="gen187_narrow_de"></div>
+  <div class="tr" title="Tìm kiếm">→ Tìm kiếm</div>
+</div>
+<div class="card" data-cat="narrow" data-lang="ru" data-blocks="5">
+  <div class="meta"><b>gen188_narrow_ru</b> · narrow · ru · 232×165 · 5 khối / 5 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen188_narrow_ru.png" alt="gen188_narrow_ru"></div>
+  <div class="tr" title="Thêm chế độ nền tối">→ Thêm chế độ nền tối</div>
+</div>
+<div class="card" data-cat="banner" data-lang="ko" data-blocks="1">
+  <div class="meta"><b>gen189_banner_ko</b> · banner · ko · 1000×88 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen189_banner_ko.png" alt="gen189_banner_ko"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="banner" data-lang="ja" data-blocks="2">
+  <div class="meta"><b>gen190_banner_ja</b> · banner · ja · 1000×146 · 2 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen190_banner_ja.png" alt="gen190_banner_ja"></div>
+  <div class="tr" title="Cập nhật phiên bản thư viện phụ thuộc">→ Cập nhật phiên bản thư viện phụ thuộc</div>
+</div>
+<div class="card" data-cat="banner" data-lang="zh" data-blocks="1">
+  <div class="meta"><b>gen191_banner_zh</b> · banner · zh · 1000×98 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen191_banner_zh.png" alt="gen191_banner_zh"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="banner" data-lang="zht" data-blocks="2">
+  <div class="meta"><b>gen192_banner_zht</b> · banner · zht · 1000×146 · 2 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen192_banner_zht.png" alt="gen192_banner_zht"></div>
+  <div class="tr" title="Sửa vòng lặp chuyển hướng đăng nhập">→ Sửa vòng lặp chuyển hướng đăng nhập</div>
+</div>
+<div class="card" data-cat="banner" data-lang="en" data-blocks="2">
+  <div class="meta"><b>gen193_banner_en</b> · banner · en · 1000×136 · 2 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen193_banner_en.png" alt="gen193_banner_en"></div>
+  <div class="tr" title="Quá thờ̀i gian chờ kết nối">→ Quá thờ̀i gian chờ kết nối</div>
+</div>
+<div class="card" data-cat="banner" data-lang="vi" data-blocks="1">
+  <div class="meta"><b>gen194_banner_vi</b> · banner · vi · 1000×97 · 1 khối / 1 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen194_banner_vi.png" alt="gen194_banner_vi"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="banner" data-lang="de" data-blocks="2">
+  <div class="meta"><b>gen195_banner_de</b> · banner · de · 1000×134 · 2 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen195_banner_de.png" alt="gen195_banner_de"></div>
+  <div class="tr" title="Cập nhật phiên bản thư viện phụ thuộc">→ Cập nhật phiên bản thư viện phụ thuộc</div>
+</div>
+<div class="card" data-cat="banner" data-lang="ru" data-blocks="2">
+  <div class="meta"><b>gen196_banner_ru</b> · banner · ru · 1000×117 · 2 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen196_banner_ru.png" alt="gen196_banner_ru"></div>
+  <div class="tr" title="Đã lưu tệp thành công">→ Đã lưu tệp thành công</div>
+</div>
+<div class="card" data-cat="banner" data-lang="ko" data-blocks="2">
+  <div class="meta"><b>gen197_banner_ko</b> · banner · ko · 1000×161 · 2 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen197_banner_ko.png" alt="gen197_banner_ko"></div>
+  <div class="tr" title="Quá thờ̀i gian chờ kết nối">→ Quá thờ̀i gian chờ kết nối</div>
+</div>
+<div class="card" data-cat="banner" data-lang="ja" data-blocks="2">
+  <div class="meta"><b>gen198_banner_ja</b> · banner · ja · 1000×129 · 2 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen198_banner_ja.png" alt="gen198_banner_ja"></div>
+  <div class="tr" title="Xóa import không sử dụng">→ Xóa import không sử dụng</div>
+</div>
+<div class="card" data-cat="banner" data-lang="zh" data-blocks="2">
+  <div class="meta"><b>gen199_banner_zh</b> · banner · zh · 1000×134 · 2 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen199_banner_zh.png" alt="gen199_banner_zh"></div>
+  <div class="tr" title="Cập nhật phiên bản thư viện phụ thuộc">→ Cập nhật phiên bản thư viện phụ thuộc</div>
+</div>
+<div class="card" data-cat="banner" data-lang="zht" data-blocks="2">
+  <div class="meta"><b>gen200_banner_zht</b> · banner · zht · 1000×158 · 2 khối / 2 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen200_banner_zht.png" alt="gen200_banner_zht"></div>
+  <div class="tr" title="Thêm chế độ nền tối">→ Thêm chế độ nền tối</div>
+</div>
+<div class="card" data-cat="webcards" data-lang="en" data-blocks="4">
+  <div class="meta"><b>gen201_webcards_en</b> · webcards · en · 654×382 · 4 khối / 10 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen201_webcards_en.png" alt="gen201_webcards_en"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI
+Nhấn nút bên dưới để bắt đầu quá trình chuyển đổi. Việc này có thể mất vài phút tùy theo dung lượng dữ liệu.">→ CHÀO MỪNG TRỞ LẠI
+Nhấn nút bên dưới để bắt đầu quá trình chuyển đổi. Việc này có thể mất v</div>
+</div>
+<div class="card" data-cat="webcards" data-lang="vi" data-blocks="4">
+  <div class="meta"><b>gen202_webcards_vi</b> · webcards · vi · 632×344 · 4 khối / 8 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen202_webcards_vi.png" alt="gen202_webcards_vi"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI
+Các thay đổi của bạn đã được lưu tự động và sẽ đồng bộ vào lần tới khi kết nối máy chủ.">→ CHÀO MỪNG TRỞ LẠI
+Các thay đổi của bạn đã được lưu tự động và sẽ đồng bộ vào lần tới khi k</div>
+</div>
+<div class="card" data-cat="webcards" data-lang="de" data-blocks="4">
+  <div class="meta"><b>gen203_webcards_de</b> · webcards · de · 488×396 · 4 khối / 14 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen203_webcards_de.png" alt="gen203_webcards_de"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI
+Bạn có thể thay đổi ngôn ngữ hiển thị, phím tắt và tùy chọn thông báo trong bảng cài đặt.">→ CHÀO MỪNG TRỞ LẠI
+Bạn có thể thay đổi ngôn ngữ hiển thị, phím tắt và tùy chọn thông báo tr</div>
+</div>
+<div class="card" data-cat="webcards" data-lang="ru" data-blocks="8">
+  <div class="meta"><b>gen204_webcards_ru</b> · webcards · ru · 1338×294 · 8 khối / 20 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen204_webcards_ru.png" alt="gen204_webcards_ru"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN
+Gói cài đặt bao gồm mọi thành phần cần thiết và có thể chạy không cần kết nối internet.">→ CÀI ĐẶT DỰ ÁN
+Gói cài đặt bao gồm mọi thành phần cần thiết và có thể chạy không cần kết nố</div>
+</div>
+<div class="card" data-cat="webcards" data-lang="ko" data-blocks="6">
+  <div class="meta"><b>gen205_webcards_ko</b> · webcards · ko · 864×386 · 6 khối / 14 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen205_webcards_ko.png" alt="gen205_webcards_ko"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI
+Bạn có thể thay đổi ngôn ngữ hiển thị, phím tắt và tùy chọn thông báo trong bảng cài đặt.">→ CHÀO MỪNG TRỞ LẠI
+Bạn có thể thay đổi ngôn ngữ hiển thị, phím tắt và tùy chọn thông báo tr</div>
+</div>
+<div class="card" data-cat="webcards" data-lang="ja" data-blocks="8">
+  <div class="meta"><b>gen206_webcards_ja</b> · webcards · ja · 1151×336 · 8 khối / 21 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen206_webcards_ja.png" alt="gen206_webcards_ja"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC
+Nhấn nút bên dưới để bắt đầu quá trình chuyển đổi. Việc này có thể mất vài phút tùy theo dung lượng dữ liệu.">→ DỊCH THUẬT SIÊU TỐC
+Nhấn nút bên dưới để bắt đầu quá trình chuyển đổi. Việc này có thể mất</div>
+</div>
+<div class="card" data-cat="webcards" data-lang="zh" data-blocks="4">
+  <div class="meta"><b>gen207_webcards_zh</b> · webcards · zh · 504×296 · 4 khối / 8 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen207_webcards_zh.png" alt="gen207_webcards_zh"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC
+Nhấn nút bên dưới để bắt đầu quá trình chuyển đổi. Việc này có thể mất vài phút tùy theo dung lượng dữ liệu.">→ DỊCH THUẬT SIÊU TỐC
+Nhấn nút bên dưới để bắt đầu quá trình chuyển đổi. Việc này có thể mất</div>
+</div>
+<div class="card" data-cat="webcards" data-lang="zht" data-blocks="4">
+  <div class="meta"><b>gen208_webcards_zht</b> · webcards · zht · 570×364 · 4 khối / 8 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen208_webcards_zht.png" alt="gen208_webcards_zht"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC
+Các thay đổi của bạn đã được lưu tự động và sẽ đồng bộ vào lần tới khi kết nối máy chủ.">→ DỊCH THUẬT SIÊU TỐC
+Các thay đổi của bạn đã được lưu tự động và sẽ đồng bộ vào lần tới khi</div>
+</div>
+<div class="card" data-cat="webcards" data-lang="en" data-blocks="4">
+  <div class="meta"><b>gen209_webcards_en</b> · webcards · en · 506×378 · 4 khối / 12 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen209_webcards_en.png" alt="gen209_webcards_en"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN
+Gói cài đặt bao gồm mọi thành phần cần thiết và có thể chạy không cần kết nối internet.">→ CÀI ĐẶT DỰ ÁN
+Gói cài đặt bao gồm mọi thành phần cần thiết và có thể chạy không cần kết nố</div>
+</div>
+<div class="card" data-cat="webcards" data-lang="vi" data-blocks="8">
+  <div class="meta"><b>gen210_webcards_vi</b> · webcards · vi · 1367×340 · 8 khối / 16 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen210_webcards_vi.png" alt="gen210_webcards_vi"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN
+Bạn có thể thay đổi ngôn ngữ hiển thị, phím tắt và tùy chọn thông báo trong bảng cài đặt.">→ CÀI ĐẶT DỰ ÁN
+Bạn có thể thay đổi ngôn ngữ hiển thị, phím tắt và tùy chọn thông báo trong </div>
+</div>
+<div class="card" data-cat="webcards" data-lang="de" data-blocks="6">
+  <div class="meta"><b>gen211_webcards_de</b> · webcards · de · 848×354 · 6 khối / 16 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen211_webcards_de.png" alt="gen211_webcards_de"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC
+Bạn có thể thay đổi ngôn ngữ hiển thị, phím tắt và tùy chọn thông báo trong bảng cài đặt.">→ DỊCH THUẬT SIÊU TỐC
+Bạn có thể thay đổi ngôn ngữ hiển thị, phím tắt và tùy chọn thông báo </div>
+</div>
+<div class="card" data-cat="webcards" data-lang="ru" data-blocks="6">
+  <div class="meta"><b>gen212_webcards_ru</b> · webcards · ru · 904×343 · 6 khối / 16 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen212_webcards_ru.png" alt="gen212_webcards_ru"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI
+Nhấn nút bên dưới để bắt đầu quá trình chuyển đổi. Việc này có thể mất vài phút tùy theo dung lượng dữ liệu.">→ CHÀO MỪNG TRỞ LẠI
+Nhấn nút bên dưới để bắt đầu quá trình chuyển đổi. Việc này có thể mất v</div>
+</div>
+<div class="card" data-cat="webcards" data-lang="ko" data-blocks="8">
+  <div class="meta"><b>gen213_webcards_ko</b> · webcards · ko · 1314×375 · 8 khối / 17 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen213_webcards_ko.png" alt="gen213_webcards_ko"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI
+Gói cài đặt bao gồm mọi thành phần cần thiết và có thể chạy không cần kết nối internet.">→ CHÀO MỪNG TRỞ LẠI
+Gói cài đặt bao gồm mọi thành phần cần thiết và có thể chạy không cần kế</div>
+</div>
+<div class="card" data-cat="webcards" data-lang="ja" data-blocks="8">
+  <div class="meta"><b>gen214_webcards_ja</b> · webcards · ja · 1113×324 · 8 khối / 18 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen214_webcards_ja.png" alt="gen214_webcards_ja"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC
+Các thay đổi của bạn đã được lưu tự động và sẽ đồng bộ vào lần tới khi kết nối máy chủ.">→ DỊCH THUẬT SIÊU TỐC
+Các thay đổi của bạn đã được lưu tự động và sẽ đồng bộ vào lần tới khi</div>
+</div>
+<div class="card" data-cat="webcards" data-lang="zh" data-blocks="8">
+  <div class="meta"><b>gen215_webcards_zh</b> · webcards · zh · 1113×334 · 8 khối / 16 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen215_webcards_zh.png" alt="gen215_webcards_zh"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN
+Các thay đổi của bạn đã được lưu tự động và sẽ đồng bộ vào lần tới khi kết nối máy chủ.">→ CÀI ĐẶT DỰ ÁN
+Các thay đổi của bạn đã được lưu tự động và sẽ đồng bộ vào lần tới khi kết n</div>
+</div>
+<div class="card" data-cat="webcards" data-lang="zht" data-blocks="6">
+  <div class="meta"><b>gen216_webcards_zht</b> · webcards · zht · 722×312 · 6 khối / 12 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen216_webcards_zht.png" alt="gen216_webcards_zht"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI
+Gói cài đặt bao gồm mọi thành phần cần thiết và có thể chạy không cần kết nối internet.">→ CHÀO MỪNG TRỞ LẠI
+Gói cài đặt bao gồm mọi thành phần cần thiết và có thể chạy không cần kế</div>
+</div>
+<div class="card" data-cat="webcards" data-lang="en" data-blocks="6">
+  <div class="meta"><b>gen217_webcards_en</b> · webcards · en · 844×331 · 6 khối / 15 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen217_webcards_en.png" alt="gen217_webcards_en"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI
+Gói cài đặt bao gồm mọi thành phần cần thiết và có thể chạy không cần kết nối internet.">→ CHÀO MỪNG TRỞ LẠI
+Gói cài đặt bao gồm mọi thành phần cần thiết và có thể chạy không cần kế</div>
+</div>
+<div class="card" data-cat="webcards" data-lang="vi" data-blocks="6">
+  <div class="meta"><b>gen218_webcards_vi</b> · webcards · vi · 843×317 · 6 khối / 15 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen218_webcards_vi.png" alt="gen218_webcards_vi"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC
+Nhấn nút bên dưới để bắt đầu quá trình chuyển đổi. Việc này có thể mất vài phút tùy theo dung lượng dữ liệu.">→ DỊCH THUẬT SIÊU TỐC
+Nhấn nút bên dưới để bắt đầu quá trình chuyển đổi. Việc này có thể mất</div>
+</div>
+<div class="card" data-cat="webcards" data-lang="de" data-blocks="6">
+  <div class="meta"><b>gen219_webcards_de</b> · webcards · de · 726×365 · 6 khối / 22 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen219_webcards_de.png" alt="gen219_webcards_de"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC
+Các thay đổi của bạn đã được lưu tự động và sẽ đồng bộ vào lần tới khi kết nối máy chủ.">→ DỊCH THUẬT SIÊU TỐC
+Các thay đổi của bạn đã được lưu tự động và sẽ đồng bộ vào lần tới khi</div>
+</div>
+<div class="card" data-cat="webcards" data-lang="ru" data-blocks="4">
+  <div class="meta"><b>gen220_webcards_ru</b> · webcards · ru · 584×305 · 4 khối / 10 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen220_webcards_ru.png" alt="gen220_webcards_ru"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN
+Gói cài đặt bao gồm mọi thành phần cần thiết và có thể chạy không cần kết nối internet.">→ CÀI ĐẶT DỰ ÁN
+Gói cài đặt bao gồm mọi thành phần cần thiết và có thể chạy không cần kết nố</div>
+</div>
+<div class="card" data-cat="webcards" data-lang="ko" data-blocks="4">
+  <div class="meta"><b>gen221_webcards_ko</b> · webcards · ko · 492×356 · 4 khối / 11 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen221_webcards_ko.png" alt="gen221_webcards_ko"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI
+Các thay đổi của bạn đã được lưu tự động và sẽ đồng bộ vào lần tới khi kết nối máy chủ.">→ CHÀO MỪNG TRỞ LẠI
+Các thay đổi của bạn đã được lưu tự động và sẽ đồng bộ vào lần tới khi k</div>
+</div>
+<div class="card" data-cat="webcards" data-lang="ja" data-blocks="4">
+  <div class="meta"><b>gen222_webcards_ja</b> · webcards · ja · 637×275 · 4 khối / 8 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen222_webcards_ja.png" alt="gen222_webcards_ja"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC
+Bạn có thể thay đổi ngôn ngữ hiển thị, phím tắt và tùy chọn thông báo trong bảng cài đặt.">→ DỊCH THUẬT SIÊU TỐC
+Bạn có thể thay đổi ngôn ngữ hiển thị, phím tắt và tùy chọn thông báo </div>
+</div>
+<div class="card" data-cat="webarticle" data-lang="zh" data-blocks="10">
+  <div class="meta"><b>gen223_webarticle_zh</b> · webarticle · zh · 834×247 · 10 khối / 10 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen223_webarticle_zh.png" alt="gen223_webarticle_zh"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="webarticle" data-lang="zht" data-blocks="8">
+  <div class="meta"><b>gen224_webarticle_zht</b> · webarticle · zht · 845×178 · 8 khối / 8 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen224_webarticle_zht.png" alt="gen224_webarticle_zht"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webarticle" data-lang="en" data-blocks="5">
+  <div class="meta"><b>gen225_webarticle_en</b> · webarticle · en · 685×243 · 5 khối / 6 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen225_webarticle_en.png" alt="gen225_webarticle_en"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN">→ CÀI ĐẶT DỰ ÁN</div>
+</div>
+<div class="card" data-cat="webarticle" data-lang="vi" data-blocks="4">
+  <div class="meta"><b>gen226_webarticle_vi</b> · webarticle · vi · 690×205 · 4 khối / 5 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen226_webarticle_vi.png" alt="gen226_webarticle_vi"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN">→ CÀI ĐẶT DỰ ÁN</div>
+</div>
+<div class="card" data-cat="webarticle" data-lang="de" data-blocks="6">
+  <div class="meta"><b>gen227_webarticle_de</b> · webarticle · de · 578×313 · 6 khối / 10 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen227_webarticle_de.png" alt="gen227_webarticle_de"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webarticle" data-lang="ru" data-blocks="9">
+  <div class="meta"><b>gen228_webarticle_ru</b> · webarticle · ru · 796×259 · 9 khối / 12 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen228_webarticle_ru.png" alt="gen228_webarticle_ru"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webarticle" data-lang="ko" data-blocks="5">
+  <div class="meta"><b>gen229_webarticle_ko</b> · webarticle · ko · 718×223 · 5 khối / 5 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen229_webarticle_ko.png" alt="gen229_webarticle_ko"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webarticle" data-lang="ja" data-blocks="8">
+  <div class="meta"><b>gen230_webarticle_ja</b> · webarticle · ja · 911×187 · 8 khối / 9 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen230_webarticle_ja.png" alt="gen230_webarticle_ja"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webarticle" data-lang="zh" data-blocks="6">
+  <div class="meta"><b>gen231_webarticle_zh</b> · webarticle · zh · 675×252 · 6 khối / 6 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen231_webarticle_zh.png" alt="gen231_webarticle_zh"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="webarticle" data-lang="zht" data-blocks="8">
+  <div class="meta"><b>gen232_webarticle_zht</b> · webarticle · zht · 917×178 · 8 khối / 8 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen232_webarticle_zht.png" alt="gen232_webarticle_zht"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="webarticle" data-lang="en" data-blocks="8">
+  <div class="meta"><b>gen233_webarticle_en</b> · webarticle · en · 846×246 · 8 khối / 10 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen233_webarticle_en.png" alt="gen233_webarticle_en"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="webarticle" data-lang="vi" data-blocks="9">
+  <div class="meta"><b>gen234_webarticle_vi</b> · webarticle · vi · 885×230 · 9 khối / 10 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen234_webarticle_vi.png" alt="gen234_webarticle_vi"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webarticle" data-lang="de" data-blocks="10">
+  <div class="meta"><b>gen235_webarticle_de</b> · webarticle · de · 898×276 · 10 khối / 13 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen235_webarticle_de.png" alt="gen235_webarticle_de"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webarticle" data-lang="ru" data-blocks="8">
+  <div class="meta"><b>gen236_webarticle_ru</b> · webarticle · ru · 939×219 · 8 khối / 10 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen236_webarticle_ru.png" alt="gen236_webarticle_ru"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webarticle" data-lang="ko" data-blocks="6">
+  <div class="meta"><b>gen237_webarticle_ko</b> · webarticle · ko · 720×245 · 6 khối / 6 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen237_webarticle_ko.png" alt="gen237_webarticle_ko"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webarticle" data-lang="ja" data-blocks="5">
+  <div class="meta"><b>gen238_webarticle_ja</b> · webarticle · ja · 670×213 · 5 khối / 6 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen238_webarticle_ja.png" alt="gen238_webarticle_ja"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="webarticle" data-lang="zh" data-blocks="6">
+  <div class="meta"><b>gen239_webarticle_zh</b> · webarticle · zh · 562×263 · 6 khối / 6 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen239_webarticle_zh.png" alt="gen239_webarticle_zh"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webarticle" data-lang="zht" data-blocks="8">
+  <div class="meta"><b>gen240_webarticle_zht</b> · webarticle · zht · 809×180 · 8 khối / 8 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen240_webarticle_zht.png" alt="gen240_webarticle_zht"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webarticle" data-lang="en" data-blocks="6">
+  <div class="meta"><b>gen241_webarticle_en</b> · webarticle · en · 585×348 · 6 khối / 10 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen241_webarticle_en.png" alt="gen241_webarticle_en"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="webarticle" data-lang="vi" data-blocks="6">
+  <div class="meta"><b>gen242_webarticle_vi</b> · webarticle · vi · 660×246 · 6 khối / 7 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen242_webarticle_vi.png" alt="gen242_webarticle_vi"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="webarticle" data-lang="de" data-blocks="10">
+  <div class="meta"><b>gen243_webarticle_de</b> · webarticle · de · 969×216 · 10 khối / 10 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen243_webarticle_de.png" alt="gen243_webarticle_de"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webarticle" data-lang="ru" data-blocks="4">
+  <div class="meta"><b>gen244_webarticle_ru</b> · webarticle · ru · 591×213 · 4 khối / 6 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen244_webarticle_ru.png" alt="gen244_webarticle_ru"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webproduct" data-lang="ko" data-blocks="8">
+  <div class="meta"><b>gen245_webproduct_ko</b> · webproduct · ko · 550×375 · 8 khối / 9 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen245_webproduct_ko.png" alt="gen245_webproduct_ko"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="webproduct" data-lang="ja" data-blocks="9">
+  <div class="meta"><b>gen246_webproduct_ja</b> · webproduct · ja · 530×335 · 9 khối / 9 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen246_webproduct_ja.png" alt="gen246_webproduct_ja"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN">→ CÀI ĐẶT DỰ ÁN</div>
+</div>
+<div class="card" data-cat="webproduct" data-lang="zh" data-blocks="9">
+  <div class="meta"><b>gen247_webproduct_zh</b> · webproduct · zh · 527×387 · 9 khối / 9 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen247_webproduct_zh.png" alt="gen247_webproduct_zh"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN">→ CÀI ĐẶT DỰ ÁN</div>
+</div>
+<div class="card" data-cat="webproduct" data-lang="zht" data-blocks="9">
+  <div class="meta"><b>gen248_webproduct_zht</b> · webproduct · zht · 427×380 · 9 khối / 9 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen248_webproduct_zht.png" alt="gen248_webproduct_zht"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN">→ CÀI ĐẶT DỰ ÁN</div>
+</div>
+<div class="card" data-cat="webproduct" data-lang="en" data-blocks="9">
+  <div class="meta"><b>gen249_webproduct_en</b> · webproduct · en · 581×396 · 9 khối / 10 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen249_webproduct_en.png" alt="gen249_webproduct_en"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webproduct" data-lang="vi" data-blocks="8">
+  <div class="meta"><b>gen250_webproduct_vi</b> · webproduct · vi · 577×356 · 8 khối / 9 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen250_webproduct_vi.png" alt="gen250_webproduct_vi"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webproduct" data-lang="de" data-blocks="9">
+  <div class="meta"><b>gen251_webproduct_de</b> · webproduct · de · 465×336 · 9 khối / 10 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen251_webproduct_de.png" alt="gen251_webproduct_de"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN">→ CÀI ĐẶT DỰ ÁN</div>
+</div>
+<div class="card" data-cat="webproduct" data-lang="ru" data-blocks="8">
+  <div class="meta"><b>gen252_webproduct_ru</b> · webproduct · ru · 485×350 · 8 khối / 9 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen252_webproduct_ru.png" alt="gen252_webproduct_ru"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN">→ CÀI ĐẶT DỰ ÁN</div>
+</div>
+<div class="card" data-cat="webproduct" data-lang="ko" data-blocks="8">
+  <div class="meta"><b>gen253_webproduct_ko</b> · webproduct · ko · 441×394 · 8 khối / 9 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen253_webproduct_ko.png" alt="gen253_webproduct_ko"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN">→ CÀI ĐẶT DỰ ÁN</div>
+</div>
+<div class="card" data-cat="webproduct" data-lang="ja" data-blocks="8">
+  <div class="meta"><b>gen254_webproduct_ja</b> · webproduct · ja · 549×336 · 8 khối / 9 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen254_webproduct_ja.png" alt="gen254_webproduct_ja"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="webproduct" data-lang="zh" data-blocks="8">
+  <div class="meta"><b>gen255_webproduct_zh</b> · webproduct · zh · 538×364 · 8 khối / 8 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen255_webproduct_zh.png" alt="gen255_webproduct_zh"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN">→ CÀI ĐẶT DỰ ÁN</div>
+</div>
+<div class="card" data-cat="webproduct" data-lang="zht" data-blocks="9">
+  <div class="meta"><b>gen256_webproduct_zht</b> · webproduct · zht · 572×396 · 9 khối / 9 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen256_webproduct_zht.png" alt="gen256_webproduct_zht"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN">→ CÀI ĐẶT DỰ ÁN</div>
+</div>
+<div class="card" data-cat="webproduct" data-lang="en" data-blocks="9">
+  <div class="meta"><b>gen257_webproduct_en</b> · webproduct · en · 439×396 · 9 khối / 10 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen257_webproduct_en.png" alt="gen257_webproduct_en"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN">→ CÀI ĐẶT DỰ ÁN</div>
+</div>
+<div class="card" data-cat="webproduct" data-lang="vi" data-blocks="9">
+  <div class="meta"><b>gen258_webproduct_vi</b> · webproduct · vi · 473×381 · 9 khối / 10 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen258_webproduct_vi.png" alt="gen258_webproduct_vi"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN">→ CÀI ĐẶT DỰ ÁN</div>
+</div>
+<div class="card" data-cat="webproduct" data-lang="de" data-blocks="9">
+  <div class="meta"><b>gen259_webproduct_de</b> · webproduct · de · 497×336 · 9 khối / 10 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen259_webproduct_de.png" alt="gen259_webproduct_de"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN">→ CÀI ĐẶT DỰ ÁN</div>
+</div>
+<div class="card" data-cat="webproduct" data-lang="ru" data-blocks="8">
+  <div class="meta"><b>gen260_webproduct_ru</b> · webproduct · ru · 497×342 · 8 khối / 9 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen260_webproduct_ru.png" alt="gen260_webproduct_ru"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN">→ CÀI ĐẶT DỰ ÁN</div>
+</div>
+<div class="card" data-cat="webproduct" data-lang="ko" data-blocks="9">
+  <div class="meta"><b>gen261_webproduct_ko</b> · webproduct · ko · 550×412 · 9 khối / 10 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen261_webproduct_ko.png" alt="gen261_webproduct_ko"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webproduct" data-lang="ja" data-blocks="8">
+  <div class="meta"><b>gen262_webproduct_ja</b> · webproduct · ja · 447×345 · 8 khối / 9 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen262_webproduct_ja.png" alt="gen262_webproduct_ja"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN">→ CÀI ĐẶT DỰ ÁN</div>
+</div>
+<div class="card" data-cat="webproduct" data-lang="zh" data-blocks="9">
+  <div class="meta"><b>gen263_webproduct_zh</b> · webproduct · zh · 437×371 · 9 khối / 9 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen263_webproduct_zh.png" alt="gen263_webproduct_zh"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN">→ CÀI ĐẶT DỰ ÁN</div>
+</div>
+<div class="card" data-cat="webproduct" data-lang="zht" data-blocks="8">
+  <div class="meta"><b>gen264_webproduct_zht</b> · webproduct · zht · 548×336 · 8 khối / 8 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen264_webproduct_zht.png" alt="gen264_webproduct_zht"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webproduct" data-lang="en" data-blocks="9">
+  <div class="meta"><b>gen265_webproduct_en</b> · webproduct · en · 572×411 · 9 khối / 10 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen265_webproduct_en.png" alt="gen265_webproduct_en"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webproduct" data-lang="vi" data-blocks="9">
+  <div class="meta"><b>gen266_webproduct_vi</b> · webproduct · vi · 572×367 · 9 khối / 10 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen266_webproduct_vi.png" alt="gen266_webproduct_vi"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="weblanding" data-lang="de" data-blocks="9">
+  <div class="meta"><b>gen267_weblanding_de</b> · weblanding · de · 670×296 · 9 khối / 18 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen267_weblanding_de.png" alt="gen267_weblanding_de"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN">→ CÀI ĐẶT DỰ ÁN</div>
+</div>
+<div class="card" data-cat="weblanding" data-lang="ru" data-blocks="9">
+  <div class="meta"><b>gen268_weblanding_ru</b> · weblanding · ru · 672×309 · 9 khối / 18 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen268_weblanding_ru.png" alt="gen268_weblanding_ru"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="weblanding" data-lang="ko" data-blocks="9">
+  <div class="meta"><b>gen269_weblanding_ko</b> · weblanding · ko · 682×340 · 9 khối / 16 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen269_weblanding_ko.png" alt="gen269_weblanding_ko"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="weblanding" data-lang="ja" data-blocks="9">
+  <div class="meta"><b>gen270_weblanding_ja</b> · weblanding · ja · 762×318 · 9 khối / 16 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen270_weblanding_ja.png" alt="gen270_weblanding_ja"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN">→ CÀI ĐẶT DỰ ÁN</div>
+</div>
+<div class="card" data-cat="weblanding" data-lang="zh" data-blocks="9">
+  <div class="meta"><b>gen271_weblanding_zh</b> · weblanding · zh · 780×310 · 9 khối / 12 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen271_weblanding_zh.png" alt="gen271_weblanding_zh"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN">→ CÀI ĐẶT DỰ ÁN</div>
+</div>
+<div class="card" data-cat="weblanding" data-lang="zht" data-blocks="9">
+  <div class="meta"><b>gen272_weblanding_zht</b> · weblanding · zht · 688×310 · 9 khối / 12 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen272_weblanding_zht.png" alt="gen272_weblanding_zht"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="weblanding" data-lang="en" data-blocks="9">
+  <div class="meta"><b>gen273_weblanding_en</b> · weblanding · en · 669×334 · 9 khối / 17 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen273_weblanding_en.png" alt="gen273_weblanding_en"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="weblanding" data-lang="vi" data-blocks="9">
+  <div class="meta"><b>gen274_weblanding_vi</b> · weblanding · vi · 744×305 · 9 khối / 17 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen274_weblanding_vi.png" alt="gen274_weblanding_vi"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN">→ CÀI ĐẶT DỰ ÁN</div>
+</div>
+<div class="card" data-cat="weblanding" data-lang="de" data-blocks="9">
+  <div class="meta"><b>gen275_weblanding_de</b> · weblanding · de · 729×297 · 9 khối / 17 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen275_weblanding_de.png" alt="gen275_weblanding_de"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="weblanding" data-lang="ru" data-blocks="9">
+  <div class="meta"><b>gen276_weblanding_ru</b> · weblanding · ru · 666×301 · 9 khối / 18 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen276_weblanding_ru.png" alt="gen276_weblanding_ru"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="weblanding" data-lang="ko" data-blocks="9">
+  <div class="meta"><b>gen277_weblanding_ko</b> · weblanding · ko · 687×350 · 9 khối / 16 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen277_weblanding_ko.png" alt="gen277_weblanding_ko"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="weblanding" data-lang="ja" data-blocks="9">
+  <div class="meta"><b>gen278_weblanding_ja</b> · weblanding · ja · 682×293 · 9 khối / 17 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen278_weblanding_ja.png" alt="gen278_weblanding_ja"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="weblanding" data-lang="zh" data-blocks="9">
+  <div class="meta"><b>gen279_weblanding_zh</b> · weblanding · zh · 831×301 · 9 khối / 12 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen279_weblanding_zh.png" alt="gen279_weblanding_zh"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN">→ CÀI ĐẶT DỰ ÁN</div>
+</div>
+<div class="card" data-cat="weblanding" data-lang="zht" data-blocks="9">
+  <div class="meta"><b>gen280_weblanding_zht</b> · weblanding · zht · 729×308 · 9 khối / 12 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen280_weblanding_zht.png" alt="gen280_weblanding_zht"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="weblanding" data-lang="en" data-blocks="9">
+  <div class="meta"><b>gen281_weblanding_en</b> · weblanding · en · 759×330 · 9 khối / 16 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen281_weblanding_en.png" alt="gen281_weblanding_en"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="weblanding" data-lang="vi" data-blocks="9">
+  <div class="meta"><b>gen282_weblanding_vi</b> · weblanding · vi · 795×315 · 9 khối / 16 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen282_weblanding_vi.png" alt="gen282_weblanding_vi"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="weblanding" data-lang="de" data-blocks="9">
+  <div class="meta"><b>gen283_weblanding_de</b> · weblanding · de · 840×304 · 9 khối / 15 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen283_weblanding_de.png" alt="gen283_weblanding_de"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN">→ CÀI ĐẶT DỰ ÁN</div>
+</div>
+<div class="card" data-cat="weblanding" data-lang="ru" data-blocks="9">
+  <div class="meta"><b>gen284_weblanding_ru</b> · weblanding · ru · 702×305 · 9 khối / 18 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen284_weblanding_ru.png" alt="gen284_weblanding_ru"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="weblanding" data-lang="ko" data-blocks="9">
+  <div class="meta"><b>gen285_weblanding_ko</b> · weblanding · ko · 686×331 · 9 khối / 15 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen285_weblanding_ko.png" alt="gen285_weblanding_ko"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN">→ CÀI ĐẶT DỰ ÁN</div>
+</div>
+<div class="card" data-cat="weblanding" data-lang="ja" data-blocks="9">
+  <div class="meta"><b>gen286_weblanding_ja</b> · weblanding · ja · 743×321 · 9 khối / 17 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen286_weblanding_ja.png" alt="gen286_weblanding_ja"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="weblanding" data-lang="zh" data-blocks="9">
+  <div class="meta"><b>gen287_weblanding_zh</b> · weblanding · zh · 750×310 · 9 khối / 12 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen287_weblanding_zh.png" alt="gen287_weblanding_zh"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="weblanding" data-lang="zht" data-blocks="9">
+  <div class="meta"><b>gen288_weblanding_zht</b> · weblanding · zht · 710×309 · 9 khối / 12 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen288_weblanding_zht.png" alt="gen288_weblanding_zht"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN">→ CÀI ĐẶT DỰ ÁN</div>
+</div>
+<div class="card" data-cat="webforum" data-lang="en" data-blocks="4">
+  <div class="meta"><b>gen289_webforum_en</b> · webforum · en · 481×236 · 4 khối / 6 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen289_webforum_en.png" alt="gen289_webforum_en"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN">→ CÀI ĐẶT DỰ ÁN</div>
+</div>
+<div class="card" data-cat="webforum" data-lang="vi" data-blocks="5">
+  <div class="meta"><b>gen290_webforum_vi</b> · webforum · vi · 630×254 · 5 khối / 7 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen290_webforum_vi.png" alt="gen290_webforum_vi"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN">→ CÀI ĐẶT DỰ ÁN</div>
+</div>
+<div class="card" data-cat="webforum" data-lang="de" data-blocks="4">
+  <div class="meta"><b>gen291_webforum_de</b> · webforum · de · 600×196 · 4 khối / 6 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen291_webforum_de.png" alt="gen291_webforum_de"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="webforum" data-lang="ru" data-blocks="5">
+  <div class="meta"><b>gen292_webforum_ru</b> · webforum · ru · 684×236 · 5 khối / 7 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen292_webforum_ru.png" alt="gen292_webforum_ru"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webforum" data-lang="ko" data-blocks="4">
+  <div class="meta"><b>gen293_webforum_ko</b> · webforum · ko · 566×207 · 4 khối / 5 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen293_webforum_ko.png" alt="gen293_webforum_ko"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webforum" data-lang="ja" data-blocks="5">
+  <div class="meta"><b>gen294_webforum_ja</b> · webforum · ja · 522×247 · 5 khối / 7 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen294_webforum_ja.png" alt="gen294_webforum_ja"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webforum" data-lang="zh" data-blocks="5">
+  <div class="meta"><b>gen295_webforum_zh</b> · webforum · zh · 617×214 · 5 khối / 5 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen295_webforum_zh.png" alt="gen295_webforum_zh"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webforum" data-lang="zht" data-blocks="4">
+  <div class="meta"><b>gen296_webforum_zht</b> · webforum · zht · 711×179 · 4 khối / 4 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen296_webforum_zht.png" alt="gen296_webforum_zht"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webforum" data-lang="en" data-blocks="5">
+  <div class="meta"><b>gen297_webforum_en</b> · webforum · en · 600×305 · 5 khối / 8 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen297_webforum_en.png" alt="gen297_webforum_en"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webforum" data-lang="vi" data-blocks="4">
+  <div class="meta"><b>gen298_webforum_vi</b> · webforum · vi · 695×182 · 4 khối / 4 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen298_webforum_vi.png" alt="gen298_webforum_vi"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="webforum" data-lang="de" data-blocks="5">
+  <div class="meta"><b>gen299_webforum_de</b> · webforum · de · 550×247 · 5 khối / 8 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen299_webforum_de.png" alt="gen299_webforum_de"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="webforum" data-lang="ru" data-blocks="5">
+  <div class="meta"><b>gen300_webforum_ru</b> · webforum · ru · 612×257 · 5 khối / 8 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen300_webforum_ru.png" alt="gen300_webforum_ru"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="webforum" data-lang="ko" data-blocks="4">
+  <div class="meta"><b>gen301_webforum_ko</b> · webforum · ko · 638×182 · 4 khối / 4 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen301_webforum_ko.png" alt="gen301_webforum_ko"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webforum" data-lang="ja" data-blocks="5">
+  <div class="meta"><b>gen302_webforum_ja</b> · webforum · ja · 532×225 · 5 khối / 6 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen302_webforum_ja.png" alt="gen302_webforum_ja"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webforum" data-lang="zh" data-blocks="4">
+  <div class="meta"><b>gen303_webforum_zh</b> · webforum · zh · 496×185 · 4 khối / 4 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen303_webforum_zh.png" alt="gen303_webforum_zh"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webforum" data-lang="zht" data-blocks="5">
+  <div class="meta"><b>gen304_webforum_zht</b> · webforum · zht · 654×214 · 5 khối / 5 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen304_webforum_zht.png" alt="gen304_webforum_zht"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="webforum" data-lang="en" data-blocks="4">
+  <div class="meta"><b>gen305_webforum_en</b> · webforum · en · 673×235 · 4 khối / 6 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen305_webforum_en.png" alt="gen305_webforum_en"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webforum" data-lang="vi" data-blocks="4">
+  <div class="meta"><b>gen306_webforum_vi</b> · webforum · vi · 519×222 · 4 khối / 6 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen306_webforum_vi.png" alt="gen306_webforum_vi"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN">→ CÀI ĐẶT DỰ ÁN</div>
+</div>
+<div class="card" data-cat="webforum" data-lang="de" data-blocks="4">
+  <div class="meta"><b>gen307_webforum_de</b> · webforum · de · 695×190 · 4 khối / 5 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen307_webforum_de.png" alt="gen307_webforum_de"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN">→ CÀI ĐẶT DỰ ÁN</div>
+</div>
+<div class="card" data-cat="webforum" data-lang="ru" data-blocks="4">
+  <div class="meta"><b>gen308_webforum_ru</b> · webforum · ru · 494×211 · 4 khối / 6 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen308_webforum_ru.png" alt="gen308_webforum_ru"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN">→ CÀI ĐẶT DỰ ÁN</div>
+</div>
+<div class="card" data-cat="webforum" data-lang="ko" data-blocks="5">
+  <div class="meta"><b>gen309_webforum_ko</b> · webforum · ko · 622×241 · 5 khối / 6 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen309_webforum_ko.png" alt="gen309_webforum_ko"></div>
+  <div class="tr" title="CÀI ĐẶT DỰ ÁN">→ CÀI ĐẶT DỰ ÁN</div>
+</div>
+<div class="card" data-cat="webforum" data-lang="ja" data-blocks="4">
+  <div class="meta"><b>gen310_webforum_ja</b> · webforum · ja · 620×191 · 4 khối / 5 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen310_webforum_ja.png" alt="gen310_webforum_ja"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webnews" data-lang="zh" data-blocks="14">
+  <div class="meta"><b>gen311_webnews_zh</b> · webnews · zh · 702×586 · 14 khối / 14 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen311_webnews_zh.png" alt="gen311_webnews_zh"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webnews" data-lang="zht" data-blocks="8">
+  <div class="meta"><b>gen312_webnews_zht</b> · webnews · zht · 706×298 · 8 khối / 8 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen312_webnews_zht.png" alt="gen312_webnews_zht"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webnews" data-lang="en" data-blocks="14">
+  <div class="meta"><b>gen313_webnews_en</b> · webnews · en · 877×566 · 14 khối / 17 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen313_webnews_en.png" alt="gen313_webnews_en"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webnews" data-lang="vi" data-blocks="8">
+  <div class="meta"><b>gen314_webnews_vi</b> · webnews · vi · 847×332 · 8 khối / 9 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen314_webnews_vi.png" alt="gen314_webnews_vi"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webnews" data-lang="de" data-blocks="8">
+  <div class="meta"><b>gen315_webnews_de</b> · webnews · de · 702×322 · 8 khối / 10 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen315_webnews_de.png" alt="gen315_webnews_de"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webnews" data-lang="ru" data-blocks="8">
+  <div class="meta"><b>gen316_webnews_ru</b> · webnews · ru · 812×308 · 8 khối / 10 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen316_webnews_ru.png" alt="gen316_webnews_ru"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webnews" data-lang="ko" data-blocks="14">
+  <div class="meta"><b>gen317_webnews_ko</b> · webnews · ko · 776×528 · 14 khối / 16 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen317_webnews_ko.png" alt="gen317_webnews_ko"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webnews" data-lang="ja" data-blocks="11">
+  <div class="meta"><b>gen318_webnews_ja</b> · webnews · ja · 762×459 · 11 khối / 13 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen318_webnews_ja.png" alt="gen318_webnews_ja"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webnews" data-lang="zh" data-blocks="14">
+  <div class="meta"><b>gen319_webnews_zh</b> · webnews · zh · 723×562 · 14 khối / 14 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen319_webnews_zh.png" alt="gen319_webnews_zh"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webnews" data-lang="zht" data-blocks="11">
+  <div class="meta"><b>gen320_webnews_zht</b> · webnews · zht · 678×420 · 11 khối / 11 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen320_webnews_zht.png" alt="gen320_webnews_zht"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webnews" data-lang="en" data-blocks="8">
+  <div class="meta"><b>gen321_webnews_en</b> · webnews · en · 781×322 · 8 khối / 10 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen321_webnews_en.png" alt="gen321_webnews_en"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webnews" data-lang="vi" data-blocks="11">
+  <div class="meta"><b>gen322_webnews_vi</b> · webnews · vi · 734×432 · 11 khối / 14 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen322_webnews_vi.png" alt="gen322_webnews_vi"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webnews" data-lang="de" data-blocks="11">
+  <div class="meta"><b>gen323_webnews_de</b> · webnews · de · 822×468 · 11 khối / 14 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen323_webnews_de.png" alt="gen323_webnews_de"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webnews" data-lang="ru" data-blocks="8">
+  <div class="meta"><b>gen324_webnews_ru</b> · webnews · ru · 746×326 · 8 khối / 9 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen324_webnews_ru.png" alt="gen324_webnews_ru"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webnews" data-lang="ko" data-blocks="14">
+  <div class="meta"><b>gen325_webnews_ko</b> · webnews · ko · 711×540 · 14 khối / 17 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen325_webnews_ko.png" alt="gen325_webnews_ko"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webnews" data-lang="ja" data-blocks="14">
+  <div class="meta"><b>gen326_webnews_ja</b> · webnews · ja · 631×530 · 14 khối / 18 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen326_webnews_ja.png" alt="gen326_webnews_ja"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webnews" data-lang="zh" data-blocks="14">
+  <div class="meta"><b>gen327_webnews_zh</b> · webnews · zh · 659×530 · 14 khối / 14 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen327_webnews_zh.png" alt="gen327_webnews_zh"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webnews" data-lang="zht" data-blocks="14">
+  <div class="meta"><b>gen328_webnews_zht</b> · webnews · zht · 785×598 · 14 khối / 14 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen328_webnews_zht.png" alt="gen328_webnews_zht"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webnews" data-lang="en" data-blocks="8">
+  <div class="meta"><b>gen329_webnews_en</b> · webnews · en · 816×330 · 8 khối / 10 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen329_webnews_en.png" alt="gen329_webnews_en"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webnews" data-lang="vi" data-blocks="8">
+  <div class="meta"><b>gen330_webnews_vi</b> · webnews · vi · 679×292 · 8 khối / 9 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen330_webnews_vi.png" alt="gen330_webnews_vi"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webnews" data-lang="de" data-blocks="14">
+  <div class="meta"><b>gen331_webnews_de</b> · webnews · de · 821×570 · 14 khối / 17 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen331_webnews_de.png" alt="gen331_webnews_de"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webnews" data-lang="ru" data-blocks="14">
+  <div class="meta"><b>gen332_webnews_ru</b> · webnews · ru · 810×570 · 14 khối / 15 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen332_webnews_ru.png" alt="gen332_webnews_ru"></div>
+  <div class="tr" title="DỊCH THUẬT SIÊU TỐC">→ DỊCH THUẬT SIÊU TỐC</div>
+</div>
+<div class="card" data-cat="webgrid" data-lang="ko" data-blocks="20">
+  <div class="meta"><b>gen333_webgrid_ko</b> · webgrid · ko · 874×272 · 20 khối / 20 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen333_webgrid_ko.png" alt="gen333_webgrid_ko"></div>
+  <div class="tr" title="Trợ giúp">→ Trợ giúp</div>
+</div>
+<div class="card" data-cat="webgrid" data-lang="ja" data-blocks="29">
+  <div class="meta"><b>gen334_webgrid_ja</b> · webgrid · ja · 963×368 · 29 khối / 29 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen334_webgrid_ja.png" alt="gen334_webgrid_ja"></div>
+  <div class="tr" title="Trợ giúp">→ Trợ giúp</div>
+</div>
+<div class="card" data-cat="webgrid" data-lang="zh" data-blocks="20">
+  <div class="meta"><b>gen335_webgrid_zh</b> · webgrid · zh · 956×272 · 20 khối / 20 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen335_webgrid_zh.png" alt="gen335_webgrid_zh"></div>
+  <div class="tr" title="Trợ giúp">→ Trợ giúp</div>
+</div>
+<div class="card" data-cat="webgrid" data-lang="zht" data-blocks="20">
+  <div class="meta"><b>gen336_webgrid_zht</b> · webgrid · zht · 898×272 · 20 khối / 20 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen336_webgrid_zht.png" alt="gen336_webgrid_zht"></div>
+  <div class="tr" title="Trợ giúp">→ Trợ giúp</div>
+</div>
+<div class="card" data-cat="webgrid" data-lang="en" data-blocks="20">
+  <div class="meta"><b>gen337_webgrid_en</b> · webgrid · en · 896×272 · 20 khối / 21 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen337_webgrid_en.png" alt="gen337_webgrid_en"></div>
+  <div class="tr" title="Trợ giúp">→ Trợ giúp</div>
+</div>
+<div class="card" data-cat="webgrid" data-lang="vi" data-blocks="29">
+  <div class="meta"><b>gen338_webgrid_vi</b> · webgrid · vi · 918×368 · 29 khối / 29 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen338_webgrid_vi.png" alt="gen338_webgrid_vi"></div>
+  <div class="tr" title="Trợ giúp">→ Trợ giúp</div>
+</div>
+<div class="card" data-cat="webgrid" data-lang="de" data-blocks="20">
+  <div class="meta"><b>gen339_webgrid_de</b> · webgrid · de · 995×272 · 20 khối / 21 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen339_webgrid_de.png" alt="gen339_webgrid_de"></div>
+  <div class="tr" title="Trợ giúp">→ Trợ giúp</div>
+</div>
+<div class="card" data-cat="webgrid" data-lang="ru" data-blocks="29">
+  <div class="meta"><b>gen340_webgrid_ru</b> · webgrid · ru · 810×368 · 29 khối / 32 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen340_webgrid_ru.png" alt="gen340_webgrid_ru"></div>
+  <div class="tr" title="Trợ giúp">→ Trợ giúp</div>
+</div>
+<div class="card" data-cat="webgrid" data-lang="ko" data-blocks="20">
+  <div class="meta"><b>gen341_webgrid_ko</b> · webgrid · ko · 931×272 · 20 khối / 21 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen341_webgrid_ko.png" alt="gen341_webgrid_ko"></div>
+  <div class="tr" title="Trợ giúp">→ Trợ giúp</div>
+</div>
+<div class="card" data-cat="webgrid" data-lang="ja" data-blocks="20">
+  <div class="meta"><b>gen342_webgrid_ja</b> · webgrid · ja · 945×272 · 20 khối / 20 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen342_webgrid_ja.png" alt="gen342_webgrid_ja"></div>
+  <div class="tr" title="Trợ giúp">→ Trợ giúp</div>
+</div>
+<div class="card" data-cat="webgrid" data-lang="zh" data-blocks="29">
+  <div class="meta"><b>gen343_webgrid_zh</b> · webgrid · zh · 919×368 · 29 khối / 29 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen343_webgrid_zh.png" alt="gen343_webgrid_zh"></div>
+  <div class="tr" title="Trợ giúp">→ Trợ giúp</div>
+</div>
+<div class="card" data-cat="webgrid" data-lang="zht" data-blocks="29">
+  <div class="meta"><b>gen344_webgrid_zht</b> · webgrid · zht · 885×368 · 29 khối / 29 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen344_webgrid_zht.png" alt="gen344_webgrid_zht"></div>
+  <div class="tr" title="Trợ giúp">→ Trợ giúp</div>
+</div>
+<div class="card" data-cat="webgrid" data-lang="en" data-blocks="29">
+  <div class="meta"><b>gen345_webgrid_en</b> · webgrid · en · 967×368 · 29 khối / 29 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen345_webgrid_en.png" alt="gen345_webgrid_en"></div>
+  <div class="tr" title="Trợ giúp">→ Trợ giúp</div>
+</div>
+<div class="card" data-cat="webgrid" data-lang="vi" data-blocks="29">
+  <div class="meta"><b>gen346_webgrid_vi</b> · webgrid · vi · 1023×368 · 29 khối / 29 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen346_webgrid_vi.png" alt="gen346_webgrid_vi"></div>
+  <div class="tr" title="Trợ giúp">→ Trợ giúp</div>
+</div>
+<div class="card" data-cat="webgrid" data-lang="de" data-blocks="29">
+  <div class="meta"><b>gen347_webgrid_de</b> · webgrid · de · 952×368 · 29 khối / 30 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen347_webgrid_de.png" alt="gen347_webgrid_de"></div>
+  <div class="tr" title="Trợ giúp">→ Trợ giúp</div>
+</div>
+<div class="card" data-cat="webgrid" data-lang="ru" data-blocks="29">
+  <div class="meta"><b>gen348_webgrid_ru</b> · webgrid · ru · 1022×368 · 29 khối / 30 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen348_webgrid_ru.png" alt="gen348_webgrid_ru"></div>
+  <div class="tr" title="Trợ giúp">→ Trợ giúp</div>
+</div>
+<div class="card" data-cat="webgrid" data-lang="ko" data-blocks="29">
+  <div class="meta"><b>gen349_webgrid_ko</b> · webgrid · ko · 863×368 · 29 khối / 30 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen349_webgrid_ko.png" alt="gen349_webgrid_ko"></div>
+  <div class="tr" title="Trợ giúp">→ Trợ giúp</div>
+</div>
+<div class="card" data-cat="webgrid" data-lang="ja" data-blocks="20">
+  <div class="meta"><b>gen350_webgrid_ja</b> · webgrid · ja · 923×272 · 20 khối / 20 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen350_webgrid_ja.png" alt="gen350_webgrid_ja"></div>
+  <div class="tr" title="Trợ giúp">→ Trợ giúp</div>
+</div>
+<div class="card" data-cat="webgrid" data-lang="zh" data-blocks="20">
+  <div class="meta"><b>gen351_webgrid_zh</b> · webgrid · zh · 871×272 · 20 khối / 20 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen351_webgrid_zh.png" alt="gen351_webgrid_zh"></div>
+  <div class="tr" title="Trợ giúp">→ Trợ giúp</div>
+</div>
+<div class="card" data-cat="webgrid" data-lang="zht" data-blocks="29">
+  <div class="meta"><b>gen352_webgrid_zht</b> · webgrid · zht · 950×368 · 29 khối / 29 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen352_webgrid_zht.png" alt="gen352_webgrid_zht"></div>
+  <div class="tr" title="Trợ giúp">→ Trợ giúp</div>
+</div>
+<div class="card" data-cat="webgrid" data-lang="en" data-blocks="20">
+  <div class="meta"><b>gen353_webgrid_en</b> · webgrid · en · 954×272 · 20 khối / 21 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen353_webgrid_en.png" alt="gen353_webgrid_en"></div>
+  <div class="tr" title="Trợ giúp">→ Trợ giúp</div>
+</div>
+<div class="card" data-cat="webgrid" data-lang="vi" data-blocks="20">
+  <div class="meta"><b>gen354_webgrid_vi</b> · webgrid · vi · 878×272 · 20 khối / 21 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen354_webgrid_vi.png" alt="gen354_webgrid_vi"></div>
+  <div class="tr" title="Trợ giúp">→ Trợ giúp</div>
+</div>
+<div class="card" data-cat="webranked" data-lang="de" data-blocks="13">
+  <div class="meta"><b>gen355_webranked_de</b> · webranked · de · 780×383 · 13 khối / 13 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen355_webranked_de.png" alt="gen355_webranked_de"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="webranked" data-lang="ru" data-blocks="13">
+  <div class="meta"><b>gen356_webranked_ru</b> · webranked · ru · 758×388 · 13 khối / 13 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen356_webranked_ru.png" alt="gen356_webranked_ru"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="webranked" data-lang="ko" data-blocks="16">
+  <div class="meta"><b>gen357_webranked_ko</b> · webranked · ko · 800×454 · 16 khối / 16 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen357_webranked_ko.png" alt="gen357_webranked_ko"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="webranked" data-lang="ja" data-blocks="13">
+  <div class="meta"><b>gen358_webranked_ja</b> · webranked · ja · 780×388 · 13 khối / 13 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen358_webranked_ja.png" alt="gen358_webranked_ja"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="webranked" data-lang="zh" data-blocks="13">
+  <div class="meta"><b>gen359_webranked_zh</b> · webranked · zh · 722×392 · 13 khối / 13 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen359_webranked_zh.png" alt="gen359_webranked_zh"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="webranked" data-lang="zht" data-blocks="16">
+  <div class="meta"><b>gen360_webranked_zht</b> · webranked · zht · 774×448 · 16 khối / 16 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen360_webranked_zht.png" alt="gen360_webranked_zht"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="webranked" data-lang="en" data-blocks="16">
+  <div class="meta"><b>gen361_webranked_en</b> · webranked · en · 807×454 · 16 khối / 16 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen361_webranked_en.png" alt="gen361_webranked_en"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="webranked" data-lang="vi" data-blocks="16">
+  <div class="meta"><b>gen362_webranked_vi</b> · webranked · vi · 822×442 · 16 khối / 16 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen362_webranked_vi.png" alt="gen362_webranked_vi"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="webranked" data-lang="de" data-blocks="16">
+  <div class="meta"><b>gen363_webranked_de</b> · webranked · de · 840×423 · 16 khối / 16 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen363_webranked_de.png" alt="gen363_webranked_de"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="webranked" data-lang="ru" data-blocks="13">
+  <div class="meta"><b>gen364_webranked_ru</b> · webranked · ru · 789×388 · 13 khối / 13 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen364_webranked_ru.png" alt="gen364_webranked_ru"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="webranked" data-lang="ko" data-blocks="13">
+  <div class="meta"><b>gen365_webranked_ko</b> · webranked · ko · 787×395 · 13 khối / 13 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen365_webranked_ko.png" alt="gen365_webranked_ko"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="webranked" data-lang="ja" data-blocks="16">
+  <div class="meta"><b>gen366_webranked_ja</b> · webranked · ja · 789×436 · 16 khối / 16 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen366_webranked_ja.png" alt="gen366_webranked_ja"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="webranked" data-lang="zh" data-blocks="13">
+  <div class="meta"><b>gen367_webranked_zh</b> · webranked · zh · 816×392 · 13 khối / 13 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen367_webranked_zh.png" alt="gen367_webranked_zh"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="webranked" data-lang="zht" data-blocks="16">
+  <div class="meta"><b>gen368_webranked_zht</b> · webranked · zht · 730×448 · 16 khối / 16 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen368_webranked_zht.png" alt="gen368_webranked_zht"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="webranked" data-lang="en" data-blocks="16">
+  <div class="meta"><b>gen369_webranked_en</b> · webranked · en · 777×454 · 16 khối / 16 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen369_webranked_en.png" alt="gen369_webranked_en"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="webranked" data-lang="vi" data-blocks="13">
+  <div class="meta"><b>gen370_webranked_vi</b> · webranked · vi · 782×390 · 13 khối / 13 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen370_webranked_vi.png" alt="gen370_webranked_vi"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="webranked" data-lang="de" data-blocks="13">
+  <div class="meta"><b>gen371_webranked_de</b> · webranked · de · 756×383 · 13 khối / 13 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen371_webranked_de.png" alt="gen371_webranked_de"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="webranked" data-lang="ru" data-blocks="16">
+  <div class="meta"><b>gen372_webranked_ru</b> · webranked · ru · 718×436 · 16 khối / 16 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen372_webranked_ru.png" alt="gen372_webranked_ru"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="webranked" data-lang="ko" data-blocks="16">
+  <div class="meta"><b>gen373_webranked_ko</b> · webranked · ko · 821×454 · 16 khối / 16 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen373_webranked_ko.png" alt="gen373_webranked_ko"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="webranked" data-lang="ja" data-blocks="16">
+  <div class="meta"><b>gen374_webranked_ja</b> · webranked · ja · 756×436 · 16 khối / 16 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen374_webranked_ja.png" alt="gen374_webranked_ja"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="webranked" data-lang="zh" data-blocks="13">
+  <div class="meta"><b>gen375_webranked_zh</b> · webranked · zh · 802×392 · 13 khối / 13 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen375_webranked_zh.png" alt="gen375_webranked_zh"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="webranked" data-lang="zht" data-blocks="16">
+  <div class="meta"><b>gen376_webranked_zht</b> · webranked · zht · 724×448 · 16 khối / 16 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen376_webranked_zht.png" alt="gen376_webranked_zht"></div>
+  <div class="tr" title="CHÀO MỪNG TRỞ LẠI">→ CHÀO MỪNG TRỞ LẠI</div>
+</div>
+<div class="card" data-cat="webpoll" data-lang="en" data-blocks="8">
+  <div class="meta"><b>gen377_webpoll_en</b> · webpoll · en · 529×328 · 8 khối / 8 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen377_webpoll_en.png" alt="gen377_webpoll_en"></div>
+  <div class="tr" title="BÌNH CHỌN">→ BÌNH CHỌN</div>
+</div>
+<div class="card" data-cat="webpoll" data-lang="vi" data-blocks="8">
+  <div class="meta"><b>gen378_webpoll_vi</b> · webpoll · vi · 530×305 · 8 khối / 8 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen378_webpoll_vi.png" alt="gen378_webpoll_vi"></div>
+  <div class="tr" title="BÌNH CHỌN">→ BÌNH CHỌN</div>
+</div>
+<div class="card" data-cat="webpoll" data-lang="de" data-blocks="6">
+  <div class="meta"><b>gen379_webpoll_de</b> · webpoll · de · 440×225 · 6 khối / 6 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen379_webpoll_de.png" alt="gen379_webpoll_de"></div>
+  <div class="tr" title="BÌNH CHỌN">→ BÌNH CHỌN</div>
+</div>
+<div class="card" data-cat="webpoll" data-lang="ru" data-blocks="6">
+  <div class="meta"><b>gen380_webpoll_ru</b> · webpoll · ru · 510×232 · 6 khối / 6 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen380_webpoll_ru.png" alt="gen380_webpoll_ru"></div>
+  <div class="tr" title="BÌNH CHỌN">→ BÌNH CHỌN</div>
+</div>
+<div class="card" data-cat="webpoll" data-lang="ko" data-blocks="6">
+  <div class="meta"><b>gen381_webpoll_ko</b> · webpoll · ko · 400×245 · 6 khối / 6 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen381_webpoll_ko.png" alt="gen381_webpoll_ko"></div>
+  <div class="tr" title="BÌNH CHỌN">→ BÌNH CHỌN</div>
+</div>
+<div class="card" data-cat="webpoll" data-lang="ja" data-blocks="6">
+  <div class="meta"><b>gen382_webpoll_ja</b> · webpoll · ja · 478×247 · 6 khối / 6 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen382_webpoll_ja.png" alt="gen382_webpoll_ja"></div>
+  <div class="tr" title="BÌNH CHỌN">→ BÌNH CHỌN</div>
+</div>
+<div class="card" data-cat="webpoll" data-lang="zh" data-blocks="8">
+  <div class="meta"><b>gen383_webpoll_zh</b> · webpoll · zh · 534×320 · 8 khối / 8 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen383_webpoll_zh.png" alt="gen383_webpoll_zh"></div>
+  <div class="tr" title="BÌNH CHỌN">→ BÌNH CHỌN</div>
+</div>
+<div class="card" data-cat="webpoll" data-lang="zht" data-blocks="7">
+  <div class="meta"><b>gen384_webpoll_zht</b> · webpoll · zht · 434×278 · 7 khối / 7 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen384_webpoll_zht.png" alt="gen384_webpoll_zht"></div>
+  <div class="tr" title="BÌNH CHỌN">→ BÌNH CHỌN</div>
+</div>
+<div class="card" data-cat="webpoll" data-lang="en" data-blocks="8">
+  <div class="meta"><b>gen385_webpoll_en</b> · webpoll · en · 458×313 · 8 khối / 8 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen385_webpoll_en.png" alt="gen385_webpoll_en"></div>
+  <div class="tr" title="BÌNH CHỌN">→ BÌNH CHỌN</div>
+</div>
+<div class="card" data-cat="webpoll" data-lang="vi" data-blocks="7">
+  <div class="meta"><b>gen386_webpoll_vi</b> · webpoll · vi · 525×291 · 7 khối / 7 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen386_webpoll_vi.png" alt="gen386_webpoll_vi"></div>
+  <div class="tr" title="BÌNH CHỌN">→ BÌNH CHỌN</div>
+</div>
+<div class="card" data-cat="webpoll" data-lang="de" data-blocks="7">
+  <div class="meta"><b>gen387_webpoll_de</b> · webpoll · de · 404×260 · 7 khối / 7 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen387_webpoll_de.png" alt="gen387_webpoll_de"></div>
+  <div class="tr" title="BÌNH CHỌN">→ BÌNH CHỌN</div>
+</div>
+<div class="card" data-cat="webpoll" data-lang="ru" data-blocks="7">
+  <div class="meta"><b>gen388_webpoll_ru</b> · webpoll · ru · 434×308 · 7 khối / 8 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen388_webpoll_ru.png" alt="gen388_webpoll_ru"></div>
+  <div class="tr" title="BÌNH CHỌN">→ BÌNH CHỌN</div>
+</div>
+<div class="card" data-cat="webpoll" data-lang="ko" data-blocks="6">
+  <div class="meta"><b>gen389_webpoll_ko</b> · webpoll · ko · 513×252 · 6 khối / 6 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen389_webpoll_ko.png" alt="gen389_webpoll_ko"></div>
+  <div class="tr" title="BÌNH CHỌN">→ BÌNH CHỌN</div>
+</div>
+<div class="card" data-cat="webpoll" data-lang="ja" data-blocks="8">
+  <div class="meta"><b>gen390_webpoll_ja</b> · webpoll · ja · 464×312 · 8 khối / 8 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen390_webpoll_ja.png" alt="gen390_webpoll_ja"></div>
+  <div class="tr" title="BÌNH CHỌN">→ BÌNH CHỌN</div>
+</div>
+<div class="card" data-cat="webpoll" data-lang="zh" data-blocks="8">
+  <div class="meta"><b>gen391_webpoll_zh</b> · webpoll · zh · 503×320 · 8 khối / 8 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen391_webpoll_zh.png" alt="gen391_webpoll_zh"></div>
+  <div class="tr" title="BÌNH CHỌN">→ BÌNH CHỌN</div>
+</div>
+<div class="card" data-cat="webpoll" data-lang="zht" data-blocks="8">
+  <div class="meta"><b>gen392_webpoll_zht</b> · webpoll · zht · 502×337 · 8 khối / 8 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen392_webpoll_zht.png" alt="gen392_webpoll_zht"></div>
+  <div class="tr" title="BÌNH CHỌN">→ BÌNH CHỌN</div>
+</div>
+<div class="card" data-cat="webpoll" data-lang="en" data-blocks="8">
+  <div class="meta"><b>gen393_webpoll_en</b> · webpoll · en · 437×313 · 8 khối / 8 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen393_webpoll_en.png" alt="gen393_webpoll_en"></div>
+  <div class="tr" title="BÌNH CHỌN">→ BÌNH CHỌN</div>
+</div>
+<div class="card" data-cat="webpoll" data-lang="vi" data-blocks="6">
+  <div class="meta"><b>gen394_webpoll_vi</b> · webpoll · vi · 544×246 · 6 khối / 6 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen394_webpoll_vi.png" alt="gen394_webpoll_vi"></div>
+  <div class="tr" title="BÌNH CHỌN">→ BÌNH CHỌN</div>
+</div>
+<div class="card" data-cat="webpoll" data-lang="de" data-blocks="6">
+  <div class="meta"><b>gen395_webpoll_de</b> · webpoll · de · 479×225 · 6 khối / 6 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen395_webpoll_de.png" alt="gen395_webpoll_de"></div>
+  <div class="tr" title="BÌNH CHỌN">→ BÌNH CHỌN</div>
+</div>
+<div class="card" data-cat="webpoll" data-lang="ru" data-blocks="7">
+  <div class="meta"><b>gen396_webpoll_ru</b> · webpoll · ru · 542×260 · 7 khối / 7 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen396_webpoll_ru.png" alt="gen396_webpoll_ru"></div>
+  <div class="tr" title="BÌNH CHỌN">→ BÌNH CHỌN</div>
+</div>
+<div class="card" data-cat="webpoll" data-lang="ko" data-blocks="7">
+  <div class="meta"><b>gen397_webpoll_ko</b> · webpoll · ko · 495×303 · 7 khối / 7 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen397_webpoll_ko.png" alt="gen397_webpoll_ko"></div>
+  <div class="tr" title="BÌNH CHỌN">→ BÌNH CHỌN</div>
+</div>
+<div class="card" data-cat="webpoll" data-lang="ja" data-blocks="8">
+  <div class="meta"><b>gen398_webpoll_ja</b> · webpoll · ja · 537×297 · 8 khối / 8 dòng</div>
+  <div class="imgwrap"><img loading="lazy" src="annotated/gen398_webpoll_ja.png" alt="gen398_webpoll_ja"></div>
+  <div class="tr" title="BÌNH CHỌN">→ BÌNH CHỌN</div>
+</div>
+</div>
+<script>
+const cards = [...document.querySelectorAll('.card')];
+function apply() {
+  const cat = document.getElementById('fcat').value;
+  const lang = document.getElementById('flang').value;
+  const fb = document.getElementById('fblocks').value;
+  let n = 0;
+  for (const c of cards) {
+    const nb = parseInt(c.dataset.blocks);
+    const okB = !fb || (fb === '5+' ? nb >= 5 : nb === parseInt(fb));
+    const ok = (!cat || c.dataset.cat === cat) && (!lang || c.dataset.lang === lang) && okB;
+    c.style.display = ok ? '' : 'none';
+    if (ok) n++;
+  }
+  document.getElementById('count').textContent = n + ' / ' + cards.length + ' case';
+}
+function resetF() {
+  for (const id of ['fcat','flang','fblocks']) document.getElementById(id).value = '';
+  apply();
+}
+for (const id of ['fcat','flang','fblocks']) document.getElementById(id).addEventListener('change', apply);
+apply();
+</script>
+</body>
+</html>
