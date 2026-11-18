@@ -239,6 +239,9 @@ function cloneBlocksState() {
       overlayBox: b.overlayBox ? { ...b.overlayBox } : { ...b.sourceBox },
       calloutBox: b.calloutBox ? { ...b.calloutBox } : { ...b.targetBox },
       bgRgb: [...b.bgRgb],
+      richSegments: Array.isArray(b.richSegments)
+        ? b.richSegments.map((s) => ({ ...s, sourceBox: s.sourceBox ? { ...s.sourceBox } : undefined }))
+        : [],
     })),
     globalDx,
     globalDy,
@@ -262,6 +265,9 @@ function restoreSnapshot(snap) {
     overlayBox: b.overlayBox ? { ...b.overlayBox } : { ...b.sourceBox },
     calloutBox: b.calloutBox ? { ...b.calloutBox } : { ...b.targetBox },
     bgRgb: [...b.bgRgb],
+    richSegments: Array.isArray(b.richSegments)
+      ? b.richSegments.map((s) => ({ ...s, sourceBox: s.sourceBox ? { ...s.sourceBox } : undefined }))
+      : [],
   }));
   globalDx = snap.globalDx;
   globalDy = snap.globalDy;
@@ -383,6 +389,103 @@ function wrapTextLines(ctx, text, maxWidth) {
     lines.push(currentLine);
   }
   return lines;
+}
+
+function normalizeSegmentRole(role) {
+  const value = String(role || "body").toLowerCase();
+  if (["heading", "title"].includes(value)) return "heading";
+  if (["subheading", "subtitle"].includes(value)) return "subheading";
+  if (["caption", "footnote"].includes(value)) return "caption";
+  if (value === "label") return "label";
+  if (value === "emphasis") return "emphasis";
+  return "body";
+}
+
+function defaultRoleFontScale(role) {
+  switch (normalizeSegmentRole(role)) {
+    case "heading": return 1.32;
+    case "subheading": return 1.14;
+    case "caption": return 0.84;
+    case "label": return 0.92;
+    default: return 1;
+  }
+}
+
+function getRichSegments(block, field = "translation") {
+  const segments = Array.isArray(block?.richSegments)
+    ? block.richSegments.filter((s) => String(s?.[field] || "").trim())
+    : [];
+  if (segments.length) return segments;
+  const text = String(block?.[field] || "");
+  return text ? [{ [field]: text, role: "body", fontScale: 1 }] : [];
+}
+
+function richSegmentFontScale(segment) {
+  const raw = Number(segment?.fontScale);
+  return Number.isFinite(raw) ? Math.max(0.62, Math.min(1.75, raw)) : defaultRoleFontScale(segment?.role);
+}
+
+function richSegmentGap(segment, nextSegment, baseFontSize = 1) {
+  const role = normalizeSegmentRole(segment?.role);
+  const nextRole = normalizeSegmentRole(nextSegment?.role);
+  if (role === "heading" || role === "subheading") return baseFontSize * 0.16;
+  if (role === "caption" || nextRole === "caption") return baseFontSize * 0.24;
+  return baseFontSize * 0.34;
+}
+
+function renderRichTextSegments(container, block, field) {
+  const segments = getRichSegments(block, field);
+  if (!segments.length) {
+    container.textContent = "";
+    return;
+  }
+  const isRich = Array.isArray(block?.richSegments) && block.richSegments.length > 0;
+  if (!isRich) {
+    container.textContent = segments[0][field] || "";
+    return;
+  }
+
+  container.textContent = "";
+  segments.forEach((segment, index) => {
+    const node = document.createElement("div");
+    const role = normalizeSegmentRole(segment.role);
+    node.className = `trans-rich-segment doc-rich-segment role-${role}`;
+    node.textContent = segment[field] || "";
+    node.style.fontSize = `${richSegmentFontScale(segment)}em`;
+    if (index < segments.length - 1) {
+      node.style.marginBottom = `${richSegmentGap(segment, segments[index + 1], 1).toFixed(2)}em`;
+    }
+    container.appendChild(node);
+  });
+}
+
+function computeRichAutoFitFontSize(block, boxW, boxH, refLineH = null, stageScale = 1, isSingleLine = false) {
+  if (!Array.isArray(block?.richSegments) || block.richSegments.length === 0) {
+    return computeAutoFitFontSize(block?.translation || "", boxW, boxH, refLineH, stageScale, isSingleLine);
+  }
+  const segments = getRichSegments(block, "translation");
+  const start = computeAutoFitFontSize(block.translation, boxW, boxH, refLineH, stageScale, false);
+  const availableW = Math.max(16, boxW - 20);
+  const availableH = Math.max(12, boxH - 10);
+  const weight = typoSettings.bold ? "700" : "500";
+  const style = typoSettings.italic ? "italic" : "normal";
+  for (let base = start; base >= 7.5; base -= 0.5) {
+    let totalH = 0;
+    let fits = true;
+    segments.forEach((segment, index) => {
+      const size = Math.max(7.5, base * richSegmentFontScale(segment));
+      measureCtx.font = `${style} ${weight} ${size}px ${typoSettings.fontFamily}`;
+      const lines = wrapTextLines(measureCtx, segment.translation || "", availableW);
+      const role = normalizeSegmentRole(segment.role);
+      totalH += Math.max(1, lines.length) * size * (role === "heading" ? 1.15 : 1.24);
+      if (index < segments.length - 1) {
+        totalH += richSegmentGap(segment, segments[index + 1], base);
+      }
+      if (totalH > availableH + 2) fits = false;
+    });
+    if (fits) return base;
+  }
+  return 7.5;
 }
 
 function computeAutoFitFontSize(text, boxW, boxH, refLineH = null, stageScale = 1, isSingleLine = false) {
@@ -783,7 +886,7 @@ function renderAllImageOverlay() {
     }
 
     const refLineH = b.lineHeight || (b.sourceBox?.h / (b.lineCount || 1));
-    const fontSize = computeAutoFitFontSize(b.translation, dispW, dispH, refLineH, scale, isSingleLine);
+    const fontSize = computeRichAutoFitFontSize(b, dispW, dispH, refLineH, scale, isSingleLine);
     boxEl.style.fontFamily = typoSettings.fontFamily;
     boxEl.style.fontSize = `${fontSize.toFixed(1)}px`;
     boxEl.style.fontWeight = typoSettings.bold ? "700" : "500";
@@ -793,7 +896,7 @@ function renderAllImageOverlay() {
     // Nội dung văn bản đích
     const textEl = document.createElement("div");
     textEl.className = "trans-box-text";
-    textEl.textContent = b.translation || "";
+    renderRichTextSegments(textEl, b, "translation");
     boxEl.appendChild(textEl);
 
     // 6 Tay cầm Resize
@@ -909,20 +1012,20 @@ function renderDualSegments() {
   docSourceCol.innerHTML = "";
   docTargetCol.innerHTML = "";
 
-  ocrBlocks.forEach((b, idx) => {
+  ocrBlocks.forEach((b) => {
     // 1. Đoạn văn bản gốc inline (Vùng B)
-    const srcSpan = document.createElement("span");
+    const srcSpan = document.createElement("div");
     srcSpan.className = "doc-seg doc-src-seg";
     srcSpan.dataset.uid = String(b.uid);
-    srcSpan.textContent = b.text || "";
+    renderRichTextSegments(srcSpan, b, "text");
     if (hoveredUid === b.uid) srcSpan.classList.add("highlighted");
     if (selectedUids.has(b.uid)) srcSpan.classList.add("selected");
 
     // 2. Đoạn văn bản dịch inline (Vùng C)
-    const trSpan = document.createElement("span");
+    const trSpan = document.createElement("div");
     trSpan.className = "doc-seg doc-tr-seg";
     trSpan.dataset.uid = String(b.uid);
-    trSpan.textContent = b.translation || "";
+    renderRichTextSegments(trSpan, b, "translation");
     if (hoveredUid === b.uid) trSpan.classList.add("highlighted");
     if (selectedUids.has(b.uid)) trSpan.classList.add("selected");
 
@@ -952,10 +1055,6 @@ function renderDualSegments() {
     docSourceCol.appendChild(srcSpan);
     docTargetCol.appendChild(trSpan);
 
-    if (idx < ocrBlocks.length - 1) {
-      docSourceCol.appendChild(document.createTextNode("\n"));
-      docTargetCol.appendChild(document.createTextNode("\n"));
-    }
   });
 }
 
@@ -965,7 +1064,8 @@ docSourceCol?.addEventListener("input", () => {
   for (const b of ocrBlocks) {
     const seg = docSourceCol.querySelector(`.doc-seg[data-uid="${b.uid}"]`);
     if (seg) {
-      b.text = seg.innerText.replace(/\r/g, "");
+      b.text = seg.innerText.replace(/\r/g, "").trimEnd();
+      b.richSegments = [];
     }
   }
   syncRawTextsFromBlocks();
@@ -976,12 +1076,22 @@ docTargetCol?.addEventListener("input", () => {
   for (const b of ocrBlocks) {
     const seg = docTargetCol.querySelector(`.doc-seg[data-uid="${b.uid}"]`);
     if (seg) {
-      b.translation = seg.innerText.replace(/\r/g, "");
+      b.translation = seg.innerText.replace(/\r/g, "").trimEnd();
+      b.richSegments = [];
     }
   }
   syncRawTextsFromBlocks();
   renderAllImageOverlay();
 });
+
+docSourceCol?.addEventListener("blur", () => {
+  renderDualSegments();
+  renderAllImageOverlay();
+}, true);
+docTargetCol?.addEventListener("blur", () => {
+  renderDualSegments();
+  renderAllImageOverlay();
+}, true);
 
 // =========================================================================
 // CUSTOM RIGHT-CLICK CONTEXT MENU CHO HỘP VĂN BẢN (VÙNG A, B, C)
@@ -1133,7 +1243,7 @@ function startBoxResize(ev, block, dir, boxEl) {
     boxEl.style.height = `${dispH.toFixed(1)}px`;
     boxEl.style.setProperty("--box-min-h", `${dispH.toFixed(1)}px`);
     const refLineH = block.lineHeight || (block.sourceBox?.h / (block.lineCount || 1));
-    const fontSize = computeAutoFitFontSize(block.translation, dispW, dispH, refLineH, scale, Boolean(block.isSingleLine));
+    const fontSize = computeRichAutoFitFontSize(block, dispW, dispH, refLineH, scale, Boolean(block.isSingleLine));
     boxEl.style.fontSize = `${fontSize.toFixed(1)}px`;
     renderConnectorsSvg();
   };
@@ -1165,6 +1275,7 @@ function enterInlineEditOnBox(block, textEl) {
     editingUid = null;
     textEl.contentEditable = "false";
     block.translation = textEl.innerText.trim();
+    block.richSegments = [];
     syncRawTextsFromBlocks();
     renderAllImageOverlay();
     renderDualSegments();
@@ -1204,6 +1315,7 @@ async function retranslateSingleBlock(uid) {
   try {
     const r = await invoke("translate", { text: b.text });
     b.translation = r.translation;
+    b.richSegments = [];
     syncRawTextsFromBlocks();
     renderAllImageOverlay();
     renderDualSegments();
@@ -1261,6 +1373,11 @@ function mergeSelectedBoxes() {
     uid: nextBlockUid++,
     text: toMerge.map((b) => b.text).filter(Boolean).join("\n"),
     translation: toMerge.map((b) => b.translation).filter(Boolean).join("\n"),
+    richSegments: toMerge.flatMap((b) =>
+      Array.isArray(b.richSegments) && b.richSegments.length
+        ? b.richSegments.map((segment) => ({ ...segment }))
+        : [{ text: b.text || "", translation: b.translation || "", role: "body", fontScale: 1 }]
+    ),
     sourceBox: mergedSourceBox,
     overlayBox: { ...mergedSourceBox },
     calloutBox: { ...mergedTargetBox },
@@ -1321,6 +1438,7 @@ function splitSelectedBox() {
     uid: nextBlockUid++,
     text: src1,
     translation: tr1,
+    richSegments: [],
     sourceBox: srcBox1,
     overlayBox: { ...srcBox1 },
     calloutBox: { ...tgtBox1 },
@@ -1331,6 +1449,7 @@ function splitSelectedBox() {
     uid: nextBlockUid++,
     text: src2 || "...",
     translation: tr2 || "...",
+    richSegments: [],
     sourceBox: srcBox2,
     overlayBox: { ...srcBox2 },
     calloutBox: { ...tgtBox2 },
@@ -1505,16 +1624,32 @@ function renderTranslatedImageToBase64() {
     const drawX = eff.x + offsetX;
     const drawY = eff.y + offsetY;
     const refLineH = b.lineHeight || (b.sourceBox?.h / (b.lineCount || 1));
-    const fontSize = computeAutoFitFontSize(b.translation, eff.w, eff.h, refLineH, 1, Boolean(b.isSingleLine));
-    const weight = typoSettings.bold ? "700" : "500";
+    const fontSize = computeRichAutoFitFontSize(b, eff.w, eff.h, refLineH, 1, Boolean(b.isSingleLine));
     const style = typoSettings.italic ? "italic" : "normal";
-    ctx.font = `${style} ${weight} ${fontSize}px ${typoSettings.fontFamily}`;
-
     const padX = 6;
     const padY = 4;
-    const lines = wrapTextLines(ctx, b.translation || "", Math.max(16, eff.w - padX * 2));
-    const lineHeight = fontSize * 1.24;
-    const neededH = lines.length * lineHeight + padY * 2;
+    const availableW = Math.max(16, eff.w - padX * 2);
+    const hasRichSegments = Array.isArray(b.richSegments) && b.richSegments.length > 0;
+    const segments = getRichSegments(b, "translation");
+    const runs = [];
+    let totalTextH = 0;
+    for (let i = 0; i < segments.length; i++) {
+      const segment = segments[i];
+      const role = normalizeSegmentRole(segment.role);
+      const segmentFontSize = fontSize * (hasRichSegments ? richSegmentFontScale(segment) : 1);
+      const weight = typoSettings.bold || ["heading", "subheading", "emphasis"].includes(role)
+        ? "700"
+        : "500";
+      ctx.font = `${style} ${weight} ${segmentFontSize}px ${typoSettings.fontFamily}`;
+      const lines = wrapTextLines(ctx, segment.translation || "", availableW);
+      const lineHeight = segmentFontSize * (role === "heading" ? 1.15 : 1.24);
+      const gap = i < segments.length - 1 && hasRichSegments
+        ? richSegmentGap(segment, segments[i + 1], fontSize)
+        : 0;
+      totalTextH += Math.max(1, lines.length) * lineHeight + gap;
+      runs.push({ lines, role, fontSize: segmentFontSize, lineHeight, weight, gap });
+    }
+    const neededH = totalTextH + padY * 2;
     const drawH = autoExpandBox ? Math.max(eff.h, neededH) : eff.h;
 
     const [r, g, bl] = b.bgRgb || [20, 24, 34];
@@ -1529,20 +1664,23 @@ function renderTranslatedImageToBase64() {
 
     ctx.fillStyle = b.fgColor || "#f8fafc";
     ctx.textBaseline = "top";
-    const totalTextH = lines.length * lineHeight;
     let curY = drawY + Math.max(padY, (drawH - totalTextH) / 2);
 
-    for (const line of lines) {
-      let lineX = drawX + padX;
-      if (typoSettings.align === "center") {
-        const lw = ctx.measureText(line).width;
-        lineX = drawX + (eff.w - lw) / 2;
-      } else if (typoSettings.align === "right") {
-        const lw = ctx.measureText(line).width;
-        lineX = drawX + eff.w - padX - lw;
+    for (const run of runs) {
+      ctx.font = `${style} ${run.weight} ${run.fontSize}px ${typoSettings.fontFamily}`;
+      for (const line of run.lines) {
+        let lineX = drawX + padX;
+        if (typoSettings.align === "center") {
+          const lw = ctx.measureText(line).width;
+          lineX = drawX + (eff.w - lw) / 2;
+        } else if (typoSettings.align === "right") {
+          const lw = ctx.measureText(line).width;
+          lineX = drawX + eff.w - padX - lw;
+        }
+        ctx.fillText(line, lineX, curY);
+        curY += run.lineHeight;
       }
-      ctx.fillText(line, lineX, curY);
-      curY += lineHeight;
+      curY += run.gap;
     }
   }
 
@@ -1630,14 +1768,28 @@ async function exitImageMode() {
 function estimateCalloutSize(b, side, imgW, imgH, unit) {
   const s = b.sourceBox;
   const text = String(b.translation || "").trim();
-  const len = text.length;
+  const richSegments = Array.isArray(b.richSegments) && b.richSegments.length
+    ? getRichSegments(b, "translation")
+    : [];
 
   // Lấy font size tự nhiên bám sát theo chiều cao chữ của 1 DÒNG (line_height), không lấy tổng chiều cao của cả đoạn văn (s.h)
   const lineCount = b.lineCount || 1;
   const refLineH = b.lineHeight || (s.h / lineCount);
   const approxFontPx = Math.max(9.0, Math.min(36, refLineH * 0.72));
-  measureCtx.font = `500 ${approxFontPx}px ${typoSettings.fontFamily}`;
-  const measuredSingleLineWidth = measureCtx.measureText(text).width + 18;
+  let measuredSingleLineWidth = 0;
+  if (richSegments.length) {
+    for (const segment of richSegments) {
+      measureCtx.font = `500 ${approxFontPx * richSegmentFontScale(segment)}px ${typoSettings.fontFamily}`;
+      measuredSingleLineWidth = Math.max(
+        measuredSingleLineWidth,
+        measureCtx.measureText(segment.translation || "").width
+      );
+    }
+  } else {
+    measureCtx.font = `500 ${approxFontPx}px ${typoSettings.fontFamily}`;
+    measuredSingleLineWidth = measureCtx.measureText(text).width;
+  }
+  measuredSingleLineWidth += 18;
 
   let estW;
   if (lineCount > 1) {
@@ -1653,12 +1805,31 @@ function estimateCalloutSize(b, side, imgW, imgH, unit) {
     estW = Math.max(s.w, Math.min(maxTopW, Math.round(measuredSingleLineWidth * 1.06 + 14)));
   }
 
-  const lines = wrapTextLines(measureCtx, text, Math.max(36, estW - 14));
-  b.isSingleLine = (lines.length <= 1);
-  const estH = Math.max(
-    Math.round(s.h || 20),
-    Math.ceil(lines.length * approxFontPx * 1.28 + 8)
-  );
+  const availableTextW = Math.max(36, estW - 14);
+  let estimatedTextH = 0;
+  let wrappedLineCount = 0;
+  if (richSegments.length) {
+    for (let i = 0; i < richSegments.length; i++) {
+      const segment = richSegments[i];
+      const segmentFontSize = approxFontPx * richSegmentFontScale(segment);
+      measureCtx.font = `500 ${segmentFontSize}px ${typoSettings.fontFamily}`;
+      const lines = wrapTextLines(measureCtx, segment.translation || "", availableTextW);
+      wrappedLineCount += lines.length;
+      const role = normalizeSegmentRole(segment.role);
+      estimatedTextH += Math.max(1, lines.length) * segmentFontSize * (role === "heading" ? 1.15 : 1.24);
+      if (i < richSegments.length - 1) {
+        estimatedTextH += richSegmentGap(segment, richSegments[i + 1], approxFontPx);
+      }
+    }
+    b.isSingleLine = richSegments.length === 1 && wrappedLineCount <= 1;
+  } else {
+    measureCtx.font = `500 ${approxFontPx}px ${typoSettings.fontFamily}`;
+    const lines = wrapTextLines(measureCtx, text, availableTextW);
+    wrappedLineCount = lines.length;
+    estimatedTextH = lines.length * approxFontPx * 1.28;
+    b.isSingleLine = lines.length <= 1;
+  }
+  const estH = Math.max(Math.round(s.h || 20), Math.ceil(estimatedTextH + 8));
   return { w: estW, h: estH };
 }
 
@@ -1838,6 +2009,55 @@ function layoutBlocksAroundPerimeter(blocks, imgW, imgH) {
   return blocks;
 }
 
+function mapRichSegmentsFromResponse(rawSegments, sourceBox, parentLineHeight, imageW, imageH) {
+  if (!Array.isArray(rawSegments)) return [];
+  return rawSegments.flatMap((raw) => {
+    if (!raw || typeof raw !== "object") return [];
+    const text = String(raw.text || raw.source || "");
+    const translation = String(raw.translation || raw.translated || raw.target || "");
+    if (!text.trim() && !translation.trim()) return [];
+
+    const role = normalizeSegmentRole(raw.role || raw.style);
+    let segmentSourceBox = null;
+    if (Array.isArray(raw.box_2d) && raw.box_2d.length >= 4) {
+      const [y0, x0, y1, x1] = raw.box_2d.map((n) => Number(n) || 0);
+      const left = Math.min(x0, x1);
+      const top = Math.min(y0, y1);
+      segmentSourceBox = {
+        x: (left / 1000) * imageW,
+        y: (top / 1000) * imageH,
+        w: Math.max(1, (Math.abs(x1 - x0) / 1000) * imageW),
+        h: Math.max(1, (Math.abs(y1 - y0) / 1000) * imageH),
+      };
+    }
+
+    let lineCount = Math.max(1, Number(raw.line_count || raw.lines) || 1);
+    if (segmentSourceBox && !raw.line_count && text) {
+      measureCtx.font = `500 1px ${typoSettings.fontFamily}`;
+      const textWidth = measureCtx.measureText(text).width;
+      const estimated = Math.sqrt(
+        (textWidth * 0.72 * segmentSourceBox.h) / Math.max(12, segmentSourceBox.w)
+      );
+      lineCount = Math.max(1, Math.min(20, Math.ceil(estimated - 0.001)));
+    }
+
+    const segmentLineHeight = segmentSourceBox
+      ? segmentSourceBox.h / lineCount
+      : null;
+    const geometryScale = segmentLineHeight && parentLineHeight > 0
+      ? segmentLineHeight / parentLineHeight
+      : null;
+    const roleScale = defaultRoleFontScale(role);
+    const fontScale = Number.isFinite(Number(raw.font_scale))
+      ? Math.max(0.62, Math.min(1.75, Number(raw.font_scale)))
+      : geometryScale
+        ? Math.max(0.62, Math.min(1.75, geometryScale * 0.72 + roleScale * 0.28))
+        : roleScale;
+
+    return [{ text, translation, role, lineCount, fontScale, sourceBox: segmentSourceBox }];
+  });
+}
+
 function buildOcrBlocksFromResponse(res) {
   const imgW = stageImage.naturalWidth || 800;
   const imgH = stageImage.naturalHeight || 600;
@@ -1857,7 +2077,12 @@ function buildOcrBlocksFromResponse(res) {
         sh = Math.max(16, ((ymax - ymin) / 1000) * imgH);
       }
       const sourceBox = { x: sx, y: sy, w: Math.max(16, sw), h: Math.max(12, sh) };
-      let lineCount = b.line_count || 1;
+      const rawSegments = Array.isArray(b.segments) ? b.segments : [];
+      const segmentsLineCount = rawSegments.reduce(
+        (sum, segment) => sum + Math.max(1, Number(segment.line_count || segment.lines) || 1),
+        0
+      );
+      let lineCount = b.line_count || segmentsLineCount || 1;
       if (!b.line_count && b.text && sourceBox.w > 24) {
         measureCtx.font = `500 1px ${typoSettings.fontFamily}`;
         const w1 = measureCtx.measureText(b.text).width;
@@ -1865,11 +2090,19 @@ function buildOcrBlocksFromResponse(res) {
         lineCount = Math.max(1, Math.min(20, Math.ceil(n - 0.001)));
       }
       const refLineH = b.line_height || (sourceBox.h / lineCount);
+      const richSegments = mapRichSegmentsFromResponse(
+        rawSegments,
+        sourceBox,
+        refLineH,
+        imgW,
+        imgH
+      );
       const { bgRgb, fgColor } = sampleBackgroundForBox(sourceBox);
       return {
         uid: nextBlockUid++,
         text: b.text || "",
         translation: b.translation || "",
+        richSegments,
         sourceBox,
         overlayBox: { ...sourceBox },
         targetBox: { ...sourceBox },

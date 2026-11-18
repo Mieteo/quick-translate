@@ -782,6 +782,28 @@ html, body {
   outline: none;
 }
 
+.trans-rich-segment {
+  display: block;
+  width: 100%;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.trans-rich-segment.role-heading {
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.trans-rich-segment.role-subheading {
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.trans-rich-segment.role-caption {
+  font-weight: 400;
+  line-height: 1.2;
+}
+
 .trans-box-text[contenteditable="true"] {
   cursor: text;
   user-select: text;
@@ -931,10 +953,32 @@ html, body {
 
 /* Từng đoạn/câu văn bản inline tự nhiên, chỉ highlight dạng bút dạ quang khi hover/chọn */
 .doc-seg {
-  display: inline;
+  display: block;
   border-radius: 3px;
   padding: 1px 0;
+  margin: 0 0 0.78em;
   transition: background-color 120ms ease, color 120ms ease, box-shadow 120ms ease;
+}
+
+.doc-rich-segment {
+  display: block;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.doc-rich-segment.role-heading {
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.doc-rich-segment.role-subheading {
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.doc-rich-segment.role-caption {
+  font-weight: 400;
+  line-height: 1.5;
 }
 
 .doc-seg.highlighted {

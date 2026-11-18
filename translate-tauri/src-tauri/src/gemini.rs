@@ -19,6 +19,27 @@ pub struct OcrBlock {
     pub line_height: Option<f64>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub line_count: Option<usize>,
+    /// Các đoạn con giữ phân cấp chữ bên trong cùng một vùng dịch (tiêu đề, nội dung...).
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub segments: Vec<OcrSegment>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct OcrSegment {
+    pub text: String,
+    pub translation: String,
+    #[serde(default = "default_segment_role")]
+    pub role: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub box_2d: Option<[f64; 4]>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub line_count: Option<usize>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub font_scale: Option<f64>,
+}
+
+fn default_segment_role() -> String {
+    "body".to_string()
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -117,20 +138,17 @@ impl GeminiClient {
         let is_gemma = model.starts_with("gemma-");
 
         if is_gemma {
-            // Các model Gemma dùng chế độ danh sách văn bản truyền thống
             let system_prompt = format!(
-                "You are an accurate OCR and translation assistant. \
-                 First, transcribe all visible text from the image exactly as written (preserving line breaks). \
-                 Second, translate that transcribed text from {src} into {target_lang}. \
-                 Format your output strictly using the separator ===TRANSLATION=== on its own line:\n\
-                 <transcribed source text>\n\
-                 ===TRANSLATION===\n\
-                 <translated text>\n\
-                 Output nothing else — no markdown fences, no commentary, no labels."
+                "You are an accurate OCR, visual-layout and translation assistant. \
+                 Transcribe the visible text exactly and translate it from {src} into {target_lang}. \
+                 Return one parent object for each coherent visual region. Keep a heading and its closely related paragraph in one parent, with separate ordered segments for their typography. Keep distant regions and separate columns as separate parents. Never split wrapped paragraphs into per-line segments. \
+                 Every parent must contain full text, full translation, box_2d [ymin,xmin,ymax,xmax] normalized from 0 to 1000, line_count, and ordered segments. Every segment must contain text, translation, role (heading, subheading, body, caption, label, or emphasis), its own box_2d, line_count, and font_scale (body 1.0, larger type above 1.0, smaller type below 1.0; estimate the source size between 0.65 and 1.7). \
+                 Example structure: [{{ \"text\": \"Heading\\nBody\", \"translation\": \"Tiêu đề\\nNội dung\", \"box_2d\": [100, 100, 300, 900], \"line_count\": 3, \"segments\": [{{ \"text\": \"Heading\", \"translation\": \"Tiêu đề\", \"role\": \"heading\", \"box_2d\": [100, 100, 145, 700], \"line_count\": 1, \"font_scale\": 1.4 }}, {{ \"text\": \"Body\", \"translation\": \"Nội dung\", \"role\": \"body\", \"box_2d\": [155, 100, 300, 900], \"line_count\": 2, \"font_scale\": 1.0 }}] }}]. \
+                 Return ONLY a valid JSON array, with no markdown or commentary."
             );
 
             let user_prompt = format!(
-                "Transcribe the text in this image and translate it from {src} to {target_lang} separated by ===TRANSLATION===."
+                "Detect coherent text regions and internal typography, transcribe from {src}, translate into {target_lang}, and return parent boxes with ordered, accurately positioned text segments."
             );
 
             let parts = json!([
@@ -151,41 +169,26 @@ impl GeminiClient {
             });
 
             let raw_out = self.send_and_extract(api_key, model, &body).await?;
-            let (extracted_text, translation) =
-                if let Some((ocr, trans)) = raw_out.split_once("===TRANSLATION===") {
-                    (ocr.trim().to_string(), trans.trim().to_string())
-                } else {
-                    (String::new(), raw_out.trim().to_string())
-                };
-
-            return Ok(ImageTranslateOutput {
-                extracted_text,
-                translation,
-                blocks: Vec::new(),
-            });
+            return parse_model_image_output(&raw_out, granularity);
         }
 
-        // Với các model Gemini: yêu cầu trả về JSON mảng các khối văn bản kèm tọa độ box_2d [ymin, xmin, ymax, xmax] (0..1000)
+        // Với các model Gemini: trả về các vùng bố cục, mỗi vùng có thể chứa nhiều cấp chữ.
         let system_prompt = format!(
-            "You are an ultra-precise OCR, text-line layout detector, and translator. \
-             Scan the image thoroughly and detect every visual line or cohesive item of text. \
+            "You are an ultra-precise OCR, visual-layout detector, typographic hierarchy detector, and translator. \
+             Scan the image thoroughly and detect every coherent visual text region. \
              CRITICAL BOUNDING BOX RULES:\n\
-             1. Bounding box coordinates [ymin, xmin, ymax, xmax] MUST tightly cover the ENTIRE text line from the very first letter to the very last letter of that line or phrase.\n\
-             2. DO NOT isolate small icons, badges, bullet points, or single initial characters alone. The box MUST encompass the full textual description or line belonging to that entry.\n\
-             3. For list items, commit logs, table rows, or UI menus, detect each line as its own full-width bounding box covering all its text words.\n\
-             4. NEVER anchor a text box to an icon, avatar, badge, thumbnail, or bullet symbol. Boxes bound TEXT GLYPHS ONLY; when an entry pairs an icon with text, cover only the text portion.\n\
-             5. NEVER split a wrapped paragraph into per-line objects, and NEVER merge adjacent regions into one object: a heading/title, a paragraph, a caption, or a list item — each is its OWN object. One object's box must cover text of a SINGLE uniform font size spanning all of its lines.\n\
-             6. Coordinates are normalized from 0 to 1000 ([ymin, xmin, ymax, xmax] where 0,0 is top-left and 1000,1000 is bottom-right).\n\
-             For each text region, output:\n\
-             - \"text\": exact transcribed text.\n\
-             - \"translation\": natural, fluent translation into {target_lang}.\n\
-             - \"box_2d\": [ymin, xmin, ymax, xmax] (0..1000).\n\
-             - \"line_count\": the exact number of visual text lines the box covers (integer, 1 for a single line).\n\
-             Return ONLY a valid JSON array of objects: [{{ \"text\": \"...\", \"translation\": \"...\", \"box_2d\": [ymin, xmin, ymax, xmax], \"line_count\": 1 }}]."
+             1. A parent region is one coherent paragraph, UI component, card, list item, or other visually related group. Its box_2d covers the complete group.\n\
+             2. Keep unrelated regions, separate columns/cards, and text separated by a clear visual gap as separate parent regions. Do not combine distant text just to reduce the number of boxes.\n\
+             3. Within one coherent group, keep a heading/title and its closely associated body/caption together in ONE parent region, even when their font sizes differ. Do not create a separate parent box just because typography changes.\n\
+             4. Put the group's typography units in an ordered \"segments\" array (for example heading, subheading, body, caption, label). Do not split a wrapped paragraph into per-line segments. Each segment box_2d tightly covers its own text, and its role describes its visual typography.\n\
+             5. Never isolate icons, avatars, badges, thumbnails, bullets, or single initial characters. Parent and segment boxes cover text glyphs only.\n\
+             6. Coordinates are normalized from 0 to 1000 ([ymin, xmin, ymax, xmax], origin top-left). line_count is the number of visual lines.\n\
+             For every parent return exact full \"text\", fluent full \"translation\", \"box_2d\", \"line_count\", and \"segments\" in reading order. Every segment has exact \"text\", fluent \"translation\", role (one of heading, subheading, body, caption, label, emphasis), its own \"box_2d\", \"line_count\", and \"font_scale\" (relative to normal body text: body 1.0, larger type above 1.0, smaller type below 1.0; estimate the visible source size and keep the scale between 0.65 and 1.7). Keep paragraph breaks between segments in the parent text and translation. For uniform regions, return one body segment.\n\
+             Return ONLY valid JSON in this shape: [{{ \"text\": \"Title\\nParagraph\", \"translation\": \"Tiêu đề\\nĐoạn văn\", \"box_2d\": [100, 100, 260, 900], \"line_count\": 4, \"segments\": [{{ \"text\": \"Title\", \"translation\": \"Tiêu đề\", \"role\": \"heading\", \"box_2d\": [100, 100, 140, 700], \"line_count\": 1, \"font_scale\": 1.4 }}, {{ \"text\": \"Paragraph\", \"translation\": \"Đoạn văn\", \"role\": \"body\", \"box_2d\": [150, 100, 260, 900], \"line_count\": 3, \"font_scale\": 1.0 }}] }}]."
         );
 
         let user_prompt = format!(
-            "Detect all text lines/items with their FULL-WIDTH bounding boxes [ymin, xmin, ymax, xmax] covering all words from first to last letter, transcribe from {src}, and translate into {target_lang}."
+            "Detect the image's coherent text regions and their internal typography hierarchy, transcribe from {src}, translate into {target_lang}, and return one parent box per coherent region with ordered child segments and tight coordinates for both levels."
         );
 
         let parts = json!([
@@ -210,7 +213,7 @@ impl GeminiClient {
         });
 
         let raw_out = self.send_and_extract(api_key, model, &body).await?;
-        Ok(parse_structured_image_output(&raw_out, granularity))
+        parse_model_image_output(&raw_out, granularity)
     }
 
     async fn send_and_extract(
@@ -312,6 +315,10 @@ fn merge_wrapped_line_blocks(blocks: Vec<OcrBlock>) -> Vec<OcrBlock> {
     let mut out: Vec<OcrBlock> = Vec::with_capacity(blocks.len());
     for b in blocks {
         match out.last_mut() {
+            Some(last) if can_group_heading_and_body(last, &b) => {
+                let a = std::mem::replace(last, b.clone());
+                *last = group_heading_and_body(&a, &b);
+            }
             Some(last) if can_merge_stacked(last, &b) => {
                 let a = std::mem::replace(last, b.clone());
                 *last = merge_two_blocks(&a, &b);
@@ -322,12 +329,106 @@ fn merge_wrapped_line_blocks(blocks: Vec<OcrBlock>) -> Vec<OcrBlock> {
     out
 }
 
+fn single_segment_role(block: &OcrBlock) -> Option<&str> {
+    if block.segments.len() == 1 {
+        Some(block.segments[0].role.as_str())
+    } else {
+        None
+    }
+}
+
+fn can_group_heading_and_body(heading: &OcrBlock, body: &OcrBlock) -> bool {
+    if heading.segments.len() > 1 || body.segments.len() > 1 {
+        return false;
+    }
+    let explicit_heading = single_segment_role(heading) == Some("heading")
+        || single_segment_role(heading) == Some("subheading");
+    let explicit_body = matches!(single_segment_role(body), Some("body" | "caption"));
+    let heading_chars = heading.text.chars().count();
+    let heading_is_title = explicit_heading
+        || (heading_chars <= 56
+            && heading.line_count.unwrap_or(1) <= 1
+            && block_line_h(heading) / block_line_h(body) >= 1.18);
+    let body_has_content = explicit_body
+        || body.line_count.unwrap_or(1) > 1
+        || body.text.chars().count() >= 18;
+    if !heading_is_title || !body_has_content {
+        return false;
+    }
+
+    let [_, hx0, hy1, hx1] = heading.box_2d;
+    let [by0, bx0, _, bx1] = body.box_2d;
+    let h_line = block_line_h(heading);
+    let b_line = block_line_h(body);
+    let gap = by0 - hy1;
+    let max_gap = (h_line + b_line) * 0.45;
+    if !(-0.35 * h_line..=max_gap).contains(&gap) {
+        return false;
+    }
+
+    let min_w = (hx1 - hx0).min(bx1 - bx0).max(1.0);
+    let left_aligned = (hx0 - bx0).abs() <= 34.0;
+    let overlap = hx1.min(bx1) - hx0.max(bx0);
+    let center_drift = ((hx0 + hx1) - (bx0 + bx1)).abs() / 2.0;
+    left_aligned || overlap >= 0.45 * min_w || center_drift <= 0.55 * min_w
+}
+
+fn group_heading_and_body(heading: &OcrBlock, body: &OcrBlock) -> OcrBlock {
+    let mut segments = if heading.segments.is_empty() {
+        vec![OcrSegment {
+            text: heading.text.clone(),
+            translation: heading.translation.clone(),
+            role: "heading".to_string(),
+            box_2d: Some(heading.box_2d),
+            line_count: heading.line_count,
+            font_scale: None,
+        }]
+    } else {
+        heading.segments.clone()
+    };
+    segments.extend(if body.segments.is_empty() {
+        vec![OcrSegment {
+            text: body.text.clone(),
+            translation: body.translation.clone(),
+            role: "body".to_string(),
+            box_2d: Some(body.box_2d),
+            line_count: body.line_count,
+            font_scale: None,
+        }]
+    } else {
+        body.segments.clone()
+    });
+
+    OcrBlock {
+        id: heading.id,
+        text: format!("{}\n{}", heading.text, body.text),
+        translation: format!("{}\n{}", heading.translation, body.translation),
+        box_2d: [
+            heading.box_2d[0].min(body.box_2d[0]),
+            heading.box_2d[1].min(body.box_2d[1]),
+            heading.box_2d[2].max(body.box_2d[2]),
+            heading.box_2d[3].max(body.box_2d[3]),
+        ],
+        pixel_rect: None,
+        line_height: None,
+        line_count: Some(
+            heading.line_count.unwrap_or(1) + body.line_count.unwrap_or(1),
+        ),
+        segments,
+    }
+}
+
 fn block_line_h(b: &OcrBlock) -> f64 {
     let h = (b.box_2d[2] - b.box_2d[0]).max(1.0);
     h / b.line_count.unwrap_or(1).max(1) as f64
 }
 
 fn can_merge_stacked(a: &OcrBlock, b: &OcrBlock) -> bool {
+    // A heading/body hierarchy marks a semantic group boundary. Uniform body
+    // segments can still be joined when the model returns wrapped lines separately.
+    if a.segments.iter().chain(b.segments.iter()).any(|s| s.role != "body") {
+        return false;
+    }
     let [ay0, ax0, ay1, ax1] = a.box_2d;
     let [by0, bx0, by1, bx1] = b.box_2d;
     let ah = (ay1 - ay0).max(1.0);
@@ -364,6 +465,46 @@ fn can_merge_stacked(a: &OcrBlock, b: &OcrBlock) -> bool {
 fn merge_two_blocks(a: &OcrBlock, b: &OcrBlock) -> OcrBlock {
     let line_h = (block_line_h(a) + block_line_h(b)) / 2.0;
     let union_h = b.box_2d[2].max(a.box_2d[2]) - a.box_2d[0].min(b.box_2d[0]);
+    let mut segments: Vec<OcrSegment> = Vec::new();
+    if !a.segments.is_empty() || !b.segments.is_empty() {
+        let mut parts = Vec::new();
+        for block in [a, b] {
+            if block.segments.is_empty() {
+                parts.push(OcrSegment {
+                    text: block.text.clone(),
+                    translation: block.translation.clone(),
+                    role: "body".to_string(),
+                    box_2d: Some(block.box_2d),
+                    line_count: block.line_count,
+                    font_scale: None,
+                });
+            } else {
+                parts.extend(block.segments.iter().cloned());
+            }
+        }
+        for part in parts {
+            if let Some(last) = segments.last_mut() {
+                if last.role == "body" && part.role == "body" {
+                    last.text = join_block_text(&last.text, &part.text);
+                    last.translation = join_block_text(&last.translation, &part.translation);
+                    if let (Some(left), Some(right)) = (last.box_2d, part.box_2d) {
+                        last.box_2d = Some([
+                            left[0].min(right[0]),
+                            left[1].min(right[1]),
+                            left[2].max(right[2]),
+                            left[3].max(right[3]),
+                        ]);
+                    }
+                    last.line_count = Some(
+                        last.line_count.unwrap_or(1) + part.line_count.unwrap_or(1),
+                    );
+                    continue;
+                }
+            }
+            segments.push(part);
+        }
+    }
+
     OcrBlock {
         id: a.id,
         text: join_block_text(&a.text, &b.text),
@@ -377,6 +518,7 @@ fn merge_two_blocks(a: &OcrBlock, b: &OcrBlock) -> OcrBlock {
         pixel_rect: None,
         line_height: None,
         line_count: Some((union_h / line_h).round().clamp(1.0, 50.0) as usize),
+        segments,
     }
 }
 
@@ -405,41 +547,204 @@ fn is_cjk_char(c: char) -> bool {
 
 fn strip_code_fences(raw: &str) -> &str {
     let s = raw.trim();
-    if let Some(rest) = s.strip_prefix("```json") {
-        rest.trim().strip_suffix("```").unwrap_or(rest).trim()
-    } else if let Some(rest) = s.strip_prefix("```") {
-        rest.trim().strip_suffix("```").unwrap_or(rest).trim()
-    } else {
-        s
+    if !s.starts_with("```") {
+        return s;
     }
+    let Some(line_end) = s.find('\n') else {
+        return s;
+    };
+    let body = &s[line_end + 1..];
+    body.rfind("```").map_or(body.trim(), |end| body[..end].trim())
+}
+
+fn parse_json_candidate(candidate: &str) -> Option<serde_json::Value> {
+    if let Ok(value) = serde_json::from_str(candidate) {
+        return Some(value);
+    }
+
+    // Repair the common model formatting slip: a trailing comma before ] or }.
+    let chars = candidate.chars().collect::<Vec<_>>();
+    let mut repaired = String::with_capacity(candidate.len());
+    let mut in_string = false;
+    let mut escaped = false;
+    for i in 0..chars.len() {
+        let ch = chars[i];
+        if in_string {
+            repaired.push(ch);
+            if escaped {
+                escaped = false;
+            } else if ch == '\\' {
+                escaped = true;
+            } else if ch == '"' {
+                in_string = false;
+            }
+            continue;
+        }
+        if ch == '"' {
+            in_string = true;
+            repaired.push(ch);
+        } else if ch == ',' {
+            let next = chars[i + 1..].iter().find(|next| !next.is_whitespace());
+            if !matches!(next, Some(']' | '}')) {
+                repaired.push(ch);
+            }
+        } else {
+            repaired.push(ch);
+        }
+    }
+    serde_json::from_str(&repaired).ok()
+}
+
+fn parse_json_response(raw: &str) -> Option<serde_json::Value> {
+    let cleaned = strip_code_fences(raw);
+    if let Some(value) = parse_json_candidate(cleaned) {
+        if let Some(encoded) = value.as_str() {
+            if let Some(decoded) = parse_json_candidate(encoded) {
+                return Some(decoded);
+            }
+        }
+        return Some(value);
+    }
+
+    let bytes = cleaned.as_bytes();
+    for start in 0..bytes.len() {
+        if !matches!(bytes[start], b'[' | b'{') {
+            continue;
+        }
+        let mut stack = Vec::new();
+        let mut in_string = false;
+        let mut escaped = false;
+        for end in start..bytes.len() {
+            let byte = bytes[end];
+            if in_string {
+                if escaped {
+                    escaped = false;
+                } else if byte == b'\\' {
+                    escaped = true;
+                } else if byte == b'"' {
+                    in_string = false;
+                }
+                continue;
+            }
+            match byte {
+                b'"' => in_string = true,
+                b'[' | b'{' => stack.push(byte),
+                b']' | b'}' => {
+                    let expected = if byte == b']' { b'[' } else { b'{' };
+                    if stack.pop() != Some(expected) {
+                        break;
+                    }
+                    if stack.is_empty() {
+                        if let Some(candidate) = cleaned.get(start..=end) {
+                            if let Some(value) = parse_json_candidate(candidate) {
+                                return Some(value);
+                            }
+                        }
+                        break;
+                    }
+                }
+                _ => {}
+            }
+        }
+    }
+    None
+}
+
+fn find_region_items(value: &serde_json::Value, depth: usize) -> Option<Vec<serde_json::Value>> {
+    if let Some(items) = value.as_array() {
+        return Some(items.clone());
+    }
+    let object = value.as_object()?;
+    for key in ["blocks", "items", "regions", "text_regions", "results", "translations"] {
+        if let Some(items) = object.get(key).and_then(|v| v.as_array()) {
+            return Some(items.clone());
+        }
+    }
+    if depth < 3 {
+        for key in ["data", "response", "result", "output"] {
+            if let Some(items) = object
+                .get(key)
+                .and_then(|nested| find_region_items(nested, depth + 1))
+            {
+                return Some(items);
+            }
+        }
+    }
+    if object.contains_key("text") || object.contains_key("source") {
+        return Some(vec![value.clone()]);
+    }
+    None
+}
+
+fn looks_like_json_response(raw: &str) -> bool {
+    let cleaned = strip_code_fences(raw).trim_start();
+    cleaned.starts_with('[')
+        || cleaned.starts_with('{')
+        || (cleaned.contains("\"text\"") && cleaned.contains("\"translation\""))
+}
+
+fn parse_model_image_output(
+    raw: &str,
+    granularity: &str,
+) -> Result<ImageTranslateOutput, TranslateError> {
+    let output = parse_structured_image_output(raw, granularity);
+    if output.blocks.is_empty() && looks_like_json_response(raw) {
+        return Err(TranslateError::Parse(
+            "Model trả về cấu trúc JSON OCR không hợp lệ. Hãy thử lại hoặc đổi model.".into(),
+        ));
+    }
+    Ok(output)
+}
+
+fn parse_normalized_box(value: &serde_json::Value) -> Option<[f64; 4]> {
+    let values = value.as_array()?;
+    if values.len() < 4 {
+        return None;
+    }
+    let coords = [
+        values[0].as_f64()?.clamp(0.0, 1000.0),
+        values[1].as_f64()?.clamp(0.0, 1000.0),
+        values[2].as_f64()?.clamp(0.0, 1000.0),
+        values[3].as_f64()?.clamp(0.0, 1000.0),
+    ];
+    let ymin = coords[0].min(coords[2]);
+    let xmin = coords[1].min(coords[3]);
+    Some([
+        ymin,
+        xmin,
+        coords[0].max(coords[2]).max(ymin + 12.0).min(1000.0),
+        coords[1].max(coords[3]).max(xmin + 16.0).min(1000.0),
+    ])
+}
+
+fn normalize_segment_role(raw: &str) -> String {
+    match raw.trim().to_ascii_lowercase().as_str() {
+        "heading" | "title" => "heading",
+        "subheading" | "subtitle" => "subheading",
+        "caption" | "footnote" => "caption",
+        "label" => "label",
+        "emphasis" => "emphasis",
+        _ => "body",
+    }
+    .to_string()
 }
 
 fn parse_structured_image_output(raw: &str, granularity: &str) -> ImageTranslateOutput {
     let cleaned = strip_code_fences(raw);
     let sep = if granularity == "line" { "\n" } else { "\n\n" };
 
-    if let Ok(val) = serde_json::from_str::<serde_json::Value>(cleaned) {
-        let arr_opt = if let Some(a) = val.as_array() {
-            Some(a)
-        } else if let Some(a) = val.get("blocks").and_then(|v| v.as_array()) {
-            Some(a)
-        } else if let Some(a) = val.get("items").and_then(|v| v.as_array()) {
-            Some(a)
-        } else {
-            None
-        };
-
-        if let Some(arr) = arr_opt {
+    if let Some(value) = parse_json_response(cleaned) {
+        if let Some(arr) = find_region_items(&value, 0) {
             let mut blocks = Vec::new();
             for (idx, item) in arr.iter().enumerate() {
-                let text = item
+                let mut text = item
                     .get("text")
                     .or_else(|| item.get("source"))
                     .and_then(|v| v.as_str())
                     .unwrap_or("")
                     .trim()
                     .to_string();
-                let translation = item
+                let mut translation = item
                     .get("translation")
                     .or_else(|| item.get("translated"))
                     .or_else(|| item.get("target"))
@@ -447,6 +752,82 @@ fn parse_structured_image_output(raw: &str, granularity: &str) -> ImageTranslate
                     .unwrap_or("")
                     .trim()
                     .to_string();
+
+                let segments = item
+                    .get("segments")
+                    .or_else(|| item.get("parts"))
+                    .and_then(|v| v.as_array())
+                    .map(|items| {
+                        items
+                            .iter()
+                            .filter_map(|segment| {
+                                let text = segment
+                                    .get("text")
+                                    .or_else(|| segment.get("source"))
+                                    .and_then(|v| v.as_str())
+                                    .unwrap_or("")
+                                    .trim()
+                                    .to_string();
+                                let translation = segment
+                                    .get("translation")
+                                    .or_else(|| segment.get("translated"))
+                                    .or_else(|| segment.get("target"))
+                                    .and_then(|v| v.as_str())
+                                    .unwrap_or("")
+                                    .trim()
+                                    .to_string();
+                                if text.is_empty() && translation.is_empty() {
+                                    return None;
+                                }
+                                let box_2d = segment
+                                    .get("box_2d")
+                                    .or_else(|| segment.get("bbox"))
+                                    .or_else(|| segment.get("box"))
+                                    .and_then(parse_normalized_box);
+                                let line_count = segment
+                                    .get("line_count")
+                                    .or_else(|| segment.get("lines"))
+                                    .and_then(|v| v.as_u64())
+                                    .map(|n| (n as usize).clamp(1, 50));
+                                let font_scale = segment
+                                    .get("font_scale")
+                                    .and_then(|v| v.as_f64())
+                                    .map(|scale| scale.clamp(0.62, 1.75));
+                                let role = segment
+                                    .get("role")
+                                    .or_else(|| segment.get("style"))
+                                    .and_then(|v| v.as_str())
+                                    .map(normalize_segment_role)
+                                    .unwrap_or_else(default_segment_role);
+                                Some(OcrSegment {
+                                    text,
+                                    translation,
+                                    role,
+                                    box_2d,
+                                    line_count,
+                                    font_scale,
+                                })
+                            })
+                            .collect::<Vec<_>>()
+                    })
+                    .unwrap_or_default();
+
+                if text.is_empty() {
+                    text = segments
+                        .iter()
+                        .map(|segment| segment.text.as_str())
+                        .filter(|value| !value.is_empty())
+                        .collect::<Vec<_>>()
+                        .join("\n");
+                }
+                if translation.is_empty() {
+                    translation = segments
+                        .iter()
+                        .map(|segment| segment.translation.as_str())
+                        .filter(|value| !value.is_empty())
+                        .collect::<Vec<_>>()
+                        .join("\n");
+                }
 
                 if text.is_empty() && translation.is_empty() {
                     continue;
@@ -471,6 +852,15 @@ fn parse_structured_image_output(raw: &str, granularity: &str) -> ImageTranslate
                         box_2d = [ymin, xmin, ymax, xmax];
                     }
                 }
+                if box_2d == [0.0_f64; 4] {
+                    // Models that cannot ground boxes still get stable, separate
+                    // fallback regions instead of every translation stacking at (0,0).
+                    let count = arr.len().max(1) as f64;
+                    let slot = 880.0 / count;
+                    let top = 60.0 + idx as f64 * slot + slot * 0.1;
+                    let bottom = top + (slot * 0.45).max(12.0);
+                    box_2d = [top, 40.0, bottom.max(top + 12.0).min(990.0), 960.0];
+                }
 
                 blocks.push(OcrBlock {
                     id: idx + 1,
@@ -484,6 +874,7 @@ fn parse_structured_image_output(raw: &str, granularity: &str) -> ImageTranslate
                         .or_else(|| item.get("lines"))
                         .and_then(|v| v.as_u64())
                         .map(|n| (n as usize).clamp(1, 50)),
+                    segments,
                 });
             }
 
@@ -518,11 +909,18 @@ fn parse_structured_image_output(raw: &str, granularity: &str) -> ImageTranslate
         }
     }
 
-    // Dự phòng nếu phản hồi không phải mảng JSON
+    // Giữ tương thích với Gemma cũ vẫn trả văn bản kèm separator.
     if let Some((ocr, trans)) = cleaned.split_once("===TRANSLATION===") {
         ImageTranslateOutput {
             extracted_text: ocr.trim().to_string(),
             translation: trans.trim().to_string(),
+            blocks: Vec::new(),
+        }
+    } else if looks_like_json_response(cleaned) {
+        // Không bao giờ đưa JSON hỏng vào ô bản dịch như thể đó là văn xuôi.
+        ImageTranslateOutput {
+            extracted_text: String::new(),
+            translation: String::new(),
             blocks: Vec::new(),
         }
     } else {
@@ -633,6 +1031,7 @@ mod tests {
             pixel_rect: None,
             line_height: None,
             line_count: Some(line_count),
+            segments: Vec::new(),
         }
     }
 
