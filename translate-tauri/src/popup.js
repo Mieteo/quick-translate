@@ -268,8 +268,7 @@ function restoreSnapshot(snap) {
   globalScale = snap.globalScale;
   if (snap.imageDisplayMode) {
     imageDisplayMode = snap.imageDisplayMode;
-    btnModeOverlay?.classList.toggle("active", imageDisplayMode === "overlay");
-    btnModeCallout?.classList.toggle("active", imageDisplayMode === "callout");
+    updateDisplayModeControl();
   }
   syncOffsetSlidersUi();
   syncRawTextsFromBlocks();
@@ -472,6 +471,15 @@ function getStageScale() {
   return dispW / imgW;
 }
 
+function updateDisplayModeControl() {
+  for (const [button, mode] of [[btnModeOverlay, "overlay"], [btnModeCallout, "callout"]]) {
+    if (!button) continue;
+    const selected = imageDisplayMode === mode;
+    button.classList.toggle("active", selected);
+    button.setAttribute("aria-pressed", String(selected));
+  }
+}
+
 function setImageDisplayMode(mode, saveHistory = false) {
   const nextMode = mode === "overlay" ? "overlay" : "callout";
   if (saveHistory && imageDisplayMode !== nextMode) {
@@ -480,8 +488,7 @@ function setImageDisplayMode(mode, saveHistory = false) {
   imageDisplayMode = nextMode;
   localStorage.setItem("translate_image_display_mode", nextMode);
 
-  btnModeOverlay?.classList.toggle("active", nextMode === "overlay");
-  btnModeCallout?.classList.toggle("active", nextMode === "callout");
+  updateDisplayModeControl();
 
   const imgW = stageImage.naturalWidth || 800;
   const imgH = stageImage.naturalHeight || 600;
@@ -1618,10 +1625,7 @@ async function exitImageMode() {
 }
 
 // =========================================================================
-// THUẬT TOÁN BỐ TRÍ THÍCH ỨNG 4 PHÍA XUNG QUANH ẢNH GỐC (TRÁI / PHẢI / TRÊN / DƯỚI)
-// - Ảnh đứng (aspect < 0.85): Ưu tiên dạt sang 2 bên Trái & Phải
-// - Ảnh ngang rộng (aspect > 1.45): Ưu tiên dạt lên Trên & xuống Dưới
-// - Ảnh tỉ lệ cân bằng (0.85 <= aspect <= 1.45): Phân bổ hài hòa cả 4 phía
+// BỐ TRÍ Ô DỊCH THEO TỶ LỆ TOÀN BỘ ẢNH VÀ CÁC Ô
 // =========================================================================
 function estimateCalloutSize(b, side, imgW, imgH, unit) {
   const s = b.sourceBox;
@@ -1737,23 +1741,16 @@ function solveHorizontalBand(list, imgW, baseEdgeY, dir, itemGap) {
     }
   }
 
-  // Nếu vẫn chồng lấn ngang, xếp thành tầng ngoài (không bao giờ lọt vào trong ảnh)
+  // Mỗi ô nằm xa ảnh hơn mọi ô trước đó có phần giao theo chiều ngang.
   for (let i = 0; i < list.length; i++) {
+    const b = list[i].targetBox;
     for (let j = 0; j < i; j++) {
       const a = list[j].targetBox;
-      const b = list[i].targetBox;
-      const horizOverlap =
-        Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x);
-      if (horizOverlap > -itemGap + 2) {
-        const vertOverlap =
-          Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y);
-        if (vertOverlap > -itemGap + 2) {
-          if (dir < 0) {
-            b.y = a.y - b.h - itemGap;
-          } else {
-            b.y = a.y + a.h + itemGap;
-          }
-        }
+      const overlap = Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x);
+      if (overlap > -itemGap + 2) {
+        b.y = dir < 0
+          ? Math.min(b.y, a.y - b.h - itemGap)
+          : Math.max(b.y, a.y + a.h + itemGap);
       }
     }
   }
@@ -1762,117 +1759,82 @@ function solveHorizontalBand(list, imgW, baseEdgeY, dir, itemGap) {
 function layoutBlocksAroundPerimeter(blocks, imgW, imgH) {
   if (!blocks || blocks.length === 0) return blocks;
 
-  const aspect = imgW / Math.max(1, imgH);
-  const unit = Math.max(0.65, Math.min(2.2, Math.hypot(imgW, imgH) / 680));
   const marginGap = Math.max(18, Math.round(Math.min(imgW, imgH) * 0.045));
   const itemGap = Math.max(8, Math.round(marginGap * 0.45));
+  const unit = Math.max(0.65, Math.min(2.2, Math.hypot(imgW, imgH) / 680));
+  // Ảnh dọc dùng hai bên; ảnh ngang dùng trên/dưới để tránh kéo dài thêm.
+  const horizontalSides = imgW / Math.max(1, imgH) < 1.25;
+  const preferredSide = horizontalSides ? "right" : "bottom";
+  const otherSide = horizontalSides ? "left" : "top";
+  const ordered = [...blocks].sort((a, b) => {
+    const sa = a.sourceBox, sb = b.sourceBox;
+    return horizontalSides
+      ? (sa.x + sa.w / 2) - (sb.x + sb.w / 2)
+      : (sa.y + sa.h / 2) - (sb.y + sb.h / 2);
+  });
 
-  const topBlocks = [];
-  const bottomBlocks = [];
-  const leftBlocks = [];
-  const rightBlocks = [];
-
-  let leftLoad = 0;
-  let rightLoad = 0;
-  let topLoad = 0;
-  let bottomLoad = 0;
-
-  // Sắp xếp theo thứ tự từ trên xuống dưới để phân phối hài hòa
-  const ordered = [...blocks].sort(
-    (a, b) =>
-      a.sourceBox.y + a.sourceBox.h / 2 - (b.sourceBox.y + b.sourceBox.h / 2)
-  );
-
-  for (const b of ordered) {
-    const s = b.sourceBox;
-    const cx = s.x + s.w / 2;
-    const cy = s.y + s.h / 2;
-    const nx = cx / imgW; // 0..1
-    const ny = cy / imgH; // 0..1
-
-    let side;
-
-    if (aspect < 0.85) {
-      // 1. ẢNH DẠNG ĐỨNG (DỌC): Phân bổ sang 2 bên Trái & Phải
-      if (nx < 0.38 && leftLoad <= rightLoad + imgH * 0.35) {
-        side = "left";
-      } else if (nx > 0.62 && rightLoad <= leftLoad + imgH * 0.35) {
-        side = "right";
-      } else if (Math.abs(leftLoad - rightLoad) > 24) {
-        side = leftLoad <= rightLoad ? "left" : "right";
-      } else {
-        side = nx <= 0.5 ? "left" : "right";
-      }
-    } else if (aspect > 1.45) {
-      // 2. ẢNH DẠNG NGANG RỘNG: Ưu tiên Trên & Dưới (nếu quá nhiều khối ở rìa trái/phải mới san sang 2 bên)
-      if (
-        ordered.length >= 6 &&
-        ny >= 0.28 &&
-        ny <= 0.72 &&
-        (nx < 0.2 || nx > 0.8)
-      ) {
-        side = nx < 0.5 ? "left" : "right";
-      } else {
-        side = ny < 0.5 ? "top" : "bottom";
-      }
-    } else {
-      // 3. ẢNH TỈ LỆ CÂN BẰNG (VUÔNG / GẦN VUÔNG): Phân bổ hài hòa cả 4 phía
-      const canTop = ny < 0.24 && topLoad < imgW * 0.92;
-      const canBottom = ny > 0.76 && bottomLoad < imgW * 0.92;
-
-      if (canTop) {
-        side = "top";
-      } else if (canBottom) {
-        side = "bottom";
-      } else {
-        if (nx < 0.42 && leftLoad <= rightLoad + imgH * 0.3) {
-          side = "left";
-        } else if (nx > 0.58 && rightLoad <= leftLoad + imgH * 0.3) {
-          side = "right";
-        } else {
-          side = leftLoad <= rightLoad ? "left" : "right";
-        }
-      }
-    }
-
-    const sz = estimateCalloutSize(b, side, imgW, imgH, unit);
-    b.targetBox = {
-      x: s.x,
-      y: s.y,
-      w: sz.w,
-      h: sz.h,
-    };
-
-    if (side === "left") {
-      b.targetBox.x = -sz.w - marginGap;
-      leftLoad += sz.h + itemGap;
-      leftBlocks.push(b);
-    } else if (side === "right") {
-      b.targetBox.x = imgW + marginGap;
-      rightLoad += sz.h + itemGap;
-      rightBlocks.push(b);
-    } else if (side === "top") {
-      topLoad += sz.w + itemGap;
-      topBlocks.push(b);
-    } else {
-      bottomLoad += sz.w + itemGap;
-      bottomBlocks.push(b);
-    }
+  // Thử các điểm chia khối giữa hai cạnh, kể cả đặt tất cả ở cạnh ưu tiên.
+  // Giới hạn số phương án để ảnh có nhiều khối vẫn xử lý nhanh.
+  const splits = new Set([0, ordered.length]);
+  const steps = Math.min(ordered.length, 24);
+  for (let i = 0; i <= steps; i++) {
+    splits.add(Math.round((i * ordered.length) / steps));
   }
 
-  // Giải bài toán chống đè lấn cho từng phía
-  solveVerticalStack(leftBlocks, imgH, itemGap);
-  solveVerticalStack(rightBlocks, imgH, itemGap);
-  solveHorizontalBand(topBlocks, imgW, -marginGap, -1, itemGap);
-  solveHorizontalBand(bottomBlocks, imgW, imgH + marginGap, 1, itemGap);
+  let best = null;
+  for (const split of splits) {
+    const other = [], preferred = [];
+    for (let i = 0; i < ordered.length; i++) {
+      const original = ordered[i];
+      const side = i < split ? otherSide : preferredSide;
+      // Các phương án tạm không thay đổi vị trí và trạng thái ô đang hiển thị.
+      const b = { ...original, sourceBox: { ...original.sourceBox } };
+      const size = estimateCalloutSize(b, side, imgW, imgH, unit);
+      b.targetBox = { x: b.sourceBox.x, y: b.sourceBox.y, ...size };
+      if (horizontalSides) {
+        b.targetBox.x = side === "left" ? -size.w - marginGap : imgW + marginGap;
+      }
+      (side === otherSide ? other : preferred).push(b);
+    }
 
-  // Lưu lại tọa độ kiểu giải thích (calloutBox) và kiểu đè (overlayBox)
+    if (horizontalSides) {
+      solveVerticalStack(other, imgH, itemGap);
+      solveVerticalStack(preferred, imgH, itemGap);
+    } else {
+      solveHorizontalBand(other, imgW, -marginGap, -1, itemGap);
+      solveHorizontalBand(preferred, imgW, imgH + marginGap, 1, itemGap);
+    }
+
+    const candidate = [...other, ...preferred];
+    let minX = 0, minY = 0, maxX = imgW, maxY = imgH, distance = 0;
+    for (const b of candidate) {
+      const t = b.targetBox, s = b.sourceBox;
+      minX = Math.min(minX, t.x); minY = Math.min(minY, t.y);
+      maxX = Math.max(maxX, t.x + t.w); maxY = Math.max(maxY, t.y + t.h);
+      const sx = s.x + s.w / 2, sy = s.y + s.h / 2;
+      const dx = Math.max(t.x - sx, 0, sx - (t.x + t.w));
+      const dy = Math.max(t.y - sy, 0, sy - (t.y + t.h));
+      distance += Math.hypot(dx, dy);
+    }
+    const width = maxX - minX, height = maxY - minY;
+    const ratioError = Math.abs(Math.log((width / height) / 1.6));
+    const area = (width * height) / (imgW * imgH);
+    // Tỷ lệ là mục tiêu mềm: giữ bố cục gọn và đường nối ngắn.
+    const score = ratioError + 0.10 * Math.log(area) +
+      0.06 * distance / (candidate.length * Math.hypot(imgW, imgH)) +
+      0.04 * other.length / candidate.length;
+    if (!best || score < best.score) best = { score, candidate };
+  }
+
+  const chosen = new Map(best.candidate.map((b) => [b.uid, b]));
   for (const b of blocks) {
+    const result = chosen.get(b.uid);
+    b.isSingleLine = result.isSingleLine;
+    b.targetBox = { ...result.targetBox };
     b.calloutBox = { ...b.targetBox };
     if (!b.overlayBox) b.overlayBox = { ...b.sourceBox };
     b.defaultTargetBox = { ...b.targetBox };
   }
-
   return blocks;
 }
 
@@ -2070,8 +2032,7 @@ async function doTranslate() {
 // =========================================================================
 
 // Khởi tạo trạng thái nút 2 chế độ hiển thị: Kiểu đè vs Kiểu giải thích
-btnModeOverlay?.classList.toggle("active", imageDisplayMode === "overlay");
-btnModeCallout?.classList.toggle("active", imageDisplayMode === "callout");
+updateDisplayModeControl();
 btnModeOverlay?.addEventListener("click", () => setImageDisplayMode("overlay", true));
 btnModeCallout?.addEventListener("click", () => setImageDisplayMode("callout", true));
 

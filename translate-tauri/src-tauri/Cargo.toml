@@ -1,6 +1,6 @@
 [package]
 name = "translate-tauri"
-version = "1.0.0"
+version = "1.0.1"
 description = "Dich nhanh - tray translation app (BYOK Gemini)"
 edition = "2021"
 rust-version = "1.77"
@@ -29,6 +29,7 @@ base64 = "0.23"
 png = "0.18"
 image = { version = "0.24", default-features = false, features = ["png"] }
 chrono = { version = "0.4", default-features = false, features = ["clock"] }
+chrono-tz = "0.10.4"
 tokio = { version = "1", features = ["time"] }
 
 [target.'cfg(windows)'.dependencies]

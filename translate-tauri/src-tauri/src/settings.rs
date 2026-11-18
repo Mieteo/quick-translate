@@ -163,8 +163,11 @@ impl Settings {
 }
 
 fn pacific_today() -> String {
-    // UTC-7 (Pacific Daylight Time). DST chỉ lệch 1 giờ, không đáng kể cho mục đích đếm quota.
-    let now = chrono::Utc::now();
-    let pacific = now - chrono::Duration::hours(7);
-    pacific.format("%Y-%m-%d").to_string()
+    use chrono::Utc;
+    use chrono_tz::America::Los_Angeles;
+
+    Utc::now()
+        .with_timezone(&Los_Angeles)
+        .format("%Y-%m-%d")
+        .to_string()
 }

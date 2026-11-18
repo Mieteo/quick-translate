@@ -220,8 +220,8 @@ impl GeminiClient {
         body: &serde_json::Value,
     ) -> Result<String, TranslateError> {
         let url = format!(
-            "https://generativelanguage.googleapis.com/v1beta/models/{}:generateContent?key={}",
-            model, api_key
+            "https://generativelanguage.googleapis.com/v1beta/models/{}:generateContent",
+            model
         );
 
         // Gemma 4 hay bị timeout lần đầu (cold start) — thử lại 1 lần sau 2 giây.
@@ -229,7 +229,14 @@ impl GeminiClient {
         let mut raw = String::new();
         let mut status = StatusCode::OK;
         for attempt in 0..2 {
-            match self.http.post(&url).json(body).send().await {
+            match self
+                .http
+                .post(&url)
+                .header("x-goog-api-key", api_key)
+                .json(body)
+                .send()
+                .await
+            {
                 Ok(res) => {
                     status = res.status();
                     raw = res

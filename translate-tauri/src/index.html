@@ -76,12 +76,12 @@
     <div class="image-toolbar hidden" id="imageToolbar" data-tauri-drag-region>
       <div class="itb-strip">
         <!-- 1. Chế độ hiển thị: Kiểu đè (2 ảnh) vs Kiểu giải thích (1 ảnh + mũi tên) -->
-        <div class="seg-control" id="displayModeControl">
-          <button class="seg-btn" id="btnModeOverlay" data-mode="overlay" title="Hiển thị kiểu đè: 2 hình ảnh (1 ảnh gốc, 1 ảnh văn bản dịch đè lên vùng chữ gốc)">
-            🖼️ Kiểu đè
+        <div class="seg-control" id="displayModeControl" role="group" aria-label="Bố cục ảnh dịch">
+          <button type="button" class="seg-btn" id="btnModeOverlay" data-mode="overlay" aria-pressed="false" title="Xem ảnh gốc và ảnh có bản dịch chèn đè">
+            🖼️ Chèn đè
           </button>
-          <button class="seg-btn active" id="btnModeCallout" data-mode="callout" title="Hiển thị kiểu giải thích: 1 ảnh gốc ở chính giữa, các hộp văn bản dịch ở xung quanh có mũi tên nối">
-            💬 Kiểu giải thích
+          <button type="button" class="seg-btn active" id="btnModeCallout" data-mode="callout" aria-pressed="true" title="Hiển thị các ô dịch xung quanh ảnh gốc">
+            💬 Box quanh ảnh
           </button>
         </div>
 
