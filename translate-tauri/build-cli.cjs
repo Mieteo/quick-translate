@@ -4,6 +4,7 @@
 // bản cài NSIS vẫn được tạo đầy đủ.
 const path = require('path');
 const cli = require(path.join(__dirname, 'node_modules', '@tauri-apps', 'cli', 'main'));
+process.env.TRANSLATE_BUILD_EPOCH = String(Math.floor(Date.now() / 1000));
 
 cli.run(['build', '--config', JSON.stringify({ bundle: { createUpdaterArtifacts: false } })], 'tauri')
   .then(() => process.exit(0))

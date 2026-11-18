@@ -2319,6 +2319,8 @@ await listen("state-updated", (event) => {
   if (event.payload) syncUiFromState(event.payload);
 });
 
+await listen("open-settings", () => openDrawer());
+
 await listen("captured", async (event) => {
   closeDrawer();
   await exitImageMode();
@@ -2770,6 +2772,7 @@ try {
 // =========================================================================
 const appVersionText = $("appVersionText");
 const appCommitText = $("appCommitText");
+const appBuildTime = $("appBuildTime");
 const appAuthorLink = $("appAuthorLink");
 const btnCheckUpdate = $("btnCheckUpdate");
 const iconUpdateSpin = $("iconUpdateSpin");
@@ -2779,12 +2782,35 @@ const updateStatusNote = $("updateStatusNote");
 let pendingUpdate = null;
 let isUpdating = false;
 
+function formatBuildTime(unixSeconds) {
+  const date = new Date(Number(unixSeconds) * 1000);
+  if (!Number.isFinite(date.getTime())) return "";
+
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat("en-GB", {
+      hour: "2-digit",
+      minute: "2-digit",
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hourCycle: "h23",
+    })
+      .formatToParts(date)
+      .map((part) => [part.type, part.value])
+  );
+  return `${parts.hour}:${parts.minute}, ${parts.day}-${parts.month}-${parts.year}`;
+}
+
 // Tải thông tin phiên bản từ backend Rust
 try {
   const info = await invoke("get_app_info");
   if (info) {
     if (appVersionText) appVersionText.textContent = `v${info.version}`;
-    if (appCommitText) appCommitText.textContent = `(${info.commit_hash})`;
+    if (appCommitText) appCommitText.textContent = info.commit_hash;
+    if (appBuildTime) {
+      const buildTime = formatBuildTime(info.build_time_unix);
+      appBuildTime.textContent = buildTime ? `Phát hành: ${buildTime}` : "";
+    }
     if (appAuthorLink && info.repo_url) {
       appAuthorLink.href = info.repo_url;
       appAuthorLink.textContent = `${info.author} ↗`;

@@ -3,6 +3,7 @@
 // bản cài vẫn tạo đầy đủ, chỉ không sinh file .sig phục vụ auto-update.
 const path = require('path');
 process.chdir(path.join(__dirname, '..'));
+process.env.TRANSLATE_BUILD_EPOCH = String(Math.floor(Date.now() / 1000));
 const { run, logError } = require('@tauri-apps/cli');
 run(
   ['build', '--config', JSON.stringify({ bundle: { createUpdaterArtifacts: false } })],

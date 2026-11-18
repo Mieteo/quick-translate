@@ -627,6 +627,7 @@ pub async fn open_key_page() -> Result<(), String> {
 pub struct AppInfo {
     pub version: String,
     pub commit_hash: String,
+    pub build_time_unix: u64,
     pub author: String,
     pub repo_url: String,
 }
@@ -636,8 +637,9 @@ pub async fn get_app_info() -> Result<AppInfo, String> {
     Ok(AppInfo {
         version: env!("CARGO_PKG_VERSION").to_string(),
         commit_hash: option_env!("GIT_COMMIT_HASH")
-            .unwrap_or("701c096")
+            .unwrap_or("unknown")
             .to_string(),
+        build_time_unix: env!("BUILD_EPOCH_UNIX").parse().unwrap_or(0),
         author: "XavisTech".to_string(),
         repo_url: "https://github.com/Mieteo/quick-translate".to_string(),
     })
