@@ -1993,7 +1993,7 @@ function layoutBlocksAroundPerimeter(blocks, imgW, imgH) {
     // Tỷ lệ là mục tiêu mềm: giữ bố cục gọn và đường nối ngắn.
     const score = ratioError + 0.10 * Math.log(area) +
       0.06 * distance / (candidate.length * Math.hypot(imgW, imgH)) +
-      0.04 * other.length / candidate.length;
+      0.12 * other.length / candidate.length;
     if (!best || score < best.score) best = { score, candidate };
   }
 
@@ -2076,20 +2076,22 @@ function buildOcrBlocksFromResponse(res) {
         sw = Math.max(24, ((xmax - xmin) / 1000) * imgW);
         sh = Math.max(16, ((ymax - ymin) / 1000) * imgH);
       }
-      const sourceBox = { x: sx, y: sy, w: Math.max(16, sw), h: Math.max(12, sh) };
+      let sourceBox = { x: sx, y: sy, w: Math.max(16, sw), h: Math.max(12, sh) };
       const rawSegments = Array.isArray(b.segments) ? b.segments : [];
       const segmentsLineCount = rawSegments.reduce(
         (sum, segment) => sum + Math.max(1, Number(segment.line_count || segment.lines) || 1),
         0
       );
-      let lineCount = b.line_count || segmentsLineCount || 1;
+      let lineCount = rawSegments.length
+        ? Math.max(Number(b.line_count) || 1, segmentsLineCount)
+        : Number(b.line_count) || 1;
       if (!b.line_count && b.text && sourceBox.w > 24) {
         measureCtx.font = `500 1px ${typoSettings.fontFamily}`;
         const w1 = measureCtx.measureText(b.text).width;
         const n = Math.sqrt((w1 * 0.72 * sourceBox.h) / Math.max(24, sourceBox.w));
         lineCount = Math.max(1, Math.min(20, Math.ceil(n - 0.001)));
       }
-      const refLineH = b.line_height || (sourceBox.h / lineCount);
+      let refLineH = b.line_height || (sourceBox.h / lineCount);
       const richSegments = mapRichSegmentsFromResponse(
         rawSegments,
         sourceBox,
@@ -2097,6 +2099,20 @@ function buildOcrBlocksFromResponse(res) {
         imgW,
         imgH
       );
+      const segmentBoxes = richSegments.map((segment) => segment.sourceBox).filter(Boolean);
+      if (segmentBoxes.length) {
+        const left = Math.min(...segmentBoxes.map((box) => box.x));
+        const top = Math.min(...segmentBoxes.map((box) => box.y));
+        const right = Math.max(...segmentBoxes.map((box) => box.x + box.w));
+        const bottom = Math.max(...segmentBoxes.map((box) => box.y + box.h));
+        const pad = Math.max(2, Math.min(right - left, bottom - top) * 0.035);
+        const x = Math.max(0, left - pad);
+        const y = Math.max(0, top - pad);
+        const x2 = Math.min(imgW, right + pad);
+        const y2 = Math.min(imgH, bottom + pad);
+        sourceBox = { x, y, w: Math.max(16, x2 - x), h: Math.max(12, y2 - y) };
+        refLineH = b.line_height || (sourceBox.h / lineCount);
+      }
       const { bgRgb, fgColor } = sampleBackgroundForBox(sourceBox);
       return {
         uid: nextBlockUid++,

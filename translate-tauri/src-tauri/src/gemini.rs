@@ -361,7 +361,8 @@ fn can_group_heading_and_body(heading: &OcrBlock, body: &OcrBlock) -> bool {
     let h_line = block_line_h(heading);
     let b_line = block_line_h(body);
     let gap = by0 - hy1;
-    let max_gap = (h_line + b_line) * 0.45;
+    let max_gap = (h_line + b_line)
+        * if explicit_heading && explicit_body { 1.0 } else { 0.45 };
     if !(-0.35 * h_line..=max_gap).contains(&gap) {
         return false;
     }
